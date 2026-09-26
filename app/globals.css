@@ -1,7 +1,54 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+@source "../components";
+@source "../screens";
+@source "../app";
+
+@theme {
+  --color-primary: #003d29;
+
+  --animate-meteor: meteor 5s linear infinite;
+
+  @keyframes meteor {
+    0% {
+      transform: rotate(215deg) translateX(0);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(215deg) translateX(-500px);
+      opacity: 0;
+    }
+  }
+}
+
+/* Base styles for v3 compatibility */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Custom utilities */
+@utility hide-scrollbar {
+  overflow: hidden;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar Styles */
 html,
 body {
   scrollbar-width: thin;
@@ -23,14 +70,7 @@ body {
   background-color: #ccc;
 }
 
-.hide-scrollbar {
-  overflow: hidden;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
+/* Input Styles */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
