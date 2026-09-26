@@ -11,11 +11,15 @@
     "push": "npx drizzle-kit push",
     "pull": "npx drizzle-kit pull",
     "studio": "npx drizzle-kit studio",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "crawl:jumia": "bun scripts/crawl-and-import.ts",
+    "images:download": "bun scripts/download-images.ts"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.2",
     "@hookform/resolvers": "^3.9.1",
+    "@paystack/inline-js": "^2.26.0",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-separator": "^1.1.1",
     "@supabase/ssr": "^0.5.2",
@@ -29,6 +33,7 @@
     "hono": "^4.6.15",
     "next": "^16.3.6",
     "next-nprogress-bar": "^2.4.3",
+    "nuqs": "^2.10.1",
     "postgres": "^3.4.5",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
