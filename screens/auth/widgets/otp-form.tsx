@@ -8,21 +8,25 @@ import { useRouter } from "next-nprogress-bar";
 import { useConfirmOtp } from "@/features/auth/confirm-otp";
 import { useResendOtp } from "@/features/auth/resend-otp";
 import { createClient } from "@/lib/supabase/client";
+import { getUserRole, getRoleDashboardPath } from "@/lib/auth/roles";
+import type { User } from "@supabase/supabase-js";
 
 interface OtpFormData {
   otp: string;
 }
 
-const supabase = createClient();
-const {
-  data: { user },
-} = await supabase.auth.getUser();
-
 const OtpForm: React.FC = () => {
+  const [user, setUser] = React.useState<User | null>(null);
   const confirmOTP = useConfirmOtp();
   const resendOTP = useResendOtp();
   const router = useRouter();
 
+  React.useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+  }, []);
 
   const onOtpSubmit = async (data: OtpFormData) => {
     const id = toast.loading("Verifying...");
@@ -30,7 +34,8 @@ const OtpForm: React.FC = () => {
       const response = await confirmOTP.mutateAsync(data);
       if (response?.success) {
         toast.success("Account Verified successfully");
-        router.push("/user/dashboard");
+        const role = getUserRole(user);
+        router.push(getRoleDashboardPath(role));
       } else {
         toast.error(response?.message || "Invalid OTP. Please try again.");
       }

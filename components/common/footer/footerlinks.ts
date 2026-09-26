@@ -3,52 +3,36 @@ const footerLinks = [
     title: "Departments",
     links: [
       {
-        name: "Fashion",
-        href: "/",
-      },
-      {
-        name: "Education Products",
-        href: "/",
-      },
-      {
-        name: "Beverages",
-        href: "/",
-      },
-      {
-        name: "Organic Grocery",
-        href: "/",
-      },
-      {
-        name: "Office Supplus",
-        href: "/",
-      },
-      {
-        name: "Beauty Products",
-        href: "/",
-      },
-      {
-        name: "Books",
-        href: "/",
-      },
-      {
         name: "Electronics & Gadgets",
-        href: "/",
+        href: "/shop?category=1c2b120c-9613-446c-86c1-39f4cb7c2e14",
       },
       {
-        name: "Fitness",
-        href: "/",
+        name: "Fashion & Apparel",
+        href: "/shop?category=e019bd1a-da92-434e-89bd-02ba0c1e2f74",
       },
       {
-        name: "Sneakers",
-        href: "/",
+        name: "Home & Living",
+        href: "/shop?category=4f0368a4-d1a8-4aff-b617-ce1d89f03e44",
       },
       {
-        name: "Toys",
-        href: "/",
+        name: "Beauty & Personal Care",
+        href: "/shop?category=87376ae2-cdd6-4278-a786-f6ac547aacb0",
       },
       {
-        name: "Furniture",
-        href:"/"
+        name: "Computing & Stationery",
+        href: "/shop?category=bd80ff30-fcef-4028-8b56-c8c58fd2af3e",
+      },
+      {
+        name: "Sports & Fitness",
+        href: "/shop?category=cecd7fa5-5dff-4784-b9d5-e189e2e3c5dc",
+      },
+      {
+        name: "Trending Deals",
+        href: "/deals",
+      },
+      {
+        name: "All Products",
+        href: "/shop",
       },
     ],
   },
@@ -56,89 +40,85 @@ const footerLinks = [
     title: "About Us",
     links: [
       {
-        name: "Career",
-        href: "/",
+        name: "Our Company",
+        href: "/deals",
       },
       {
-        name: "News/Blogs",
-        href: "/",
-      },
-      {
-        name: "Help",
-        href: "/",
+        name: "News & Releases",
+        href: "/deals",
       },
       {
         name: "Press Center",
-        href: "/",
+        href: "/deals",
       },
       {
-        name: "Shop By Location",
-        href: "/",
+        name: "Partner Stores",
+        href: "/shop",
       },
       {
-        name: "ShopCart Brands",
-        href: "/",
+        name: "Featured Brands",
+        href: "/shop",
       },
       {
-        name: "Affiliates & Partners",
-        href: "/",
-      },
-      {
-        name: "Ideas & Guide",
-        href: "/",
+        name: "Affiliates & Vendors",
+        href: "/vendor/dashboard",
       },
     ],
   },
   {
-    title: "Services",
+    title: "Customer Services",
     links: [
       {
-        name: "Gift Card",
-        href: "/",
+        name: "Exclusive Deals",
+        href: "/deals",
       },
       {
-        name: "Mobile App",
-        href: "/",
+        name: "Cart & Checkout",
+        href: "/cart",
       },
       {
-        name: "Shipping & Delivery",
-        href: "/",
+        name: "Pickup Station Network",
+        href: "/cart",
       },
       {
-        name: "Order Pickup",
-        href: "/",
+        name: "Order Tracking",
+        href: "/user/dashboard",
       },
       {
-        name: "Account Sign up",
-        href: "auth/Login",
+        name: "Create Customer Account",
+        href: "/auth/sign-up",
+      },
+      {
+        name: "Vendor Merchant Portal",
+        href: "/vendor/dashboard",
       },
     ],
   },
   {
-    title: "Help",
+    title: "Help & FAQ",
     links: [
       {
-        name: "ShopCart Help",
-        href: "/",
+        name: "Help Center & FAQs",
+        href: "/shop",
       },
       {
-        name: "Returns",
-        href: "/",
+        name: "Returns & Refunds",
+        href: "/user/dashboard",
       },
       {
-        name: "Track Delivery",
-        href: "/",
+        name: "Order History",
+        href: "/user/dashboard",
       },
       {
-        name: "FeedBack",
-        href: "/",
+        name: "Payment Security",
+        href: "/cart",
       },
       {
-        name: "Security & Fraud",
-        href: "/",
+        name: "Verified Delivery",
+        href: "/cart",
       },
     ],
   },
 ];
 
-export default footerLinks
+export default footerLinks;

@@ -54,7 +54,7 @@ const ProductCard = ({ thumbnail, product, animate }: ProductCardProps) => {
       transition={{ duration: 0.6 }}
     >
       <div className="rounded-lg h-[320px] flex justify-center items-center relative overflow-hidden bg-gray-50 border border-gray-100 group">
-        <Link href={`/shop?product=${product?.id}`} className="w-full h-full relative block">
+        <Link href={`/product/${product?.id}`} className="w-full h-full relative block">
           <Image
             src={imgSrc}
             alt={product?.name || "Product Image"}
@@ -69,7 +69,7 @@ const ProductCard = ({ thumbnail, product, animate }: ProductCardProps) => {
       {!thumbnail && (
         <div className="px-2">
           <div className="flex justify-between items-center text-gray-800 text-lg font-semibold mt-3">
-            <Link href={`/shop?product=${product?.id}`} className="truncate hover:text-primary transition-colors">
+            <Link href={`/product/${product?.id}`} className="truncate hover:text-primary transition-colors">
               {product?.name}
             </Link>
             <span className="whitespace-nowrap text-primary font-bold ml-2">
@@ -89,9 +89,14 @@ const ProductCard = ({ thumbnail, product, animate }: ProductCardProps) => {
           </div>
           <div className="cart-buttons mt-3">
             <CartActionButtons
-              cartValue={0}
-              currentStock={10}
               productId={product?.id.toString()}
+              product={{
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: typeof imgSrc === "string" ? imgSrc : undefined,
+              }}
+              currentStock={10}
             />
           </div>
         </div>

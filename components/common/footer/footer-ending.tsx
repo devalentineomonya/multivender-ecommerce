@@ -38,16 +38,20 @@ const FooterEnding = () => {
       >
         {footerEnding?.map((footerEndingItem) => (
           <motion.div
-            className="flex  gap-x-2"
             key={footerEndingItem.name}
             variants={itemVariants}
           >
-            <Image
-              src={footerEndingItem.image}
-              alt={footerEndingItem.name ?? "footer-ending-image"}
-              loading="lazy"
-            />
-            {footerEndingItem.name}
+            <Link
+              href={footerEndingItem.href || "/"}
+              className="flex items-center gap-x-2 hover:text-emerald-800 transition-colors"
+            >
+              <Image
+                src={footerEndingItem.image}
+                alt={footerEndingItem.name ?? "footer-ending-image"}
+                loading="lazy"
+              />
+              {footerEndingItem.name}
+            </Link>
           </motion.div>
         ))}
       </motion.div>
@@ -61,37 +65,29 @@ const FooterEnding = () => {
       >
         <motion.div className="max-sm:text-start max-sm:block max-sm:w-full" variants={itemVariants}>
           <Link
-            href="/"
-            title="Terms Of Services"
-            aria-label="Terms Of Services"
+            href="/terms"
+            title="Terms of Service"
+            aria-label="Terms of Service"
+            className="hover:text-primary transition-colors"
           >
-            Term of Services
+            Terms
           </Link>
         </motion.div>
         <motion.div className="max-sm:text-start max-sm:block max-sm:w-full" variants={itemVariants}>
           <Link
-            href="/"
-            title="Privacy and Policy"
-            aria-label="Privacy and Policy"
+            href="/privacy"
+            title="Privacy Policy"
+            aria-label="Privacy Policy"
+            className="hover:text-primary transition-colors"
           >
-            Privacy and Policy
+            Privacy
           </Link>
         </motion.div>
       </motion.div>
 
       {/* Third Section: Footer Text */}
-      <motion.div variants={itemVariants}>
-        All Rights Reserved from
-        <Link
-          href="https://devalentineomonya.vercel.app"
-          target="_blank"
-          className="text-green-600 underline mx-3"
-          title="My Portfolio"
-          aria-label="My Portfolio"
-        >
-          Devalentine
-        </Link>
-        | {new Date().getFullYear()}
+      <motion.div variants={itemVariants} className="text-gray-500 text-sm">
+        Powered by <span className="font-bold text-primary">ShoppingCart</span> © {new Date().getFullYear()}
       </motion.div>
     </motion.div>
   );

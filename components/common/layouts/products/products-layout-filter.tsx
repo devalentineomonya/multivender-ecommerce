@@ -1,203 +1,287 @@
 "use client";
-import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useQueryState, parseAsString, parseAsInteger } from "nuqs";
 import { BiFilter } from "react-icons/bi";
+import { BsCheck2, BsX } from "react-icons/bs";
 import { motion } from "framer-motion";
 import MainLayout from "../main/main-layout";
+import { useGetCategories } from "@/features/categories/use-get-categories";
 
-// Filter Configurations
-const filterConfig = [
-  {
-    name: "Price",
-    key: "price",
-    options: [
-      { value: "0-25", label: "$0 - $25" },
-      { value: "25-50", label: "$25 - $50" },
-      { value: "50-75", label: "$50 - $75" },
-      { value: "75+", label: "$75+" },
-    ],
-  },
-  {
-    name: "Color",
-    key: "color",
-    options: [
-      { value: "white", label: "White" },
-      { value: "beige", label: "Beige" },
-      { value: "blue", label: "Blue" },
-      { value: "brown", label: "Brown" },
-      { value: "green", label: "Green" },
-    ],
-  },
-  {
-    name: "Size",
-    key: "size",
-    options: [
-      { value: "xs", label: "XS" },
-      { value: "s", label: "S" },
-      { value: "m", label: "M" },
-      { value: "l", label: "L" },
-      { value: "xl", label: "XL" },
-    ],
-  },
+const PRICE_RANGES = [
+  { label: "All Prices", min: null, max: null },
+  { label: "Under KSh 1,000", min: 0, max: 1000 },
+  { label: "KSh 1,000 - 5,000", min: 1000, max: 5000 },
+  { label: "KSh 5,000 - 20,000", min: 5000, max: 20000 },
+  { label: "Above KSh 20,000", min: 20000, max: null },
 ];
 
-// Zod schema for validation
-const filterSchema = z.object({
-  price: z.array(z.string()).optional(),
-  color: z.array(z.string()).optional(),
-  size: z.array(z.string()).optional(),
-});
-
-type FilterFormValues = z.infer<typeof filterSchema>;
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest Arrivals" },
+  { value: "price_asc", label: "Price: Low to High" },
+  { value: "price_desc", label: "Price: High to Low" },
+  { value: "popular", label: "Most Popular" },
+];
 
 export default function ScalableFilters() {
-  const { control, handleSubmit, watch, reset } = useForm<FilterFormValues>({
-    resolver: zodResolver(filterSchema),
-    defaultValues: {
-      price: [],
-      color: [],
-      size: [],
-    },
-  });
-
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState<FilterFormValues>({});
-  const watchFilters = watch();
 
-  const onSubmit = (data: FilterFormValues) => {
-    setSelectedFilters(data);
-    console.log("Applied Filters:", data);
+  // nuqs URL query state management
+  const [category, setCategory] = useQueryState("category", parseAsString.withDefault(""));
+  const [search, setSearch] = useQueryState("search", parseAsString.withDefault(""));
+  const [sort, setSort] = useQueryState("sort", parseAsString.withDefault("newest"));
+  const [minPrice, setMinPrice] = useQueryState("minPrice", parseAsInteger);
+  const [maxPrice, setMaxPrice] = useQueryState("maxPrice", parseAsInteger);
+  const [label, setLabel] = useQueryState("label", parseAsString.withDefault(""));
+  const [budgetTier, setBudgetTier] = useQueryState("budgetTier", parseAsString.withDefault(""));
+
+  const { data: categories } = useGetCategories();
+
+  // Active filter count
+  let activeFilterCount = 0;
+  if (category) activeFilterCount++;
+  if (search) activeFilterCount++;
+  if (label) activeFilterCount++;
+  if (budgetTier) activeFilterCount++;
+  if (sort && sort !== "newest") activeFilterCount++;
+  if (minPrice !== null || maxPrice !== null) activeFilterCount++;
+
+  const handleClearAll = () => {
+    setCategory(null);
+    setSearch(null);
+    setLabel(null);
+    setBudgetTier(null);
+    setSort(null);
+    setMinPrice(null);
+    setMaxPrice(null);
   };
 
-  const clearFilters = () => {
-    reset();
-    setSelectedFilters({});
-  };
-
-  const selectedFilterCount = Object.values(watchFilters)
-    .flat()
-    .filter(Boolean).length;
-
-  const toggleFilter = () => setIsOpen((prev) => !prev);
+  const selectedCategoryName = categories?.find((c) => c.id === category)?.name || "";
 
   return (
     <MainLayout className="bg-white mt-3">
-      <section
-        aria-labelledby="filter-heading"
-        className="relative z-10 border-t border-b border-gray-200 grid items-center"
-      >
+      <section aria-labelledby="filter-heading" className="relative z-10 border-t border-b border-gray-200">
         <h2 id="filter-heading" className="sr-only">
           Filters
         </h2>
-        <div className="relative col-start-1 row-start-1 py-4">
-          <div className="w-full flex items-center space-x-6 divide-x divide-gray-200 text-sm px-4 sm:px-6 lg:px-8">
-            <button
-              onClick={toggleFilter}
-              className="group text-gray-700 font-medium flex items-center"
-            >
-              <BiFilter
-                className="flex-none w-5 h-5 mr-2 text-gray-400 group-hover:text-gray-500"
-                aria-hidden="true"
-              />
-              Filters
-            </button>
-            <div className="pl-6 w-fit">
+        <div className="py-4 px-4 sm:px-6 lg:px-8">
+          <div className="w-full flex flex-wrap items-center justify-between gap-4 text-sm">
+            {/* Filter Toggle and Clear All */}
+            <div className="flex items-center gap-4">
               <button
                 type="button"
-                onClick={clearFilters}
-                className="text-gray-500 whitespace-nowrap"
+                onClick={() => setIsOpen((prev) => !prev)}
+                className={`group px-3 py-1.5 rounded-lg border font-medium flex items-center gap-2 transition-all ${
+                  isOpen || activeFilterCount > 0
+                    ? "bg-primary text-white border-primary"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-primary"
+                }`}
               >
-                Clear all
+                <BiFilter className="w-5 h-5" />
+                <span>Filters {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
               </button>
+
+              {activeFilterCount > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearAll}
+                  className="text-xs text-gray-500 hover:text-red-600 transition-colors flex items-center gap-1 font-medium"
+                >
+                  <BsX className="text-base" />
+                  Clear all
+                </button>
+              )}
             </div>
-            <div className="pl-6 flex justify-end md:justify-between items-center w-full ">
-              <ul className="flex max-md:flex-col gap-4 max-md:hidden ">
-                {Object.entries(selectedFilters).map(([key, values]) =>
-                  values?.length ? (
-                    <li key={key}>
-                      <strong>{key}:</strong> {values.join(", ")}
-                    </li>
-                  ) : null
-                )}
-              </ul>
-              <h3 className="font-medium text-gray-900">
-                Selected Filters ({selectedFilterCount})
-              </h3>
+
+            {/* Quick Sort Dropdown */}
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-500 font-medium">Sort by:</span>
+              <select
+                value={sort || "newest"}
+                onChange={(e) => setSort(e.target.value)}
+                className="text-xs bg-gray-50 border border-gray-200 rounded-md px-2.5 py-1.5 text-gray-700 font-medium focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
+
+          {/* Active Filter Badges */}
+          {activeFilterCount > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-3">
+              {category && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
+                  Category: {selectedCategoryName || category}
+                  <button type="button" onClick={() => setCategory(null)} className="hover:text-emerald-700">
+                    <BsX className="text-sm" />
+                  </button>
+                </span>
+              )}
+              {search && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
+                  Search: &quot;{search}&quot;
+                  <button type="button" onClick={() => setSearch(null)} className="hover:text-emerald-700">
+                    <BsX className="text-sm" />
+                  </button>
+                </span>
+              )}
+              {(minPrice !== null || maxPrice !== null) && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
+                  Price: KSh {minPrice || 0} - {maxPrice ? `KSh ${maxPrice}` : "Above"}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMinPrice(null);
+                      setMaxPrice(null);
+                    }}
+                    className="hover:text-emerald-700"
+                  >
+                    <BsX className="text-sm" />
+                  </button>
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Animated Disclosure Panel */}
         <motion.div
           initial={false}
           animate={{ height: isOpen ? "auto" : 0 }}
-          className="overflow-hidden border-t border-gray-200"
+          className="overflow-hidden border-t border-gray-100 bg-gray-50/60"
         >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isOpen ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="py-10"
-          >
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="max-w-7xl mx-auto grid grid-cols-2 gap-x-4 px-4 text-sm sm:px-6 md:gap-x-6 lg:px-8"
-            >
-              {filterConfig.map((filter) => (
-                <fieldset key={filter.key}>
-                  <legend className="block font-medium">{filter.name}</legend>
-                  <div className="pt-6 space-y-6 sm:pt-4 sm:space-y-4">
-                    {filter.options.map((option) => (
-                      <div
-                        key={option.value}
-                        className="flex items-center text-base sm:text-sm"
-                      >
-                        <Controller
-                          name={filter.key as "price" | "color" | "size" | `price.${number}` | `color.${number}` | `size.${number}`}
-                          control={control}
-                          render={({ field }) => {
-                            const currentValue = Array.isArray(field.value) ? field.value : [];
-                            return (
-                              <input
-                                id={`${filter.key}-${option.value}`}
-                                value={option.value}
-                                type="checkbox"
-                                className="flex-shrink-0 h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
-                                checked={currentValue.includes(option.value)}
-                                onChange={() =>
-                                  field.onChange(
-                                    currentValue.includes(option.value)
-                                      ? currentValue.filter(item => item !== option.value)
-                                      : [...currentValue, option.value]
-                                  )
-                                }
-                              />
-                            );
-                          }}
-                        />
-                        <label
-                          htmlFor={`${filter.key}-${option.value}`}
-                          className="ml-3 min-w-0 flex-1 text-gray-600"
-                        >
-                          {option.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </fieldset>
-              ))}
-              <div className="col-span-2 flex justify-center mt-6">
-                <button
-                  type="submit"
-                  className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-                >
-                  Apply Filters
-                </button>
+          <div className="py-6 px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {/* Category Filter */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
+                  Department
+                </h4>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-2">
+                  <button
+                    type="button"
+                    onClick={() => setCategory(null)}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center justify-between transition-colors ${
+                      !category ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    <span>All Departments</span>
+                    {!category && <BsCheck2 />}
+                  </button>
+                  {categories?.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setCategory(cat.id === category ? null : cat.id)}
+                      className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center justify-between transition-colors ${
+                        cat.id === category ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
+                      <span className="truncate">{cat.name}</span>
+                      {cat.id === category && <BsCheck2 />}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </form>
-          </motion.div>
+
+              {/* Price Filter */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
+                  Price Range (KES)
+                </h4>
+                <div className="space-y-1.5">
+                  {PRICE_RANGES.map((pr, idx) => {
+                    const isSelected = minPrice === pr.min && maxPrice === pr.max;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setMinPrice(null);
+                            setMaxPrice(null);
+                          } else {
+                            setMinPrice(pr.min);
+                            setMaxPrice(pr.max);
+                          }
+                        }}
+                        className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center justify-between transition-colors ${
+                          isSelected ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <span>{pr.label}</span>
+                        {isSelected && <BsCheck2 />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Product Label Filter */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
+                  Product Label
+                </h4>
+                <div className="space-y-1.5">
+                  {[
+                    { val: "", name: "All Labels" },
+                    { val: "Hot", name: "🔥 Hot Deals" },
+                    { val: "New", name: "✨ New Arrivals" },
+                    { val: "Featured", name: "⭐ Featured" },
+                    { val: "Trending", name: "📈 Trending" },
+                    { val: "BestSelling", name: "🏆 Best Selling" },
+                    { val: "Sponsored", name: "🚀 Sponsored" },
+                  ].map((l) => {
+                    const isSelected = (!label && !l.val) || label === l.val;
+                    return (
+                      <button
+                        key={l.val}
+                        type="button"
+                        onClick={() => setLabel(l.val || null)}
+                        className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center justify-between transition-colors ${
+                          isSelected ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <span>{l.name}</span>
+                        {isSelected && <BsCheck2 />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Keyword Search Filter */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
+                  Keyword Filter
+                </h4>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={search || ""}
+                    onChange={(e) => setSearch(e.target.value || null)}
+                    placeholder="Search titles, brands..."
+                    className="w-full text-xs px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch(null)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <BsX className="text-base" />
+                    </button>
+                  )}
+                </div>
+                <p className="text-[11px] text-gray-400 mt-2">
+                  Filters dynamically update the URL parameters and catalog in real time.
+                </p>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </section>
     </MainLayout>

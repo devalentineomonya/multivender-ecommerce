@@ -14,11 +14,13 @@ interface NavCategoryDropDownProps {
 }
 
 interface CategoryItemProps {
+  id: string;
   image?: string | null;
   name: string;
   count: number;
   brand?: boolean;
   animate?: boolean;
+  onClick?: () => void;
 }
 
 const NavCategoryDropDown: React.FC<NavCategoryDropDownProps> = ({
@@ -83,15 +85,27 @@ const NavCategoryDropDown: React.FC<NavCategoryDropDownProps> = ({
             </Link>
           </div>
           {isLoading ? (
-            <div className="py-8 text-center text-gray-400 text-sm">Loading categories...</div>
-          ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="w-full rounded-md bg-gray-100 animate-pulse h-16 p-2 flex gap-x-3 items-center">
+                  <div className="w-14 h-14 bg-gray-200 rounded-md shrink-0" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1">
               {categories.map((category) => (
                 <CategoryItem
                   key={category.id}
+                  id={category.id}
                   image={category.imageUrl}
                   name={category.name}
                   count={category.productCount || 0}
+                  onClick={() => setShowDropDown(false)}
                 />
               ))}
             </div>
@@ -103,19 +117,22 @@ const NavCategoryDropDown: React.FC<NavCategoryDropDownProps> = ({
 };
 
 const CategoryItem: React.FC<CategoryItemProps> = ({
+  id,
   image,
   name,
   count,
   brand = false,
+  onClick,
 }) => {
   const { t } = useI18nStore();
   const placeholderImg = "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=150&auto=format&fit=crop&q=80";
 
   return (
     <Link
-      href={`/shop?category=${encodeURIComponent(name.toLowerCase())}`}
+      href={`/shop?category=${encodeURIComponent(id)}`}
       title={name}
       aria-label={name}
+      onClick={onClick}
     >
       <div
         className={cn(

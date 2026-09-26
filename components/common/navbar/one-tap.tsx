@@ -101,13 +101,12 @@ const OneTap = () => {
       const [nonce, hashedNonce] = await generateNonce();
       console.log("Nonce: ", nonce, hashedNonce);
 
-      // Check if there's already an existing session before initializing the One Tap UI
+      // If user already has an active session, do not show Google One Tap prompt
       const { data, error } = await supabase.auth.getSession();
       if (error) {
         console.error("Error getting session", error);
       }
       if (data.session) {
-        router.push("/");
         return;
       }
 
@@ -128,8 +127,8 @@ const OneTap = () => {
               console.log("Session data: ", data);
               console.log("Successfully logged in with Google One Tap");
 
-              // Redirect to protected page
-              router.push("/");
+              // Refresh current page to apply session without redirecting away from current page
+              router.refresh();
             } catch (error) {
               console.error("Error logging in with Google One Tap", error);
             }

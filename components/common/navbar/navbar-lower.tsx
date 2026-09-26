@@ -69,7 +69,7 @@ const NavbarLower: React.FC = () => {
       setSearching(true);
       toast.warning("Please Type something to search...!");
     } else {
-      router.push(`/search?query=${searchValue}`);
+      router.push(`/shop?search=${searchValue}`);
     }
   }, [searchValue, router, setSearching]);
 

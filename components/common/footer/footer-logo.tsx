@@ -3,6 +3,7 @@ import footerPaymentMethod from "./footerpaymentmethods";
 import Logo from "@/public/images/logo.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { BiCreditCard, BiMobile, BiBuilding, BiHash } from "react-icons/bi";
 
 function FooterLogo() {
   // Animation Variants
@@ -61,25 +62,41 @@ function FooterLogo() {
           Accepted Payments
         </h3>
         <motion.div
-          className="grid grid-cols-4 gap-y-3 justify-center items-center max-w-full sm:max-w-[350px] mt-2"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-full sm:max-w-[440px] mt-2"
           variants={paymentContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.5 }}
         >
-          {footerPaymentMethod?.map((method) => (
-            <motion.div
-              className="rounded-md border border-gray-300 py-3 px-5 max-w-[80px] max-h-[48px] min-w-[80px] min-h-[48px] hover:bg-gray-100 cursor-pointer"
-              variants={paymentMethodVariants}
-              key={method.name}
-            >
-              <Image
-                src={method.image}
-                alt={method.name ?? "payment-method-image"}
-                loading="lazy"
-              />
-            </motion.div>
-          ))}
+          {footerPaymentMethod.map((method) => {
+            const Icon =
+              method.id === "cards"
+                ? BiCreditCard
+                : method.id === "mpesa"
+                ? BiMobile
+                : method.id === "bank"
+                ? BiBuilding
+                : BiHash;
+
+            return (
+              <motion.div
+                className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-2 hover:bg-primary/10 transition-colors cursor-default"
+                variants={paymentMethodVariants}
+                key={method.id}
+                title={method.detail}
+              >
+                <Icon className="text-primary text-xl shrink-0" />
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-[11px] font-bold text-slate-800 leading-tight truncate">
+                    {method.name}
+                  </span>
+                  <span className="text-[9px] font-semibold text-primary leading-tight">
+                    {method.tag}
+                  </span>
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </div>

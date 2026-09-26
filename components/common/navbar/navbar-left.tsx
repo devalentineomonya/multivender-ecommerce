@@ -1,9 +1,15 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AiOutlineUser, AiOutlineSearch } from "react-icons/ai";
 import { BsCartPlus } from "react-icons/bs";
 import { HiOutlineMenuAlt4 } from "react-icons/hi";
 import { TbUserCheck } from "react-icons/tb";
 import { createClient } from "@/lib/supabase/client";
+import { useCartStore } from "@/lib/zustand/cart-store";
+import { getUserRole, getRoleDashboardPath } from "@/lib/auth/roles";
+import type { User } from "@supabase/supabase-js";
 
 interface NavbarLeftProps {
   isMobile: boolean;
@@ -15,12 +21,6 @@ interface NavbarLeftProps {
   searchValue: string;
 }
 
-const supabase = createClient();
-
-const {
-  data: { user },
-} = await supabase.auth.getUser();
-console.log(user);
 const NavbarLeft: React.FC<NavbarLeftProps> = ({
   isMobile,
   setSearching,
@@ -30,9 +30,40 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
   handleSearchValueChange,
   searchValue,
 }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const cartItemCount = useCartStore((state) => state.totalItems());
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const supabase = createClient();
+
+    async function fetchUser() {
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+      setUser(currentUser);
+    }
+
+    fetchUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const role = getUserRole(user);
+  const dashboardPath = getRoleDashboardPath(role);
+
   const profileLink = user
     ? !!user?.identities?.[0]?.identity_data?.email_verified
-      ? "/user/dashboard"
+      ? dashboardPath
       : "/auth/confirm-otp"
     : "/auth/sign-in";
 
@@ -88,15 +119,17 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
           </div>
         )}
       </div>
+
       <Link href={profileLink} title="Profile" aria-label="Profile">
         <div className="flex justify-center items-center gap-x-3 relative ml-1 md:ml-0">
           {user ? (
             <>
-              <TbUserCheck size={20} />
+              <TbUserCheck size={20} className="text-primary" />
               {!isMobile && (
-                <span className="capitalize">
+                <span className="capitalize font-medium text-slate-800">
                   {user?.user_metadata?.full_name?.split(" ")[0]?.toLowerCase() ||
-                    user?.user_metadata?.firstName?.toLowerCase()}
+                    user?.user_metadata?.firstName?.toLowerCase() ||
+                    "Account"}
                 </span>
               )}
             </>
@@ -108,12 +141,21 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
           )}
         </div>
       </Link>
-      <Link href="/cart" title="Cart" aria-label="Cart">
-        <div className="flex justify-center items-center gap-x-3 relative ml-1 md:ml-0">
-          <BsCartPlus size={20} />
-          {!isMobile && "Cart"}
+
+      <Link href="/cart" title="Cart" aria-label="Cart" className="relative">
+        <div className="flex justify-center items-center gap-x-2 relative ml-1 md:ml-0">
+          <div className="relative">
+            <BsCartPlus size={22} />
+            {mounted && cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-in zoom-in-50">
+                {cartItemCount > 99 ? "99+" : cartItemCount}
+              </span>
+            )}
+          </div>
+          {!isMobile && <span className="font-medium text-slate-800">Cart</span>}
         </div>
       </Link>
+
       <div
         className={`flex justify-center items-center gap-x-3 relative ml-1 md:ml-0 ${
           !isMobile ? "hidden" : ""
