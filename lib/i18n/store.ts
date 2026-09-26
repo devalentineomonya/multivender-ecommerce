@@ -20,8 +20,8 @@ interface I18nState {
   setCurrency: (currency: SupportedCurrency) => void;
   setCountry: (country: string) => void;
   t: (key: string, fallback?: string) => string;
-  convertPrice: (priceInUSD: number) => number;
-  formatPrice: (priceInUSD: number) => string;
+  convertPrice: (priceInKES: number) => number;
+  formatPrice: (priceInKES: number) => string;
 }
 
 export const useI18nStore = create<I18nState>()(
@@ -29,7 +29,7 @@ export const useI18nStore = create<I18nState>()(
     (set, get) => ({
       locale: DEFAULT_LOCALE,
       currency: DEFAULT_CURRENCY,
-      country: "US",
+      country: "KE",
 
       setLocale: (locale: SupportedLocale) => {
         if (LOCALES[locale]) {
@@ -55,23 +55,36 @@ export const useI18nStore = create<I18nState>()(
         return defaultLocalized || fallback || key;
       },
 
-      convertPrice: (priceInUSD: number) => {
+      convertPrice: (priceInKES: number) => {
+        if (typeof priceInKES !== "number" || isNaN(priceInKES)) return 0;
         const { currency } = get();
         const currencyInfo = CURRENCIES[currency] || CURRENCIES[DEFAULT_CURRENCY];
-        return Math.round(priceInUSD * currencyInfo.rateToUSD);
+        return Math.round(priceInKES * currencyInfo.rateFromKES);
       },
 
-      formatPrice: (priceInUSD: number) => {
+      formatPrice: (priceInKES: number) => {
+        if (typeof priceInKES !== "number" || isNaN(priceInKES)) {
+          return "KSh 0";
+        }
         const { currency } = get();
         const currencyInfo = CURRENCIES[currency] || CURRENCIES[DEFAULT_CURRENCY];
-        const converted = Math.round(priceInUSD * currencyInfo.rateToUSD);
-        // Format with thousand separators
-        const formattedNumber = new Intl.NumberFormat().format(converted);
+        const converted = priceInKES * currencyInfo.rateFromKES;
+
+        if (currency === "KES" || currency === "UGX" || currency === "TSH") {
+          const formattedNumber = new Intl.NumberFormat().format(Math.round(converted));
+          return `${currencyInfo.symbol} ${formattedNumber}`;
+        }
+
+        // For USD, EUR, GBP
+        const formattedNumber = new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: converted % 1 === 0 ? 0 : 2,
+          maximumFractionDigits: 2,
+        }).format(converted);
         return `${currencyInfo.symbol} ${formattedNumber}`;
       },
     }),
     {
-      name: "ecommerce-i18n-storage",
+      name: "ecommerce-i18n-storage-v2",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         locale: state.locale,

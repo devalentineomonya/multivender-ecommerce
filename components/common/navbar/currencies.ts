@@ -4,8 +4,8 @@ export interface CurrencyOption {
 }
 
 const currencies: CurrencyOption[] = [
-  { code: "USD", label: "USD ($)" },
   { code: "KES", label: "KES (KSh)" },
+  { code: "USD", label: "USD ($)" },
   { code: "EUR", label: "EUR (€)" },
   { code: "GBP", label: "GBP (£)" },
   { code: "UGX", label: "UGX (USh)" },

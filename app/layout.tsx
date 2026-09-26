@@ -6,6 +6,7 @@ import Footer from "@/components/common/footer/footer";
 import { QueryProvider } from "@/providers/query-provider";
 import { ProgressBarProviders } from "@/providers/progress-bar-provider";
 
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Zoom, ToastContainer } from "react-toastify";
 import Script from "next/script";
 
@@ -24,11 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <QueryProvider>
-          <ProgressBarProviders>
-            <NavbarMain />
-            {children}
-            <Footer />
+        <NuqsAdapter>
+          <QueryProvider>
+            <ProgressBarProviders>
+              <NavbarMain />
+              {children}
+              <Footer />
             <ToastContainer
               position="top-right"
               autoClose={5000}
@@ -45,6 +47,7 @@ export default function RootLayout({
             />
           </ProgressBarProviders>
         </QueryProvider>
+      </NuqsAdapter>
         <Script
           src="https://accounts.google.com/gsi/client"
           strategy="beforeInteractive"
