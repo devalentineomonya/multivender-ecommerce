@@ -5,6 +5,10 @@ import { handle } from "hono/vercel";
 
 import users from "./(modules)/users/users";
 import auth from "./(modules)/auth/auth";
+import callback from "./(modules)/auth/callback";
+import products from "./(modules)/products/products";
+import categories from "./(modules)/categories/categories";
+import countries from "./(modules)/countries/countries";
 
 
 const app = new Hono().basePath("/api");
@@ -12,6 +16,10 @@ app.use("*", logger());
 const routes = app
   .route("/users", users)
   .route("/auth", auth)
+  .route("/callback", callback)
+  .route("/products", products)
+  .route("/categories", categories)
+  .route("/countries", countries);
 
 
 routes.onError((err, c) => {

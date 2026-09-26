@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+export const userRoleSchema = z.enum(["user", "vendor", "admin"]);
+export type UserRole = z.infer<typeof userRoleSchema>;
+
 export const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -31,4 +34,50 @@ export const signUpSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["user", "vendor", "admin"]).default("user").optional(),
+  storeName: z.string().optional(),
+});
+
+export const productLabelSchema = z.enum([
+  "BestSelling",
+  "Popular",
+  "Featured",
+  "Trending",
+  "New",
+  "MostSelling",
+]);
+
+export const productQuerySchema = z.object({
+  category: z.string().optional(),
+  brand: z.string().optional(),
+  label: productLabelSchema.optional(),
+  search: z.string().optional(),
+  minPrice: z.coerce.number().optional(),
+  maxPrice: z.coerce.number().optional(),
+  page: z.coerce.number().min(1).default(1).optional(),
+  limit: z.coerce.number().min(1).max(100).default(20).optional(),
+  sort: z.enum(["newest", "price_asc", "price_desc", "popular"]).default("newest").optional(),
+});
+
+export const createProductSchema = z.object({
+  name: z.string().min(2, "Product name is required"),
+  price: z.number().nonnegative("Price must be a positive number"),
+  shortDescription: z.string().max(500).optional(),
+  longDescription: z.string().optional(),
+  label: productLabelSchema.default("New"),
+  type: z.string().optional(),
+  stock: z.number().int().nonnegative().default(1),
+  discount: z.number().int().min(0).max(100).default(0),
+  sizes: z.array(z.string()).default([]),
+  images: z.array(z.string()).min(1, "At least one product image is required"),
+  colorVariants: z.array(z.any()).default([]),
+  brandIds: z.array(z.string()).default([]),
+  categoryIds: z.array(z.string()).default([]),
+  additionalInfo: z.record(z.any()).optional(),
+});
+
+export const createCategorySchema = z.object({
+  name: z.string().min(2, "Category name is required"),
+  description: z.string().optional(),
+  imageUrl: z.string().url("Must be a valid image URL").optional(),
 });
