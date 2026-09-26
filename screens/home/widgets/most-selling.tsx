@@ -4,6 +4,7 @@ import React from "react";
 import SectionLayout from "@/components/common/layouts/section/section-layout";
 import ScrollCarousel from "@/components/global/scroll-carousel";
 import ProductCard from "@/components/shared/product-card/product-card";
+import { ProductCardSkeleton } from "@/components/shared/skeletons";
 import { useGetProducts } from "@/features/products/use-get-products";
 import { useI18nStore } from "@/lib/i18n/store";
 
@@ -31,7 +32,13 @@ const MostSelling = () => {
   return (
     <SectionLayout title={t("products.bestSelling", "Most Selling Products")} overflow>
       {isLoading ? (
-        <div className="py-12 text-center text-gray-400 text-sm">Loading most selling products...</div>
+        <div className="flex gap-4 overflow-hidden py-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="min-w-[240px] sm:min-w-[280px]">
+              <ProductCardSkeleton />
+            </div>
+          ))}
+        </div>
       ) : (
         <ScrollCarousel>
           {products.map((p) => (

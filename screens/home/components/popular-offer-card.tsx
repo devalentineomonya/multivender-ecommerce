@@ -4,12 +4,15 @@ import React from "react";
 import { StaticImageData } from "next/image";
 import { motion } from "framer-motion";
 
+import Link from "next/link";
+
 interface PopularOfferCardProps {
   offer: {
     value: number;
     description: string;
     image: string | StaticImageData;
     name: string;
+    href?: string;
   };
   bg: string;
   text: string;
@@ -32,13 +35,14 @@ const PopularOfferCard: React.FC<PopularOfferCardProps> = ({
   };
 
   return (
-    <motion.div
-      className={`w-full h-fit sm:min-h-[400px] rounded-lg overflow-hidden grid grid-rows-2 ${text}`}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.8 }}
-    >
+    <Link href={offer.href || "/shop"} className="block group">
+      <motion.div
+        className={`w-full h-fit sm:min-h-[400px] rounded-lg overflow-hidden grid grid-rows-2 ${text} transition-transform group-hover:scale-[1.02]`}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.8 }}
+      >
       {/* Text Section */}
       <motion.div
         className={`px-3 py-5 ${bg}`}
@@ -69,7 +73,8 @@ const PopularOfferCard: React.FC<PopularOfferCardProps> = ({
         />
       </motion.div>
     </motion.div>
-  );
+  </Link>
+);
 };
 
 export default PopularOfferCard;

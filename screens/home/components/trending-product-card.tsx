@@ -8,6 +8,8 @@ import { FaStar, FaRegStar } from "react-icons/fa";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 import defaultImg from "@/public/images/63e8c4e563db5560c31bbfce_leptop sleeve macbook-min.png";
 import { useI18nStore } from "@/lib/i18n/store";
+import { useCartStore } from "@/lib/zustand/cart-store";
+import { toast } from "react-toastify";
 import type { ProductItem } from "@/features/products/use-get-products";
 
 interface TrendingProductCardProps {
@@ -17,6 +19,7 @@ interface TrendingProductCardProps {
 const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) => {
   const [liked, setLiked] = useState(false);
   const { formatPrice, t } = useI18nStore();
+  const addItem = useCartStore((state) => state.addItem);
 
   const title = product?.name || "Laptop sleeve macbook";
   const price = product ? product.price : 20;
@@ -42,21 +45,36 @@ const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) =>
 
   const firstImage = getValidImg(rawFirstImg);
 
+  const handleAddToCart = () => {
+    addItem({
+      productId: product?.id ? String(product.id) : "trending-default",
+      name: title,
+      price: price,
+      image: typeof firstImage === "string" ? firstImage : undefined,
+      quantity: 1,
+    });
+    toast.success(`Added ${title} to cart!`);
+  };
+
   const textAnimation = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0 },
   };
 
+  const productLink = product ? `/product/${product.id}` : "/shop";
+
   return (
     <div className="w-full border border-gray-200 rounded-lg overflow-hidden p-2 grid grid-cols-12 bg-white shadow-xs hover:shadow-md transition-shadow">
       <div className="col-span-12 sm:col-span-5 h-64 sm:h-auto bg-gray-50 relative rounded-md overflow-hidden">
-        <Image
-          src={firstImage}
-          alt={title}
-          fill
-          sizes="(max-width: 640px) 100vw, 40vw"
-          className="object-contain p-4 hover:scale-105 transition-transform duration-300"
-        />
+        <Link href={productLink} className="block w-full h-full relative">
+          <Image
+            src={firstImage}
+            alt={title}
+            fill
+            sizes="(max-width: 640px) 100vw, 40vw"
+            className="object-contain p-4 hover:scale-105 transition-transform duration-300"
+          />
+        </Link>
         {product?.discount ? (
           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
             -{product.discount}% {t("products.discount", "OFF")}
@@ -65,7 +83,7 @@ const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) =>
       </div>
 
       <div className="col-span-12 sm:col-span-7 flex flex-col justify-center p-4">
-        <Link href={product ? `/shop?product=${product.id}` : "/shop"}>
+        <Link href={productLink}>
           <motion.h2
             variants={textAnimation}
             initial="hidden"
@@ -121,6 +139,7 @@ const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) =>
         <div className="flex items-center gap-x-3 mt-4">
           <motion.button
             type="button"
+            onClick={handleAddToCart}
             variants={textAnimation}
             initial="hidden"
             whileInView="visible"

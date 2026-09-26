@@ -13,6 +13,7 @@ const PopularOffers = () => {
       value: 100,
       bg: "bg-[#f2e4d9]",
       text: "text-[#cb9917]",
+      href: "/shop?category=3e877fd1-f58a-43f5-bd57-7b73fed9add6",
     },
     {
       name: "Books Offer",
@@ -21,6 +22,7 @@ const PopularOffers = () => {
       value: 25,
       bg: "bg-[#f9dcdc]",
       text: "text-[#961f1f]",
+      href: "/shop?category=2739a8d3-96ee-4a1c-a1cc-f4acfefb6244",
     },
     {
       name: "Clothes Offer",
@@ -29,6 +31,7 @@ const PopularOffers = () => {
       value: 40,
       bg: "bg-[#f2e4d9]",
       text: "text-[#94623c]",
+      href: "/shop?category=e019bd1a-da92-434e-89bd-02ba0c1e2f74",
     },
     {
       name: "Student Bags Offer",
@@ -37,6 +40,7 @@ const PopularOffers = () => {
       value: 15,
       bg: "bg-[#d2f7ec]",
       text: "text-[#003d29]",
+      href: "/shop?category=bd80ff30-fcef-4028-8b56-c8c58fd2af3e",
     },
   ];
 

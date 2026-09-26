@@ -34,8 +34,12 @@ const OfferBanner = () => {
               troubling for the bank balance.
             </p>
             </div>
-            <Link className="border border-white  py-3 text-center text-white rounded-full max-w-40" href="/offers">
-            Learn More
+            <Link
+              className="border border-white py-3 text-center text-white rounded-full max-w-40 hover:bg-white hover:text-primary transition-colors font-semibold"
+              href="/deals"
+              title="Explore Hot Deals"
+            >
+              Learn More
             </Link>
           </div>
         </div>

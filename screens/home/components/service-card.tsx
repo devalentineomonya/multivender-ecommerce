@@ -8,7 +8,8 @@ interface ServiceCardProps {
     name: string;
     description: string;
     image: string | StaticImageData;
-    value: number;
+    value?: number;
+    href?: string;
   };
 }
 
@@ -19,9 +20,9 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
     visible: { opacity: 1, y: 0 },
   };
 
-  return (
+  const card = (
     <motion.div
-      className="w-full sm:max-w-[300px] h-fit sm:min-h-[400px] rounded-lg overflow-hidden grid grid-rows-2 bg-[#fcfcfc] max-w-full min-w-full max-h-72"
+      className="w-full sm:max-w-[300px] h-fit sm:min-h-[400px] rounded-lg overflow-hidden grid grid-rows-2 bg-[#fcfcfc] max-w-full min-w-full max-h-72 border border-gray-100 hover:border-primary/20 transition-all hover:shadow-sm group cursor-pointer"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
@@ -34,12 +35,11 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="px-6 pt-7"
       >
-        <h4 className="font-semibold text-slate-700 text-lg mb-3">
-          Frequently Asked Questions
+        <h4 className="font-semibold text-slate-800 text-lg mb-2 group-hover:text-primary transition-colors">
+          {service.name}
         </h4>
-        <p className="text-sm font-semibold text-gray-500">
-          Velit velit officia magna veniam sit veniam consectetur tempor elit.
-          Do excepteur aliquip quis culpa ullamco.
+        <p className="text-sm font-medium text-gray-500 leading-snug line-clamp-3">
+          {service.description}
         </p>
       </motion.div>
       <motion.div
@@ -48,10 +48,10 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         variants={animationVariants}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true, amount: 0.2 }}
-        className="service-image"
+        className="service-image overflow-hidden"
       >
         <Image
-          className="w-full h-full"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           src={service?.image}
           alt={service?.name ?? "service-image"}
           loading="lazy"
@@ -59,6 +59,16 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
       </motion.div>
     </motion.div>
   );
+
+  if (service.href) {
+    return (
+      <a href={service.href} className="block w-full h-full">
+        {card}
+      </a>
+    );
+  }
+
+  return card;
 };
 
 export default ServiceCard;

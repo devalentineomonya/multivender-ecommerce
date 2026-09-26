@@ -14,11 +14,11 @@ const TopCategories: React.FC = () => {
   const { t } = useI18nStore();
 
   const fallbackCategories = [
-    { id: "1", name: "Electronics", imageUrl: null },
-    { id: "2", name: "Clothing", imageUrl: null },
-    { id: "3", name: "Home & Living", imageUrl: null },
-    { id: "4", name: "Books", imageUrl: null },
-    { id: "5", name: "Sports", imageUrl: null },
+    { id: "1c2b120c-9613-446c-86c1-39f4cb7c2e14", name: "Electronics", imageUrl: null },
+    { id: "e019bd1a-da92-434e-89bd-02ba0c1e2f74", name: "Fashion & Apparel", imageUrl: null },
+    { id: "4f0368a4-d1a8-4aff-b617-ce1d89f03e44", name: "Home & Living", imageUrl: null },
+    { id: "2739a8d3-96ee-4a1c-a1cc-f4acfefb6244", name: "Books & Stationery", imageUrl: null },
+    { id: "cecd7fa5-5dff-4784-b9d5-e189e2e3c5dc", name: "Sports & Outdoors", imageUrl: null },
   ];
 
   const items = categories && categories.length > 0 ? categories : fallbackCategories;
@@ -32,7 +32,17 @@ const TopCategories: React.FC = () => {
     >
       <SectionLayout overflow title={t("products.topCategories", "Top Categories")}>
         {isLoading ? (
-          <div className="py-12 text-center text-gray-400 text-sm">Loading categories...</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4 my-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-md w-full aspect-[1/1.3] bg-gray-100 animate-pulse border border-gray-200 p-4 flex flex-col justify-between"
+              >
+                <div className="h-6 w-24 bg-gray-200 rounded-full" />
+                <div className="h-8 w-28 bg-gray-200 rounded-full self-center" />
+              </div>
+            ))}
+          </div>
         ) : (
           <Swiper
             modules={[Navigation]}

@@ -24,38 +24,40 @@ const PromotionBanner = () => {
             </Link>
           </p>
 
-          <button
-            className="py-3 px-10 rounded-full bg-primary text-white hover:bg-black mt-4"
-            title="Learn More"
-            aria-label="Learn More"
+          <Link
+            href="/deals"
+            className="inline-block py-3 px-10 rounded-full bg-primary text-white hover:bg-black mt-4 transition-colors font-semibold text-sm"
+            title="Explore Deals"
           >
             Learn More
-          </button>
+          </Link>
         </div>
-        <div className="z-10  relative h-full w-full flex justify-end   rotate-12">
-          <div className="absolute -top-9 bottom-auto -right-[20px] left-auto rotate-[-6.6deg]">
-            <Image
-              src={cardOne}
-              loading="lazy"
-              alt="card-one"
-              className="max-w-full align-middle inline-block pt-28"
-            />
-          </div>
-          <div className="z-[1] absolute -top-[18px] bottom-auto -right-[9px] left-auto rotate-[-10.6deg]">
-            <Image
-              src={cardTwo}
-              loading="lazy"
-              alt="card-two"
-              className="max-w-full align-middle inline-block pt-28"
-            />
-          </div>
-          <div className="absolute -right-[2px]  bottom-auto rotate-[20deg]">
-            <Image
-              src={cardThree}
-              loading="lazy"
-              alt="card-three"
-              className="max-w-full align-middle inline-block pt-28"
-            />
+        <div className="relative h-full w-full flex items-center justify-end pr-4">
+          <div className="relative flex items-center justify-center w-72 h-64">
+            {/* Card 1: Fanned Left / Bottom */}
+            <div className="absolute z-10 transition-all duration-300 transform -rotate-[14deg] -translate-x-8 translate-y-2 drop-shadow-xl hover:-rotate-[18deg]">
+              <Image
+                src={cardOne}
+                alt="Payment Card 1"
+                className="w-52 sm:w-60 h-auto rounded-xl"
+              />
+            </div>
+            {/* Card 2: Center Spine */}
+            <div className="absolute z-20 transition-all duration-300 transform -rotate-[2deg] translate-y-0 drop-shadow-2xl hover:scale-105">
+              <Image
+                src={cardTwo}
+                alt="Payment Card 2"
+                className="w-52 sm:w-60 h-auto rounded-xl"
+              />
+            </div>
+            {/* Card 3: Fanned Right / Front */}
+            <div className="absolute z-30 transition-all duration-300 transform rotate-[14deg] translate-x-8 translate-y-3 drop-shadow-2xl hover:rotate-[18deg]">
+              <Image
+                src={cardThree}
+                alt="Payment Card 3"
+                className="w-52 sm:w-60 h-auto rounded-xl"
+              />
+            </div>
           </div>
         </div>
       </div>

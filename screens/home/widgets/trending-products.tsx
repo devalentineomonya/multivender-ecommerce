@@ -15,7 +15,16 @@ const TrendingProducts = () => {
   return (
     <SectionLayout title={t("products.trendingProducts", "Trending Products for you!")}>
       {isLoading ? (
-        <div className="py-8 text-center text-gray-400 text-sm">Loading trending products...</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-64 rounded-xl bg-gray-100 animate-pulse flex flex-col justify-end p-6 space-y-3">
+            <div className="h-5 w-2/3 bg-gray-200 rounded-md" />
+            <div className="h-4 w-1/3 bg-gray-200 rounded-md" />
+          </div>
+          <div className="h-64 rounded-xl bg-gray-100 animate-pulse flex flex-col justify-end p-6 space-y-3">
+            <div className="h-5 w-2/3 bg-gray-200 rounded-md" />
+            <div className="h-4 w-1/3 bg-gray-200 rounded-md" />
+          </div>
+        </div>
       ) : products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {products.map((prod) => (

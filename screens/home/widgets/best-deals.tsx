@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import SectionLayout from "@/components/common/layouts/section/section-layout";
 import ProductCard from "@/components/shared/product-card/product-card";
+import { ProductCardSkeleton } from "@/components/shared/skeletons";
 import { useGetProducts } from "@/features/products/use-get-products";
 import { useGetCategories } from "@/features/categories/use-get-categories";
 import { useI18nStore } from "@/lib/i18n/store";
+import { BsArrowRight } from "react-icons/bs";
 
 const BestDeals = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
@@ -54,7 +57,11 @@ const BestDeals = () => {
         </div>
 
         {isLoading ? (
-          <div className="py-12 text-center text-gray-400 text-sm">Loading best deals...</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
         ) : products.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {products.map((prod) => (
@@ -73,6 +80,17 @@ const BestDeals = () => {
         ) : (
           <div className="py-12 text-center text-gray-500">No products found in this category.</div>
         )}
+
+        {/* View More Deals Button */}
+        <div className="mt-10 flex justify-center">
+          <Link
+            href={selectedCategory ? `/shop?category=${selectedCategory}` : "/shop"}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl hover:opacity-90 transition-all shadow-xs group"
+          >
+            <span>View More Deals in Shop</span>
+            <BsArrowRight className="text-base group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
       </>
     </SectionLayout>
   );

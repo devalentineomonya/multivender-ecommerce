@@ -32,7 +32,7 @@ const getValidCategoryImg = (img: any) => {
 const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   const { t } = useI18nStore();
   const name = category?.name || "Category";
-  const href = category ? `/shop?category=${encodeURIComponent(category.name.toLowerCase())}` : "/shop";
+  const href = category?.id ? `/shop?category=${encodeURIComponent(category.id)}` : "/shop";
   const imgSrc = getValidCategoryImg(category?.imageUrl);
 
   return (
