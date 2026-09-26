@@ -1,7 +1,7 @@
 import React from 'react'
 
-import MainLayout from '@/components/common/layouts/main/MainLayout'
-import CartMain from '@/screens/cart/CartMain'
+import MainLayout from '@/components/common/layouts/main/main-layout'
+import CartMain from '@/screens/cart/cart-main'
 
 const Cart = () => {
   return (

@@ -1,9 +1,9 @@
 "use client"
 import footerLinks from "./footerlinks";
-import MainLayout from "../layouts/main/MainLayout";
-import FooterEnding from "./FooterEnding";
-import FooterLinksList from "./FooterLinksList";
-import FooterLogo from "./FooterLogo";
+import MainLayout from "../layouts/main/main-layout";
+import FooterEnding from "./footer-ending";
+import FooterLinksList from "./footer-links-list";
+import FooterLogo from "./footer-logo";
 import { motion } from "framer-motion";
 import { usePathname } from 'next/navigation';
 import { EXCLUDED_PATHS } from "@/lib/constants";

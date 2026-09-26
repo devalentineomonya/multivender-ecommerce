@@ -1,5 +1,5 @@
-import SectionLayout from "@/components/common/layouts/section/SectionLayout";
-import ServiceCard from "../components/ServiceCard";
+import SectionLayout from "@/components/common/layouts/section/section-layout";
+import ServiceCard from "../components/service-card";
 import testImage from "@/public/images/63e8c4e6cd367817e964f756_sofa-min.png";
 const Services = () => {
   const service = {

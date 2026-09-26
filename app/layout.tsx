@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import NavbarMain from "@/components/common/navbar/NavbarMain";
+import NavbarMain from "@/components/common/navbar/navbar-main";
 import { Inter } from "next/font/google";
-import Footer from "@/components/common/footer/Footer";
+import Footer from "@/components/common/footer/footer";
 import { QueryProvider } from "@/providers/query-provider";
 import { ProgressBarProviders } from "@/providers/progress-bar-provider";
 

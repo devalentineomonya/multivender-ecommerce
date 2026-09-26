@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import MainLayout from "@/components/common/layouts/main/MainLayout";
-import HeroItem from "../components/HeroItem";
+import MainLayout from "@/components/common/layouts/main/main-layout";
+import HeroItem from "../components/hero-item";
 import image from "@/public/images/banner-2.jpg";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";

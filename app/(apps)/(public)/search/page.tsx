@@ -1,5 +1,5 @@
 import React from 'react'
-import ProductsLayout from '@/components/common/layouts/products/ProductsLayout'
+import ProductsLayout from '@/components/common/layouts/products/products-layout'
 const Search = () => {
   return (
     <ProductsLayout/>
