@@ -9,7 +9,10 @@ import callback from "./(modules)/auth/callback";
 import products from "./(modules)/products/products";
 import categories from "./(modules)/categories/categories";
 import countries from "./(modules)/countries/countries";
-
+import payments from "./(modules)/payments/paystack";
+import orders from "./(modules)/orders/orders";
+import admin from "./(modules)/admin/admin";
+import vendor from "./(modules)/vendor/vendor";
 
 const app = new Hono().basePath("/api");
 app.use("*", logger());
@@ -19,8 +22,11 @@ const routes = app
   .route("/callback", callback)
   .route("/products", products)
   .route("/categories", categories)
-  .route("/countries", countries);
-
+  .route("/countries", countries)
+  .route("/payments", payments)
+  .route("/orders", orders)
+  .route("/admin", admin)
+  .route("/vendor", vendor);
 
 routes.onError((err, c) => {
   console.error(err);
@@ -45,6 +51,7 @@ routes.onError((err, c) => {
 export const GET = handle(app);
 export const POST = handle(app);
 export const PUT = handle(app);
+export const PATCH = handle(app);
 export const DELETE = handle(app);
 
 export type AppType = typeof routes;

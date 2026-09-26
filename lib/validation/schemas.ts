@@ -45,15 +45,20 @@ export const productLabelSchema = z.enum([
   "Trending",
   "New",
   "MostSelling",
+  "Hot",
+  "Sponsored",
 ]);
 
 export const productQuerySchema = z.object({
   category: z.string().optional(),
   brand: z.string().optional(),
-  label: productLabelSchema.optional(),
+  label: z.string().optional(),
   search: z.string().optional(),
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
+  budgetTier: z.enum(["budget", "mid", "premium"]).optional(),
+  isHot: z.coerce.boolean().optional(),
+  isSponsored: z.coerce.boolean().optional(),
   page: z.coerce.number().min(1).default(1).optional(),
   limit: z.coerce.number().min(1).max(100).default(20).optional(),
   sort: z.enum(["newest", "price_asc", "price_desc", "popular"]).default("newest").optional(),
@@ -73,6 +78,9 @@ export const createProductSchema = z.object({
   colorVariants: z.array(z.any()).default([]),
   brandIds: z.array(z.string()).default([]),
   categoryIds: z.array(z.string()).default([]),
+  isSponsored: z.boolean().default(false).optional(),
+  isHot: z.boolean().default(false).optional(),
+  budgetTier: z.enum(["budget", "mid", "premium"]).default("mid").optional(),
   additionalInfo: z.record(z.any()).optional(),
 });
 

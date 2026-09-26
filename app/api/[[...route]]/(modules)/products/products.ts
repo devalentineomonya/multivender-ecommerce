@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { eq, desc, asc, ilike, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, asc, ilike, and, or, gte, lte, sql } from "drizzle-orm";
 import { db } from "@/db/drizzle";
 import { productTable } from "@/db/models/product";
+import { categoryTable } from "@/db/models/category";
 import { productQuerySchema, createProductSchema } from "@/lib/validation/schemas";
 import { getCurrentUserWithRole } from "@/lib/auth/roles-server";
 
@@ -17,6 +18,9 @@ const productsRouter = new Hono()
         search,
         minPrice,
         maxPrice,
+        budgetTier,
+        isHot,
+        isSponsored,
         page = 1,
         limit = 20,
         sort = "newest",
@@ -27,11 +31,29 @@ const productsRouter = new Hono()
       const conditions = [];
 
       if (label) {
-        conditions.push(eq(productTable.label, label));
+        conditions.push(sql`${productTable.label}::text = ${label}`);
+      }
+
+      if (budgetTier) {
+        conditions.push(eq(productTable.budgetTier, budgetTier));
+      }
+
+      if (isHot !== undefined) {
+        conditions.push(eq(productTable.isHot, isHot));
+      }
+
+      if (isSponsored !== undefined) {
+        conditions.push(eq(productTable.isSponsored, isSponsored));
       }
 
       if (search && search.trim() !== "") {
-        conditions.push(ilike(productTable.name, `%${search.trim()}%`));
+        const searchTerm = `%${search.trim()}%`;
+        conditions.push(
+          or(
+            ilike(productTable.name, searchTerm),
+            ilike(productTable.shortDescription, searchTerm)
+          )
+        );
       }
 
       if (minPrice !== undefined) {
@@ -43,9 +65,30 @@ const productsRouter = new Hono()
       }
 
       if (category && category.trim() !== "") {
-        conditions.push(
-          sql`${productTable.categoryIds}::jsonb ? ${category.trim()}`
-        );
+        const catVal = category.trim();
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(catVal);
+        if (isUuid) {
+          conditions.push(
+            sql`${productTable.categoryIds}::jsonb ? ${catVal}`
+          );
+        } else {
+          // If a category name/slug was passed, look up category by name in categoryTable
+          const matchedCats = await db
+            .select({ id: categoryTable.id })
+            .from(categoryTable)
+            .where(ilike(categoryTable.name, `%${catVal}%`));
+
+          if (matchedCats.length > 0) {
+            const orConditions = matchedCats.map(
+              (c) => sql`${productTable.categoryIds}::jsonb ? ${c.id}`
+            );
+            conditions.push(or(...orConditions)!);
+          } else {
+            conditions.push(
+              sql`${productTable.categoryIds}::jsonb ? ${catVal}`
+            );
+          }
+        }
       }
 
       if (brand && brand.trim() !== "") {
@@ -134,6 +177,13 @@ const productsRouter = new Hono()
 
     const body = c.req.valid("json");
     try {
+      const isHot = body.isHot || body.label === "Hot";
+      const isSponsored = body.isSponsored || body.label === "Sponsored";
+      const dbLabel: "BestSelling" | "Popular" | "Featured" | "Trending" | "New" | "MostSelling" =
+        body.label === "Hot" || body.label === "Sponsored"
+          ? "Featured"
+          : (body.label as "BestSelling" | "Popular" | "Featured" | "Trending" | "New" | "MostSelling") || "New";
+
       const [newProduct] = await db
         .insert(productTable)
         .values({
@@ -141,7 +191,7 @@ const productsRouter = new Hono()
           price: body.price,
           shortDescription: body.shortDescription || "",
           longDescription: body.longDescription || "",
-          label: body.label,
+          label: dbLabel,
           type: body.type || "Physical",
           stock: body.stock,
           discount: body.discount || 0,
@@ -150,6 +200,9 @@ const productsRouter = new Hono()
           colorVariants: body.colorVariants,
           brandIds: body.brandIds,
           categoryIds: body.categoryIds,
+          isHot,
+          isSponsored,
+          budgetTier: body.budgetTier || "mid",
           additionalInfo: body.additionalInfo || {},
         })
         .returning();

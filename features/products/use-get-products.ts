@@ -24,10 +24,11 @@ export interface ProductItem {
 export interface ProductsQueryParams {
   category?: string;
   brand?: string;
-  label?: "BestSelling" | "Popular" | "Featured" | "Trending" | "New" | "MostSelling";
+  label?: string;
   search?: string;
   minPrice?: number;
   maxPrice?: number;
+  budgetTier?: "budget" | "mid" | "premium";
   page?: number;
   limit?: number;
   sort?: "newest" | "price_asc" | "price_desc" | "popular";
@@ -44,6 +45,7 @@ export const useGetProducts = (params?: ProductsQueryParams) => {
       if (params?.search) queryPayload.search = params.search;
       if (params?.minPrice !== undefined) queryPayload.minPrice = String(params.minPrice);
       if (params?.maxPrice !== undefined) queryPayload.maxPrice = String(params.maxPrice);
+      if (params?.budgetTier) queryPayload.budgetTier = params.budgetTier;
       if (params?.page !== undefined) queryPayload.page = String(params.page);
       if (params?.limit !== undefined) queryPayload.limit = String(params.limit);
       if (params?.sort) queryPayload.sort = params.sort;
