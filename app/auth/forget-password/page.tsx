@@ -1,4 +1,4 @@
-import ForgetPassword from "@/screens/auth/widgets/ForgetPassword";
+import ForgetPassword from "@/screens/auth/widgets/forget-password";
 import React from "react";
 
 const page = () => {

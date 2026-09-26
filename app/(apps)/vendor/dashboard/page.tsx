@@ -4,9 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next-nprogress-bar";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import { BiUser, BiShoppingBag, BiHeart, BiMap, BiLogOut } from "react-icons/bi";
+import {
+  BiStore,
+  BiPackage,
+  BiDollarCircle,
+  BiTrendingUp,
+  BiPlus,
+  BiLogOut,
+} from "react-icons/bi";
 
-export default function UserDashboard() {
+export default function VendorDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -36,8 +43,9 @@ export default function UserDashboard() {
     );
   }
 
-  const role = user?.app_metadata?.role || user?.user_metadata?.role || "user";
-  const firstName = user?.user_metadata?.firstName || "Customer";
+  const storeName =
+    user?.user_metadata?.storeName ||
+    `${user?.user_metadata?.firstName || "Merchant"}'s Store`;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
@@ -45,21 +53,24 @@ export default function UserDashboard() {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              Hello, {firstName}!
+              {storeName}
             </h1>
-            <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize">
-              {role}
+            <span className="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              Vendor Portal
             </span>
           </div>
-          <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
+          <p className="text-gray-500 text-sm mt-1">
+            Logged in as {user?.email}
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="px-4 py-2 border border-gray-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+          <button
+            type="button"
+            className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
           >
-            Continue Shopping
-          </Link>
+            <BiPlus className="text-lg" />
+            <span>Add Product</span>
+          </button>
           <button
             onClick={handleLogout}
             className="flex items-center gap-1.5 px-4 py-2 bg-red-50 text-red-600 text-sm font-medium rounded-lg hover:bg-red-100 transition-colors cursor-pointer"
@@ -72,41 +83,57 @@ export default function UserDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex items-center gap-4">
-          <div className="p-3 bg-primary/10 text-primary rounded-lg text-2xl">
-            <BiShoppingBag />
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg text-2xl">
+            <BiDollarCircle />
+          </div>
+          <div>
+            <p className="text-gray-500 text-xs font-medium">Total Revenue</p>
+            <h3 className="text-xl font-bold text-slate-900 mt-0.5">$0.00</h3>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex items-center gap-4">
+          <div className="p-3 bg-blue-50 text-blue-600 rounded-lg text-2xl">
+            <BiPackage />
           </div>
           <div>
             <p className="text-gray-500 text-xs font-medium">Orders</p>
-            <h3 className="text-xl font-bold text-slate-900 mt-0.5">0 Active</h3>
+            <h3 className="text-xl font-bold text-slate-900 mt-0.5">0 Orders</h3>
           </div>
         </div>
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex items-center gap-4">
-          <div className="p-3 bg-red-50 text-red-500 rounded-lg text-2xl">
-            <BiHeart />
+          <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg text-2xl">
+            <BiStore />
           </div>
           <div>
-            <p className="text-gray-500 text-xs font-medium">Saved Items</p>
-            <h3 className="text-xl font-bold text-slate-900 mt-0.5">0 Items</h3>
+            <p className="text-gray-500 text-xs font-medium">Active Products</p>
+            <h3 className="text-xl font-bold text-slate-900 mt-0.5">0 Listed</h3>
           </div>
         </div>
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex items-center gap-4">
-          <div className="p-3 bg-amber-50 text-amber-600 rounded-lg text-2xl">
-            <BiMap />
+          <div className="p-3 bg-purple-50 text-purple-600 rounded-lg text-2xl">
+            <BiTrendingUp />
           </div>
           <div>
-            <p className="text-gray-500 text-xs font-medium">Saved Addresses</p>
-            <h3 className="text-xl font-bold text-slate-900 mt-0.5">1 Default</h3>
+            <p className="text-gray-500 text-xs font-medium">Store Status</p>
+            <h3 className="text-xl font-bold text-purple-600 mt-0.5">Active</h3>
           </div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex items-center gap-4">
-          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg text-2xl">
-            <BiUser />
-          </div>
-          <div>
-            <p className="text-gray-500 text-xs font-medium">Profile Status</p>
-            <h3 className="text-xl font-bold text-emerald-600 mt-0.5">Active</h3>
-          </div>
-        </div>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center py-12">
+        <BiStore className="mx-auto text-5xl text-gray-400 mb-3" />
+        <h3 className="text-lg font-semibold text-slate-800">
+          Welcome to your Vendor Dashboard
+        </h3>
+        <p className="text-gray-500 text-sm max-w-md mx-auto mt-1 mb-6">
+          Start listing products, managing inventory, and tracking customer orders directly from this portal.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm font-semibold text-primary hover:underline"
+        >
+          &larr; View Marketplace Front
+        </Link>
       </div>
     </main>
   );

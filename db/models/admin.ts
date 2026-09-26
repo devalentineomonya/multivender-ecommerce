@@ -1,9 +1,7 @@
-import { pgTable, uuid, text, varchar, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, varchar, timestamp } from "drizzle-orm/pg-core";
 import { z } from "zod";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-
-export const genderEnum = pgEnum("gender", ["Male", "Female", "Others"]);
-
+import { genderEnum } from "./user";
 
 export const adminTable = pgTable("admins", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -16,11 +14,8 @@ export const adminTable = pgTable("admins", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-
 export const adminInsertSchema = createInsertSchema(adminTable);
-
 export const adminSelectSchema = createSelectSchema(adminTable);
-
 
 export type AdminInsert = z.infer<typeof adminInsertSchema>;
 export type AdminSelect = z.infer<typeof adminSelectSchema>;

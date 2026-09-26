@@ -11,7 +11,8 @@ import {
 import { z } from "zod";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-const genderEnum = pgEnum("gender", ["Male", "Female", "Others"]);
+export const genderEnum = pgEnum("gender", ["Male", "Female", "Others"]);
+export const userRoleEnum = pgEnum("user_role", ["user", "vendor", "admin"]);
 
 export const userTable = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom().notNull(),
@@ -19,8 +20,9 @@ export const userTable = pgTable("users", {
   middleName: varchar("middle_name", { length: 255 }).default(""),
   lastName: varchar("last_name", { length: 255 }).default(""),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  role: userRoleEnum("role").default("user").notNull(),
   gender: genderEnum("gender"),
-  isNew:boolean("is_new").default(true),
+  isNew: boolean("is_new").default(true),
   dateOfBirth: date("date_of_birth"),
   primaryPhoneNumber: varchar("primary_phone_number", { length: 20 }),
   secondaryPhoneNumber: varchar("secondary_phone_number", { length: 20 }),

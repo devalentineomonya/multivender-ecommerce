@@ -1,4 +1,4 @@
-import SignUp from "@/screens/auth/widgets/SignUp";
+import SignUp from "@/screens/auth/widgets/sign-up";
 import React from "react";
 
 const page = () => {

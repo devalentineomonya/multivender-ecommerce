@@ -9,3 +9,4 @@ export * from "@/db/models/order";
 export * from "@/db/models/product";
 export * from "@/db/models/review";
 export * from "@/db/models/user";
+export * from "@/db/models/vendor";

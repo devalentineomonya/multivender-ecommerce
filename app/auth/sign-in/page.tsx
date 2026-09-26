@@ -1,4 +1,4 @@
-import SignIn from "@/screens/auth/widgets/SignIn";
+import SignIn from "@/screens/auth/widgets/sign-in";
 import React from "react";
 
 const page = () => {

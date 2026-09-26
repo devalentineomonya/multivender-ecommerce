@@ -1,4 +1,4 @@
-import OtpForm from '@/screens/auth/widgets/OtpForm'
+import OtpForm from '@/screens/auth/widgets/otp-form'
 import React from 'react'
 
 const page = () => {
