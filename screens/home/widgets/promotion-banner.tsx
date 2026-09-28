@@ -34,7 +34,7 @@ const PromotionBanner = () => {
         <div className="relative h-full w-full flex items-center justify-end pr-4">
           <div className="relative flex items-center justify-center w-72 h-64">
             {/* Card 1: Fanned Left / Bottom */}
-            <div className="absolute z-10 transition-all duration-300 transform -rotate-[14deg] -translate-x-8 translate-y-2 drop-shadow-xl hover:-rotate-[18deg]">
+            <div className="absolute z-10 transition-transform duration-300 transform -rotate-[14deg] -translate-x-8 translate-y-2 drop-shadow-xl hover:-rotate-[18deg]">
               <Image
                 src={cardOne}
                 alt="Payment Card 1"
@@ -42,7 +42,7 @@ const PromotionBanner = () => {
               />
             </div>
             {/* Card 2: Center Spine */}
-            <div className="absolute z-20 transition-all duration-300 transform -rotate-[2deg] translate-y-0 drop-shadow-2xl hover:scale-105">
+            <div className="absolute z-20 transition-transform duration-300 transform -rotate-[2deg] translate-y-0 drop-shadow-2xl hover:scale-105">
               <Image
                 src={cardTwo}
                 alt="Payment Card 2"
@@ -50,7 +50,7 @@ const PromotionBanner = () => {
               />
             </div>
             {/* Card 3: Fanned Right / Front */}
-            <div className="absolute z-30 transition-all duration-300 transform rotate-[14deg] translate-x-8 translate-y-3 drop-shadow-2xl hover:rotate-[18deg]">
+            <div className="absolute z-30 transition-transform duration-300 transform rotate-[14deg] translate-x-8 translate-y-3 drop-shadow-2xl hover:rotate-[18deg]">
               <Image
                 src={cardThree}
                 alt="Payment Card 3"

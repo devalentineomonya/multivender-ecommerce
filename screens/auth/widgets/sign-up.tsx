@@ -105,7 +105,7 @@ const SignUp = () => {
           <button
             type="button"
             onClick={() => handleRoleChange("user")}
-            className={`flex-1 py-2 text-xs font-semibold rounded-md transition-all ${
+            className={`flex-1 py-2 text-xs font-semibold rounded-md transition-colors ${
               selectedRole === "user"
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-gray-500 hover:text-slate-900"
@@ -116,7 +116,7 @@ const SignUp = () => {
           <button
             type="button"
             onClick={() => handleRoleChange("vendor")}
-            className={`flex-1 py-2 text-xs font-semibold rounded-md transition-all ${
+            className={`flex-1 py-2 text-xs font-semibold rounded-md transition-colors ${
               selectedRole === "vendor"
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-gray-500 hover:text-slate-900"
@@ -156,7 +156,7 @@ const SignUp = () => {
         </div>
 
         {selectedRole === "vendor" && (
-          <div className="transition-all animate-in fade-in">
+          <div className="animate-in fade-in">
             <AuthInput
               type="text"
               label={t("auth.storeName")}

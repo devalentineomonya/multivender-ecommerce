@@ -128,7 +128,7 @@ const Hero = () => {
           <ul className="flex flex-col justify-between h-full">
             {categories.map((item, index) => (
               <motion.li
-                className={`py-1 px-2 my-px text-xs xl:text-sm hover:pl-3 hover:text-primary transition-all ${
+                className={`py-1 px-2 my-px text-xs xl:text-sm hover:pl-3 hover:text-primary transition-[padding-left,color] ${
                   index === categories.length - 1
                     ? "font-bold text-xs xl:text-sm text-primary pt-1.5 border-t border-gray-200 mt-1"
                     : "border-b border-gray-100"

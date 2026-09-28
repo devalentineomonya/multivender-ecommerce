@@ -111,7 +111,7 @@ export default async function CategoriesPage() {
           return (
             <div
               key={category.id}
-              className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300 flex flex-col justify-between group"
+              className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-primary/20 transition-[box-shadow,border-color] duration-300 flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">

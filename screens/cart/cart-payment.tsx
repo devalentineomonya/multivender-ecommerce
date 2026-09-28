@@ -242,7 +242,7 @@ const CartPayment: React.FC<CartPaymentProps> = ({
   };
 
   return (
-    <div className="w-full md:w-2/5 border border-gray-200 rounded-2xl p-6 bg-white shadow-xs h-fit sticky top-20">
+    <div className="card-surface w-full md:w-2/5 p-6 h-fit sticky top-20">
       <h2 className="text-xl font-bold text-slate-900 border-b border-gray-100 pb-3">
         {t("cart.summary.heading")}
       </h2>
@@ -273,7 +273,7 @@ const CartPayment: React.FC<CartPaymentProps> = ({
 
       <div className="space-y-2 mb-4">
         <label
-          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
             paymentMethod === "paystack"
               ? "border-primary bg-primary/5 ring-1 ring-primary/30"
               : "border-gray-200 hover:border-gray-300"

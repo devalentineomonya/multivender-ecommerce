@@ -45,7 +45,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
             defaultValue={defaultValue}
             onChange={onChange}
             className={cn(
-              "peer w-full h-14 pt-5 pb-1.5 pl-4 pr-11 text-sm sm:text-base text-slate-900 bg-[#f7fbff] border border-gray-200 rounded-lg outline-none transition-all",
+              "peer w-full h-14 pt-5 pb-1.5 pl-4 pr-11 text-sm sm:text-base text-slate-900 bg-tint-blue border border-gray-200 rounded-lg outline-none transition-[border-color,background-color,box-shadow]",
               "focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white",
               className
             )}
@@ -54,7 +54,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
           <label
             htmlFor={name}
             className={cn(
-              "absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all duration-200 ease-out origin-[0]",
+              "absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-[top,transform,color] duration-200 ease-out origin-[0]",
               "peer-focus:top-3 peer-focus:-translate-y-0 peer-focus:text-xs peer-focus:text-primary peer-focus:font-medium",
               "peer-[:not(:placeholder-shown)]:top-3 peer-[:not(:placeholder-shown)]:-translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-slate-600 peer-[:not(:placeholder-shown)]:font-medium"
             )}

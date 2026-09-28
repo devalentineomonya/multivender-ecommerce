@@ -87,7 +87,7 @@ const BestDeals = () => {
         <div className="mt-10 flex justify-center">
           <Link
             href={selectedCategory ? `/shop?category=${selectedCategory}` : "/shop"}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl hover:opacity-90 transition-all shadow-xs group"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl hover:opacity-90 transition-opacity shadow-xs group"
           >
             <span>{t("home.bestDeals.viewMore")}</span>
             <BsArrowRight className="text-base group-hover:translate-x-1 transition-transform" />

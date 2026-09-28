@@ -84,7 +84,7 @@ const CartMain = () => {
         {/* Left Section: Items and Delivery / Pickup Options */}
         <div className="w-full md:w-3/5">
           {/* Items Container */}
-          <div className="border border-gray-200 rounded-2xl p-4 sm:p-6 bg-white shadow-xs">
+          <div className="card-surface p-4 sm:p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-bold text-slate-900 text-lg sm:text-xl">
                 {tp("cart.itemsHeading", items.reduce((acc, i) => acc + i.quantity, 0))}
@@ -111,7 +111,7 @@ const CartMain = () => {
               <button
                 type="button"
                 onClick={() => setFulfillmentType("delivery")}
-                className={`p-4 rounded-xl border-2 font-semibold text-sm flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
+                className={`p-4 rounded-xl border-2 font-semibold text-sm flex items-center justify-center gap-2.5 transition-colors cursor-pointer ${
                   fulfillmentType === "delivery"
                     ? "border-primary bg-primary/5 text-primary shadow-xs"
                     : "border-gray-200 text-gray-600 hover:border-gray-300 bg-white"
@@ -124,7 +124,7 @@ const CartMain = () => {
               <button
                 type="button"
                 onClick={() => setFulfillmentType("pickup")}
-                className={`p-4 rounded-xl border-2 font-semibold text-sm flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
+                className={`p-4 rounded-xl border-2 font-semibold text-sm flex items-center justify-center gap-2.5 transition-colors cursor-pointer ${
                   fulfillmentType === "pickup"
                     ? "border-primary bg-primary/5 text-primary shadow-xs"
                     : "border-gray-200 text-gray-600 hover:border-gray-300 bg-white"

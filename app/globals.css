@@ -17,6 +17,8 @@
   --color-tint-teal: #e0f2f1;
   --color-tint-indigo: #e8eaf6;
   --color-tint-peach: #ffe6cc;
+  --color-tint-blue: #f7fbff;
+  --color-tint-cream: #fffffa;
 
   /* Radius: cards and inputs stay restrained; panels (popovers, modals) slightly rounder */
   --radius-card: 10px;
@@ -164,12 +166,12 @@ input[type="number"] {
 }
 
 input:-webkit-autofill {
-  box-shadow: 0 0 0px 1000px #f7fbff inset;
+  box-shadow: 0 0 0px 1000px var(--color-tint-blue) inset;
   -webkit-text-fill-color: black;
 }
 
 input:-webkit-autofill:focus {
-  box-shadow: 0 0 0px 1000px #f7fbff inset;
+  box-shadow: 0 0 0px 1000px var(--color-tint-blue) inset;
   -webkit-text-fill-color: black;
 }
 

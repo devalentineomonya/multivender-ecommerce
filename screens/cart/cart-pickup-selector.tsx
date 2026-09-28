@@ -35,7 +35,7 @@ export default function CartPickupSelector({
             <div
               key={station.id}
               onClick={() => onSelectStation(station)}
-              className={`p-4 rounded-xl border-2 cursor-pointer transition-all relative flex flex-col justify-between ${
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-colors relative flex flex-col justify-between ${
                 isSelected
                   ? "border-primary bg-primary/5 shadow-xs"
                   : "border-gray-200 hover:border-gray-300 bg-white"

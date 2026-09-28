@@ -120,7 +120,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
         {/* Left Column: Image Gallery */}
         <div className="lg:col-span-7 flex flex-col sm:flex-row-reverse gap-4">
           {/* Main Hero Image */}
-          <div className="relative flex-1 aspect-square bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden flex items-center justify-center p-6">
+          <div className="relative flex-1 aspect-square bg-gray-50 rounded-panel border border-gray-200 overflow-hidden flex items-center justify-center p-6">
             <Image
               src={getValidImgSrc(selectedImage)}
               alt={product.name}
@@ -147,7 +147,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                   key={idx}
                   type="button"
                   onClick={() => setSelectedImage(img)}
-                  className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl border-2 overflow-hidden flex-shrink-0 bg-gray-50 p-2 cursor-pointer transition-all ${
+                  className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl border-2 overflow-hidden flex-shrink-0 bg-gray-50 p-2 cursor-pointer transition-colors ${
                     selectedImage === img
                       ? "border-primary ring-2 ring-primary/20"
                       : "border-gray-200 hover:border-gray-300"
@@ -226,7 +226,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                     key={sz}
                     type="button"
                     onClick={() => setSelectedSize(sz)}
-                    className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                    className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
                       selectedSize === sz
                         ? "border-primary bg-primary text-white shadow-xs"
                         : "border-gray-200 text-gray-700 hover:border-gray-300"
@@ -253,7 +253,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                       key={colorName}
                       type="button"
                       onClick={() => setSelectedColor(colorName)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors cursor-pointer ${
                         selectedColor === colorName
                           ? "border-slate-900 bg-slate-900 text-white"
                           : "border-gray-200 text-gray-700 hover:border-gray-300"
@@ -269,7 +269,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
 
           {/* Cart Status & Actions */}
           {isInCart && cartItem ? (
-            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 mb-8">
+            <div className="bg-primary/5 border border-primary/20 rounded-panel p-5 mb-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
@@ -323,7 +323,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                 {/* View in Cart button */}
                 <Link
                   href="/cart"
-                  className="flex-1 min-w-[140px] py-3 px-5 rounded-xl font-bold text-sm bg-primary text-white hover:opacity-95 text-center transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
+                  className="flex-1 min-w-[140px] py-3 px-5 rounded-xl font-bold text-sm bg-primary text-white hover:opacity-95 text-center transition-opacity shadow-xs cursor-pointer flex items-center justify-center gap-2"
                 >
                   <BsCartCheck className="text-base" />
                   {t("product.viewInCart")}
