@@ -17,7 +17,7 @@ const FooterEnding = () => {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 12 },
     visible: { opacity: 1, y: 0 },
   };
 
@@ -35,6 +35,7 @@ const FooterEnding = () => {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
+        viewport={{ once: true, amount: 0.5 }}
       >
         {footerEnding?.map((footerEndingItem) => (
           <motion.div
@@ -62,6 +63,7 @@ const FooterEnding = () => {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
+        viewport={{ once: true, amount: 0.5 }}
       >
         <motion.div className="max-sm:text-start max-sm:block max-sm:w-full" variants={itemVariants}>
           <Link

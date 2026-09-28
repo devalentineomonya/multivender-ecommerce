@@ -16,23 +16,23 @@ interface ServiceCardProps {
 const ServiceCard = ({ service }: ServiceCardProps) => {
   // Animation variants
   const animationVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 12 },
     visible: { opacity: 1, y: 0 },
   };
 
   const card = (
     <motion.div
-      className="w-full sm:max-w-[300px] h-fit sm:min-h-[400px] rounded-lg overflow-hidden grid grid-rows-2 bg-[#fcfcfc] max-w-full min-w-full max-h-72 border border-gray-100 hover:border-primary/20 transition-all hover:shadow-sm group cursor-pointer"
+      className="card-surface card-interactive group grid h-fit w-full min-w-full max-w-full max-h-72 grid-rows-2 overflow-hidden sm:min-h-[400px] sm:max-w-[300px]"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
     >
       <motion.div
         initial="hidden"
         whileInView="visible"
         variants={animationVariants}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
         className="px-6 pt-7"
       >
         <h4 className="font-semibold text-slate-800 text-lg mb-2 group-hover:text-primary transition-colors">
@@ -46,12 +46,12 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         initial="hidden"
         whileInView="visible"
         variants={animationVariants}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.32, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true, amount: 0.2 }}
         className="service-image overflow-hidden"
       >
         <Image
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="h-full w-full object-cover"
           src={service?.image}
           alt={service?.name ?? "service-image"}
           loading="lazy"

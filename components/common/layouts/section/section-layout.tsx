@@ -11,23 +11,11 @@ const SectionLayout: React.FC<SectionLayoutProps> = ({
   title,
   overflow = false,
 }) => {
-
-
   return (
     <MainLayout className={overflow ? "overflow-visible" : ""}>
-      <section className="mt-14  w-full">
-        <div
-          className="font-bold text-3xl text-gray-800 "
-
-        >
-          {title}
-        </div>
-        <div
-          className="mt-10"
-
-        >
-          {children}
-        </div>
+      <section className="mt-14 w-full">
+        <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
+        <div className="mt-10">{children}</div>
       </section>
     </MainLayout>
   );

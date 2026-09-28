@@ -4,6 +4,7 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { GoArrowRight } from "react-icons/go";
 import { motion } from "framer-motion";
+import { useI18nStore } from "@/lib/i18n/store";
 
 interface HeroItemProps {
   image: StaticImageData | string;
@@ -24,6 +25,7 @@ const HeroItem = ({
   rtl = true,
   link = "/shop",
 }: HeroItemProps) => {
+  const { t } = useI18nStore();
   const textVariants = {
     hidden: () => ({
       x: rtl ? 100 : -100,
@@ -87,7 +89,7 @@ const HeroItem = ({
           custom={2}
           className="text-xl md:text-3xl font-medium mb-2"
         >
-          up to{" "}
+          {t("home.hero.upTo")}{" "}
           <span className="uppercase text-red-600 font-bold">{offer}</span>
         </motion.h5>
         <motion.p
@@ -107,7 +109,7 @@ const HeroItem = ({
             custom={4}
             className="border border-white px-2 md:px-4 p-1 md:py-2 mt-3 uppercase flex items-center gap-x-2 md:gap-x-4 cursor-pointer hover:bg-white hover:text-black transition-colors"
           >
-            <span>SHOP NOW</span>
+            <span>{t("nav.shopNow")}</span>
             <GoArrowRight />
           </motion.div>
         </Link>

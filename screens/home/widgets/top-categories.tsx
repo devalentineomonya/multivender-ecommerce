@@ -30,7 +30,7 @@ const TopCategories: React.FC = () => {
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
     >
-      <SectionLayout overflow title={t("products.topCategories", "Top Categories")}>
+      <SectionLayout overflow title={t("products.topCategories")}>
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4 my-2">
             {Array.from({ length: 5 }).map((_, i) => (

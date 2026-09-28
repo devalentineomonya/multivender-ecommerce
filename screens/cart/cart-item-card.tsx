@@ -15,7 +15,7 @@ interface CartItemCardProps {
 const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
-  const { formatPrice } = useI18nStore();
+  const { formatPrice, t } = useI18nStore();
 
   const getValidImg = (img?: string) => {
     if (!img) return defaultImg;
@@ -48,9 +48,9 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
         </Link>
 
         <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-          {item.size && <span>Size: <strong className="text-gray-700">{item.size}</strong></span>}
+          {item.size && <span>{t("cart.item.size")} <strong className="text-gray-700">{item.size}</strong></span>}
           {item.size && item.color && <span>&bull;</span>}
-          {item.color && <span>Color: <strong className="text-gray-700">{item.color}</strong></span>}
+          {item.color && <span>{t("cart.item.color")} <strong className="text-gray-700">{item.color}</strong></span>}
         </div>
 
         <div className="text-primary font-bold text-sm mt-1">
@@ -63,8 +63,8 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
         <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
           <button
             type="button"
-            title="Decrease"
-            aria-label="Decrease"
+            title={t("products.decreaseQuantity")}
+            aria-label={t("products.decreaseQuantity")}
             onClick={() => updateQuantity(item.id, item.quantity - 1)}
             className="p-1.5 text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
           >
@@ -73,8 +73,8 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
           <span className="px-2.5 text-xs font-bold text-slate-800">{item.quantity}</span>
           <button
             type="button"
-            title="Increase"
-            aria-label="Increase"
+            title={t("products.increaseQuantity")}
+            aria-label={t("products.increaseQuantity")}
             onClick={() => updateQuantity(item.id, item.quantity + 1)}
             className="p-1.5 text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
           >
@@ -92,7 +92,7 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
             className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 mt-1 cursor-pointer transition-colors"
           >
             <AiOutlineDelete />
-            <span>Remove</span>
+            <span>{t("cart.item.remove")}</span>
           </button>
         </div>
       </div>

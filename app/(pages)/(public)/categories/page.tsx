@@ -22,11 +22,16 @@ import {
 } from "react-icons/pi";
 import { BsHeartPulse, BsArrowRight } from "react-icons/bs";
 import { IoDiamondOutline } from "react-icons/io5";
+import { getServerTranslator } from "@/lib/i18n/server";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "All Categories | ShoppingCart",
-  description: "Browse all product categories and departments on ShoppingCart.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getServerTranslator();
+  return {
+    title: t("meta.categories.title"),
+    description: t("meta.categories.description"),
+  };
+}
 
 const CATEGORY_ICONS: Record<string, any> = {
   "Electronics": PiMonitorLight,
@@ -47,6 +52,7 @@ const CATEGORY_ICONS: Record<string, any> = {
 };
 
 export default async function CategoriesPage() {
+  const { t } = await getServerTranslator();
   const categories = await db.select().from(categoryTable);
   const products = await db
     .select({
@@ -77,23 +83,23 @@ export default async function CategoriesPage() {
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-primary transition-colors">
-          Home
+          {t("nav.home")}
         </Link>
         <span>/</span>
-        <span className="text-gray-900 font-medium">All Categories</span>
+        <span className="text-gray-900 font-medium">{t("categories.breadcrumb")}</span>
       </nav>
 
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-primary to-emerald-900 text-white rounded-3xl p-8 sm:p-12 mb-12 shadow-sm relative overflow-hidden">
         <div className="max-w-2xl relative z-10">
           <span className="text-xs uppercase tracking-widest font-semibold text-emerald-300">
-            Marketplace Catalog
+            {t("categories.eyebrow")}
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">
-            Explore All 15 Departments
+            {t("categories.heading", { count: categories.length })}
           </h1>
           <p className="mt-3 text-emerald-100 text-sm sm:text-base leading-relaxed">
-            Discover over 1,100+ verified products across electronics, fashion, groceries, computing, home appliances, and more.
+            {t("categories.subheading")}
           </p>
         </div>
       </div>
@@ -105,7 +111,7 @@ export default async function CategoriesPage() {
           return (
             <div
               key={category.id}
-              className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300 flex flex-col justify-between group"
+              className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-primary/20 transition-[box-shadow,border-color] duration-300 flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -113,7 +119,7 @@ export default async function CategoriesPage() {
                     <Icon />
                   </div>
                   <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                    {category.count} items
+                    {t("categories.itemsCount", { count: category.count })}
                   </span>
                 </div>
 
@@ -121,7 +127,7 @@ export default async function CategoriesPage() {
                   {category.name}
                 </h2>
                 <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                  {category.description || `Browse quality items in ${category.name} with competitive pricing.`}
+                  {category.description || t("categories.defaultDescription", { name: category.name })}
                 </p>
 
                 {/* Previews */}
@@ -151,7 +157,7 @@ export default async function CategoriesPage() {
                       );
                     })}
                     <span className="text-[11px] text-gray-400 pl-2">
-                      +{Math.max(0, category.count - 3)} more
+                      {t("categories.moreCount", { count: Math.max(0, category.count - 3) })}
                     </span>
                   </div>
                 )}
@@ -161,7 +167,7 @@ export default async function CategoriesPage() {
                 href={`/shop?category=${category.id}`}
                 className="mt-6 inline-flex items-center justify-between w-full text-xs font-bold text-primary group-hover:text-primary/90 pt-3 border-t border-gray-50"
               >
-                <span>Browse {category.name}</span>
+                <span>{t("categories.browse", { name: category.name })}</span>
                 <BsArrowRight className="text-sm transform group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>

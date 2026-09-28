@@ -4,6 +4,7 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import defaultBrandImg from "@/public/images/63e8c4e4c21faa5e03c209c5_brand (1)-min.png";
+import { useI18nStore } from "@/lib/i18n/store";
 
 export interface BrandCardData {
   id?: string;
@@ -18,10 +19,11 @@ interface BrandCardProps {
 }
 
 const BrandCard: React.FC<BrandCardProps> = ({ brand }) => {
+  const { t } = useI18nStore();
   const name = brand?.name || "Staples";
   const image = brand?.image || defaultBrandImg;
   const link = brand?.link || `/shop?search=${encodeURIComponent(name)}`;
-  const delivery = brand?.delivery || "Delivery within 24 hours";
+  const delivery = brand?.delivery || t("home.brandCard.defaultDelivery");
 
   return (
     <motion.div

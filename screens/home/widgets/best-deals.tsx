@@ -23,7 +23,7 @@ const BestDeals = () => {
   const categories = categoriesData || [];
 
   return (
-    <SectionLayout title={t("products.bestDeals", "Today's Best Deals for you!")}>
+    <SectionLayout title={t("products.bestDeals")}>
       <>
         {/* Category filter pills */}
         <div className="flex justify-start items-center gap-2 sm:gap-4 mb-6 overflow-x-auto pb-2 scrollbar-none">
@@ -34,10 +34,10 @@ const BestDeals = () => {
                 ? "bg-primary border-primary text-white"
                 : "border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
             }`}
-            title="All"
-            aria-label="All"
+            title={t("home.bestDeals.all")}
+            aria-label={t("home.bestDeals.all")}
           >
-            All
+            {t("home.bestDeals.all")}
           </button>
           {categories.slice(0, 5).map((cat) => (
             <button
@@ -71,6 +71,8 @@ const BestDeals = () => {
                   id: prod.id,
                   name: prod.name,
                   price: prod.price,
+                  discount: prod.discount,
+                  stock: prod.stock,
                   images: prod.images,
                   shortDescription: prod.shortDescription || "",
                 }}
@@ -78,16 +80,16 @@ const BestDeals = () => {
             ))}
           </div>
         ) : (
-          <div className="py-12 text-center text-gray-500">No products found in this category.</div>
+          <div className="py-12 text-center text-gray-500">{t("home.bestDeals.empty")}</div>
         )}
 
         {/* View More Deals Button */}
         <div className="mt-10 flex justify-center">
           <Link
             href={selectedCategory ? `/shop?category=${selectedCategory}` : "/shop"}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl hover:opacity-90 transition-all shadow-xs group"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl hover:opacity-90 transition-opacity shadow-xs group"
           >
-            <span>View More Deals in Shop</span>
+            <span>{t("home.bestDeals.viewMore")}</span>
             <BsArrowRight className="text-base group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

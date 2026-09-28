@@ -4,7 +4,9 @@ import BannerImage from "@/public/images/63e8c4e51a7c201f00ec5fe3_biscount_banne
 import Image from "next/image";
 import MainLayout from "@/components/common/layouts/main/main-layout";
 import Link from "next/link"
+import { useI18nStore } from "@/lib/i18n/store";
 const OfferBanner = () => {
+  const { t, formatPrice } = useI18nStore();
   const { scrollYProgress } = useScroll();
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.6]);
 
@@ -27,19 +29,18 @@ const OfferBanner = () => {
             <div>
 
             <h2 className="font-bold leading-snug text-4xl md:text-5xl text-white mb-2 capitalize">
-              Get 5% Cash Back on $200
+              {t("home.offerBanner.title", { amount: formatPrice(26000) })}
             </h2>
             <p className="text-gray-100 font-medium text-lg sm:text-xl ">
-              Shopping is a bit of a relaxing hobby for me, which is sometimes
-              troubling for the bank balance.
+              {t("home.offerBanner.body")}
             </p>
             </div>
             <Link
               className="border border-white py-3 text-center text-white rounded-full max-w-40 hover:bg-white hover:text-primary transition-colors font-semibold"
               href="/deals"
-              title="Explore Hot Deals"
+              title={t("home.exploreDeals")}
             >
-              Learn More
+              {t("common.learnMore")}
             </Link>
           </div>
         </div>

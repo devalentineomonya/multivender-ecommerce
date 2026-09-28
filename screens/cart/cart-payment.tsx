@@ -7,6 +7,7 @@ import { BiLock, BiCreditCard, BiCheckCircle } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { useCartStore } from "@/lib/zustand/cart-store";
 import { useI18nStore } from "@/lib/i18n/store";
+import { DEFAULT_CURRENCY } from "@/lib/i18n/config";
 import type { DeliveryFormValues } from "./cart-delivery-info-form";
 import type { PickupStationOption } from "@/db/models/pickup-stations";
 import footerPaymentMethod from "@/components/common/footer/footerpaymentmethods";
@@ -23,7 +24,9 @@ const CartPayment: React.FC<CartPaymentProps> = ({
   pickupStation,
 }) => {
   const router = useRouter();
-  const { formatPrice, currency } = useI18nStore();
+  const { formatPrice, formatNumber, t, tp } = useI18nStore();
+  // Prices are stored in KES; the selected currency only affects display, so always charge in KES.
+  const chargeCurrency = DEFAULT_CURRENCY;
   const items = useCartStore((state) => state.items);
   const subtotal = useCartStore((state) => state.subtotal());
   const clearCart = useCartStore((state) => state.clearCart);
@@ -44,40 +47,40 @@ const CartPayment: React.FC<CartPaymentProps> = ({
 
     if (couponCode.toUpperCase() === "SAVE10" || couponCode.toUpperCase() === "WELCOME10") {
       setDiscountPercent(10);
-      toast.success("10% discount coupon applied successfully!");
+      toast.success(t("cart.coupon.applied", { percent: 10 }));
     } else if (couponCode.toUpperCase() === "DEVAL20") {
       setDiscountPercent(20);
-      toast.success("20% discount coupon applied successfully!");
+      toast.success(t("cart.coupon.applied", { percent: 20 }));
     } else {
-      toast.error("Invalid or expired coupon code");
+      toast.error(t("cart.coupon.invalid"));
     }
   };
 
   const handleCheckout = async () => {
     if (items.length === 0) {
-      toast.error("Your cart is empty. Add products before checkout.");
+      toast.error(t("cart.toast.emptyCart"));
       return;
     }
 
     // Validate fulfillment inputs
     if (fulfillmentType === "delivery") {
       if (!deliveryInfo.firstName || !deliveryInfo.address || !deliveryInfo.town || !deliveryInfo.email || !deliveryInfo.number) {
-        toast.error("Please fill in all required delivery address fields.");
+        toast.error(t("cart.toast.missingDeliveryFields"));
         return;
       }
     } else {
       if (!pickupStation) {
-        toast.error("Please select a pickup station to collect your order.");
+        toast.error(t("cart.toast.missingPickupStation"));
         return;
       }
       if (!deliveryInfo.email) {
-        toast.error("Please provide your contact email to receive the pickup verification PIN.");
+        toast.error(t("cart.toast.missingPickupEmail"));
         return;
       }
     }
 
     setLoading(true);
-    const toastId = toast.loading("Initializing secure Paystack checkout...");
+    const toastId = toast.loading(t("cart.toast.initializing"));
 
     try {
       // 1. Initialize order & Paystack transaction on server
@@ -99,7 +102,7 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           totalAmount,
           shippingFee,
           discountAmount,
-          currency,
+          currency: chargeCurrency,
           customerEmail: deliveryInfo.email,
           customerName: `${deliveryInfo.firstName} ${deliveryInfo.lastName}`.trim() || "Customer",
           customerPhone: deliveryInfo.number,
@@ -133,11 +136,11 @@ const CartPayment: React.FC<CartPaymentProps> = ({
       const initData = await response.json();
 
       if (!response.ok || !initData.success) {
-        throw new Error(initData.message || "Failed to initialize payment");
+        throw new Error(initData.message || t("cart.toast.initFailed"));
       }
 
       toast.update(toastId, {
-        render: "Opening Paystack checkout...",
+        render: t("cart.toast.openingCheckout"),
         type: "info",
         isLoading: true,
       });
@@ -149,7 +152,7 @@ const CartPayment: React.FC<CartPaymentProps> = ({
       const paystack = new PaystackPop();
 
       const verifyAndFinalize = async (txReference: string) => {
-        const verifyToastId = toast.loading("Verifying transaction...");
+        const verifyToastId = toast.loading(t("cart.toast.verifying"));
         try {
           const verifyRes = await fetch("/api/payments/paystack/verify", {
             method: "POST",
@@ -161,11 +164,11 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           if (verifyRes.ok && verifyData.success) {
             clearCart();
             toast.dismiss(verifyToastId);
-            toast.success("Payment completed successfully!");
+            toast.success(t("cart.toast.paymentSuccess"));
             router.push(`/cart/verify?reference=${encodeURIComponent(txReference)}`);
           } else {
             toast.update(verifyToastId, {
-              render: verifyData.message || "Payment verification incomplete",
+              render: verifyData.message || t("cart.toast.verificationIncomplete"),
               type: "warning",
               isLoading: false,
               autoClose: 5000,
@@ -187,12 +190,12 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           },
           onCancel: () => {
             toast.dismiss(toastId);
-            toast.info("Transaction cancelled");
+            toast.info(t("cart.toast.transactionCancelled"));
             setLoading(false);
           },
           onError: (error: any) => {
             toast.dismiss(toastId);
-            toast.error(error.message || "Payment error occurred");
+            toast.error(error.message || t("cart.toast.paymentError"));
             setLoading(false);
           },
         });
@@ -202,7 +205,7 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           key: publicKey,
           email: deliveryInfo.email,
           amount: Math.round(totalAmount * 100),
-          currency,
+          currency: chargeCurrency,
           reference,
           metadata: {
             fulfillmentType,
@@ -220,12 +223,12 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           },
           onCancel: () => {
             toast.dismiss(toastId);
-            toast.info("Transaction cancelled");
+            toast.info(t("cart.toast.transactionCancelled"));
             setLoading(false);
           },
           onError: (error: any) => {
             toast.dismiss(toastId);
-            toast.error(error.message || "Payment error occurred");
+            toast.error(error.message || t("cart.toast.paymentError"));
             setLoading(false);
           },
         });
@@ -233,15 +236,15 @@ const CartPayment: React.FC<CartPaymentProps> = ({
     } catch (err: any) {
       console.error("[Checkout Exception]", err);
       toast.dismiss(toastId);
-      toast.error(err.message || "An unexpected error occurred during checkout");
+      toast.error(err.message || t("cart.toast.unexpectedError"));
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full md:w-2/5 border border-gray-200 rounded-2xl p-6 bg-white shadow-xs h-fit sticky top-20">
+    <div className="card-surface w-full md:w-2/5 p-6 h-fit sticky top-20">
       <h2 className="text-xl font-bold text-slate-900 border-b border-gray-100 pb-3">
-        Order Summary
+        {t("cart.summary.heading")}
       </h2>
 
       {/* Coupon Form */}
@@ -252,25 +255,25 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           type="text"
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value)}
-          placeholder="Coupon Code (e.g. SAVE10)"
+          placeholder={t("cart.coupon.placeholder")}
           className="outline-none border-none bg-transparent w-2/3 uppercase text-xs font-semibold placeholder:font-normal placeholder:capitalize"
         />
         <button
           type="submit"
           className="ml-auto py-1.5 rounded-full bg-slate-900 text-white px-3.5 text-xs font-semibold hover:bg-primary transition-colors cursor-pointer"
         >
-          Apply
+          {t("cart.coupon.apply")}
         </button>
       </form>
 
       {/* Payment Method Selector */}
       <h4 className="text-sm font-bold text-slate-800 mb-3 border-t border-gray-100 pt-3">
-        Payment Gateway
+        {t("cart.gateway.heading")}
       </h4>
 
       <div className="space-y-2 mb-4">
         <label
-          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
             paymentMethod === "paystack"
               ? "border-primary bg-primary/5 ring-1 ring-primary/30"
               : "border-gray-200 hover:border-gray-300"
@@ -287,14 +290,14 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs text-slate-900">
-                Paystack Secure Checkout
+                {t("cart.gateway.paystackName")}
               </span>
               <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
-                Instant
+                {t("cart.gateway.instant")}
               </span>
             </div>
             <p className="text-[11px] text-gray-500 mt-0.5">
-              Cards, Mobile Money (M-Pesa), Bank Transfer, Apple Pay
+              {t("cart.gateway.paystackMethods")}
             </p>
           </div>
         </label>
@@ -315,28 +318,28 @@ const CartPayment: React.FC<CartPaymentProps> = ({
       {/* Price Breakdown */}
       <div className="space-y-2 text-xs border-t border-gray-100 pt-3">
         <div className="flex justify-between text-gray-600">
-          <span>Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} items)</span>
+          <span>{tp("cart.summary.subtotalCount", items.reduce((acc, i) => acc + i.quantity, 0))}</span>
           <span className="font-semibold text-slate-800">{formatPrice(subtotal)}</span>
         </div>
 
         <div className="flex justify-between text-gray-600">
           <span>
-            {fulfillmentType === "delivery" ? "Home Delivery Shipping" : "Station Pickup Fee"}
+            {fulfillmentType === "delivery" ? t("cart.summary.homeShipping") : t("cart.summary.pickupFee")}
           </span>
           <span className={`font-semibold ${shippingFee === 0 ? "text-emerald-600" : "text-slate-800"}`}>
-            {shippingFee === 0 ? "FREE" : formatPrice(shippingFee)}
+            {shippingFee === 0 ? t("cart.summary.free") : formatPrice(shippingFee)}
           </span>
         </div>
 
         {discountAmount > 0 && (
           <div className="flex justify-between text-emerald-600 font-medium">
-            <span>Coupon Discount ({discountPercent}%)</span>
+            <span>{t("cart.summary.couponDiscount", { percent: discountPercent })}</span>
             <span>-{formatPrice(discountAmount)}</span>
           </div>
         )}
 
         <div className="border-t border-gray-200 pt-3 flex justify-between items-baseline text-base font-extrabold text-slate-900">
-          <span>Total</span>
+          <span>{t("cart.summary.total")}</span>
           <span className="text-xl text-primary font-black">{formatPrice(totalAmount)}</span>
         </div>
       </div>
@@ -349,12 +352,12 @@ const CartPayment: React.FC<CartPaymentProps> = ({
         className="w-full py-3.5 px-4 mt-5 rounded-full bg-primary hover:bg-slate-900 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <BiLock className="text-base" />
-        {loading ? "Processing..." : `Pay ${formatPrice(totalAmount)} with Paystack`}
+        {loading ? t("cart.checkout.processing") : t("cart.checkout.payWith", { amount: formatPrice(totalAmount) })}
       </button>
 
       <div className="mt-3 text-center text-[11px] text-gray-400 flex items-center justify-center gap-1">
         <BiCheckCircle className="text-emerald-500" />
-        <span>256-bit TLS encrypted &amp; verified by Paystack</span>
+        <span>{t("cart.checkout.secureNote")}</span>
       </div>
     </div>
   );

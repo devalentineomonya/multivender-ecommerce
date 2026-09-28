@@ -5,6 +5,7 @@ import { db } from "@/db/drizzle";
 import { productTable } from "@/db/models/product";
 import { vendorTable } from "@/db/models/vendor";
 import ProductDetailMain from "@/screens/product/product-detail-main";
+import { getServerTranslator } from "@/lib/i18n/server";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -12,6 +13,7 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id } = await params;
+  const { t, formatPrice } = await getServerTranslator();
   try {
     const [product] = await db
       .select({
@@ -26,8 +28,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
     if (!product) {
       return {
-        title: "Product Details | ShoppingCart",
-        description: "Explore genuine items on ShoppingCart.",
+        title: t("meta.product.notFoundTitle"),
+        description: t("meta.product.notFoundDescription"),
       };
     }
 
@@ -40,7 +42,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title: `${product.name} | ShoppingCart`,
       description:
         product.shortDescription ||
-        `Buy ${product.name} for KES ${Number(product.price).toLocaleString()} on ShoppingCart.`,
+        t("meta.product.description", { name: product.name, price: formatPrice(Number(product.price)) }),
       openGraph: {
         title: `${product.name} | ShoppingCart`,
         description: product.shortDescription || undefined,
@@ -49,7 +51,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     };
   } catch {
     return {
-      title: "Product Details | ShoppingCart",
+      title: t("meta.product.notFoundTitle"),
     };
   }
 }
@@ -81,23 +83,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       .limit(1);
 
     if (!product) {
-      return (
-        <ProductDetailMain
-          product={{
-            id,
-            name: "Premium Marketplace Product",
-            price: 4999,
-            shortDescription: "High-grade craftsmanship designed for modern everyday convenience.",
-            stock: 25,
-            discount: 10,
-            sizes: ["S", "M", "L", "XL"],
-            colorVariants: ["Black", "White", "Navy Blue"],
-            images: [],
-            label: "Popular",
-            storeName: "Verified Merchant",
-          }}
-        />
-      );
+      // A missing product should 404, not silently render a fictitious one that a user
+      // could still add to cart and attempt to check out against a non-existent id.
+      return notFound();
     }
 
     return <ProductDetailMain product={product} />;

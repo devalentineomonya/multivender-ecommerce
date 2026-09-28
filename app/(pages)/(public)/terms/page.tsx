@@ -1,22 +1,27 @@
 import React from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getServerTranslator } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Terms of Service | ShoppingCart",
-  description: "Terms and conditions for using the ShoppingCart multivendor marketplace.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getServerTranslator();
+  return {
+    title: t("meta.terms.title"),
+    description: t("meta.terms.description"),
+  };
+}
 
-export default function TermsPage() {
+// The legal body text below is intentionally left in English rather than machine-translated:
+// an imprecise translation of contractual/liability language carries real legal risk.
+export default async function TermsPage() {
+  const { t } = await getServerTranslator();
   return (
     <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="border-b border-gray-200 pb-8 mb-8">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          Terms of Service
+          {t("terms.heading")}
         </h1>
-        <p className="text-sm text-gray-500 mt-2">
-          Effective date: September 2026 • Powered by ShoppingCart
-        </p>
+        <p className="text-sm text-gray-500 mt-2">{t("terms.effectiveDate")}</p>
       </div>
 
       <div className="prose prose-slate max-w-none space-y-8 text-sm leading-relaxed text-gray-700">

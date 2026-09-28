@@ -1,17 +1,16 @@
 "use client";
 
-import { BsStar, BsStarFill } from "react-icons/bs";
 import { motion } from "framer-motion";
 import ProductLike from "./product-like";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import CartActionButtons from "./cart-action-buttons";
 import dummyProduct from "@/public/images/63ec6053e5b15cfafd550cbb_Rectangle 1436-3.png";
 import { useI18nStore } from "@/lib/i18n/store";
+import { getOriginalPrice } from "@/lib/utils";
 
 interface ProductCardProps {
   thumbnail?: boolean;
-  animate?: boolean;
   product: {
     id: string | number;
     name: string;
@@ -19,12 +18,13 @@ interface ProductCardProps {
     image?: string;
     images?: string[];
     shortDescription?: string;
+    /** Percent (0–100) already applied to `price` */
+    discount?: number | null;
+    stock?: number;
   };
 }
 
-const getValidImageSrc = (img: any) => {
-  if (!img) return dummyProduct;
-  if (typeof img === "object") return img; // StaticImageData
+const getValidImageSrc = (img: unknown): string | StaticImageData => {
   if (typeof img === "string") {
     const trimmed = img.trim();
     if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) {
@@ -34,73 +34,83 @@ const getValidImageSrc = (img: any) => {
   return dummyProduct;
 };
 
-const ProductCard = ({ thumbnail, product, animate }: ProductCardProps) => {
-  const { formatPrice, t } = useI18nStore();
+const ProductCard = ({ thumbnail, product }: ProductCardProps) => {
+  const { formatPrice, formatNumber, t } = useI18nStore();
 
-  const rawImg =
-    product?.image ||
-    (Array.isArray(product?.images) && product.images.length > 0
-      ? product.images[0]
-      : null);
-
-  const imgSrc = getValidImageSrc(rawImg);
+  const imgSrc = getValidImageSrc(product.image || product.images?.[0]);
+  const href = `/product/${product.id}`;
+  const discount = product.discount && product.discount > 0 ? product.discount : 0;
+  const discountText = formatNumber(discount / 100, { style: "percent" });
 
   return (
+    // Reveal lives on the wrapper: framer leaves an inline transform behind, which
+    // would otherwise override the card's CSS hover lift.
     <motion.div
-      className="w-full max-w-full sm:max-w-[410px] sm:mr-6 hover:-translate-y-2 cursor-pointer transition-transform"
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: animate ? 1 : 0.8, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
+      className="h-full"
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="rounded-lg h-[320px] flex justify-center items-center relative overflow-hidden bg-gray-50 border border-gray-100 group">
-        <Link href={`/product/${product?.id}`} className="w-full h-full relative block">
-          <Image
-            src={imgSrc}
-            alt={product?.name || "Product Image"}
-            fill
-            sizes="(max-width: 640px) 100vw, 410px"
-            className="object-contain p-4 group-hover:scale-110 transition-transform duration-300"
-          />
-        </Link>
-        <ProductLike productId={product?.id.toString()} />
-      </div>
-
-      {!thumbnail && (
-        <div className="px-2">
-          <div className="flex justify-between items-center text-gray-800 text-lg font-semibold mt-3">
-            <Link href={`/product/${product?.id}`} className="truncate hover:text-primary transition-colors">
-              {product?.name}
-            </Link>
-            <span className="whitespace-nowrap text-primary font-bold ml-2">
-              {formatPrice(product?.price || 0)}
-            </span>
-          </div>
-          <p className="truncate text-sm text-gray-500 mt-1">
-            {product?.shortDescription}
-          </p>
-          <div className="flex justify-start items-center gap-x-2 mt-2">
-            <BsStarFill className="size-4 text-amber-400" />
-            <BsStarFill className="size-4 text-amber-400" />
-            <BsStarFill className="size-4 text-amber-400" />
-            <BsStarFill className="size-4 text-amber-400" />
-            <BsStar className="size-4 text-gray-300" />
-            <span className="text-xs text-gray-400">(4.0)</span>
-          </div>
-          <div className="cart-buttons mt-3">
-            <CartActionButtons
-              productId={product?.id.toString()}
-              product={{
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: typeof imgSrc === "string" ? imgSrc : undefined,
-              }}
-              currentStock={10}
+      <article className="card-surface card-interactive flex h-full flex-col overflow-hidden">
+        <div className="relative aspect-square bg-gray-50">
+          <Link href={href} className="block size-full" tabIndex={-1} aria-hidden="true">
+            <Image
+              src={imgSrc}
+              alt=""
+              fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+              className="object-contain p-4"
             />
-          </div>
+          </Link>
+          {discount > 0 && (
+            <span
+              className="absolute left-2 top-2 rounded-full bg-deal px-2.5 py-1 text-xs font-semibold text-white tabular-nums"
+              aria-label={t("products.discountLabel", { percent: discountText })}
+            >
+              -{discountText}
+            </span>
+          )}
+          <ProductLike productId={String(product.id)} productName={product.name} />
         </div>
-      )}
+
+        {!thumbnail && (
+          <div className="flex flex-1 flex-col gap-1.5 p-3 md:p-4">
+            <Link
+              href={href}
+              className="line-clamp-2 text-sm font-medium text-gray-800 transition-colors hover:text-primary"
+            >
+              {product.name}
+            </Link>
+            {product.shortDescription && (
+              <p className="truncate text-xs text-gray-500">{product.shortDescription}</p>
+            )}
+            <div className="mt-auto flex flex-wrap items-baseline gap-x-2 pt-1">
+              <span className="text-base font-semibold text-primary tabular-nums">
+                {formatPrice(product.price)}
+              </span>
+              {discount > 0 && (
+                <s className="text-xs text-gray-400 tabular-nums">
+                  <span className="sr-only">{t("products.originalPrice")}: </span>
+                  {formatPrice(getOriginalPrice(product.price, discount))}
+                </s>
+              )}
+            </div>
+            <div className="pt-2">
+              <CartActionButtons
+                productId={String(product.id)}
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: typeof imgSrc === "string" ? imgSrc : undefined,
+                }}
+                currentStock={product.stock}
+              />
+            </div>
+          </div>
+        )}
+      </article>
     </motion.div>
   );
 };

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @source "../components";
 @source "../screens";
@@ -6,6 +7,28 @@
 
 @theme {
   --color-primary: #003d29;
+  --color-deal: #dc2626;
+
+  /* Soft page/banner tints (previously arbitrary hex literals) */
+  --color-tint-green: #e8f5e9;
+  --color-tint-rose: #ffebee;
+  --color-tint-amber: #fff8e1;
+  --color-tint-pink: #fce4ec;
+  --color-tint-teal: #e0f2f1;
+  --color-tint-indigo: #e8eaf6;
+  --color-tint-peach: #ffe6cc;
+  --color-tint-blue: #f7fbff;
+  --color-tint-cream: #fffffa;
+
+  /* Radius: cards and inputs stay restrained; panels (popovers, modals) slightly rounder */
+  --radius-card: 10px;
+  --radius-panel: 14px;
+
+  /* Elevation: two layers max, neutral, no glow */
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  --shadow-pop: 0 12px 28px -6px rgb(0 0 0 / 0.1), 0 4px 10px -4px rgb(0 0 0 / 0.06);
+
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 
   --animate-meteor: meteor 5s linear infinite;
 
@@ -24,8 +47,51 @@
   }
 }
 
+/* Layering scale — use as z-(--z-dropdown) */
+:root {
+  --z-dropdown: 40;
+  --z-overlay: 50;
+  --z-toast: 60;
+}
+
+/* Staggers an item's entrance animation by its --i index; drawer nav links use this. */
+@utility drawer-stagger {
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+/* Card surface: hairline border, no shadow at rest */
+@utility card-surface {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-gray-100);
+  background-color: var(--color-white);
+}
+
+/* Interactive card: one coordinated hover change (lift + shadow + border) */
+@utility card-interactive {
+  transition-property: border-color, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-smooth);
+
+  &:hover {
+    border-color: var(--color-gray-200);
+    box-shadow: var(--shadow-card);
+    transform: translateY(-1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
 /* Base styles for v3 compatibility */
 @layer base {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
   *,
   ::after,
   ::before,
@@ -60,6 +126,12 @@ html,
 body {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
+  /* A page that occasionally grows a vertical scrollbar (e.g. during a reveal
+     animation) shouldn't reflow the layout when it appears/disappears. */
+  scrollbar-gutter: stable;
+  /* Belt-and-suspenders guard against a stray wide child creating horizontal
+     scroll; unlike overflow-x: hidden this never forces overflow-y to auto. */
+  overflow-x: clip;
 }
 
 ::-webkit-scrollbar {
@@ -94,11 +166,22 @@ input[type="number"] {
 }
 
 input:-webkit-autofill {
-  box-shadow: 0 0 0px 1000px #f7fbff inset;
+  box-shadow: 0 0 0px 1000px var(--color-tint-blue) inset;
   -webkit-text-fill-color: black;
 }
 
 input:-webkit-autofill:focus {
-  box-shadow: 0 0 0px 1000px #f7fbff inset;
+  box-shadow: 0 0 0px 1000px var(--color-tint-blue) inset;
   -webkit-text-fill-color: black;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

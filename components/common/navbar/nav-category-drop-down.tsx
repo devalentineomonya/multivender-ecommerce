@@ -1,12 +1,15 @@
 "use client";
 
+import { useCallback, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { BsChevronDown } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useGetCategories } from "@/features/categories/use-get-categories";
 import { useI18nStore } from "@/lib/i18n/store";
+import { useDismiss } from "@/hooks/useDismiss";
 
 interface NavCategoryDropDownProps {
   showDropDown: boolean;
@@ -18,145 +21,192 @@ interface CategoryItemProps {
   image?: string | null;
   name: string;
   count: number;
-  brand?: boolean;
-  animate?: boolean;
   onClick?: () => void;
+  linkRef?: React.Ref<HTMLAnchorElement>;
 }
+
+const HOVER_OPEN_DELAY = 100;
+const HOVER_CLOSE_DELAY = 200;
+
+const canHover = () =>
+  typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+const dropdownVariants = {
+  open: { opacity: 1, y: 0, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } },
+  closed: { opacity: 0, y: -4, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } },
+};
 
 const NavCategoryDropDown: React.FC<NavCategoryDropDownProps> = ({
   showDropDown,
   setShowDropDown,
 }) => {
-  const { data: dbCategories, isLoading } = useGetCategories();
+  const { data: categories, isLoading } = useGetCategories();
   const { t } = useI18nStore();
+  const pathname = usePathname();
 
-  const fallbackCategories = [
-    { id: "1", name: "Electronics", imageUrl: "/images/electronics.png", productCount: 12 },
-    { id: "2", name: "Fashion", imageUrl: "/images/fashion.png", productCount: 24 },
-    { id: "3", name: "Home & Living", imageUrl: "/images/home.png", productCount: 18 },
-    { id: "4", name: "Beauty & Health", imageUrl: "/images/beauty.png", productCount: 8 },
-  ];
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
+  const openTimer = useRef<number | undefined>(undefined);
+  const closeTimer = useRef<number | undefined>(undefined);
 
-  const categories = dbCategories && dbCategories.length > 0 ? dbCategories : fallbackCategories;
+  const close = useCallback(() => setShowDropDown(false), [setShowDropDown]);
 
-  const dropdownVariants = {
-    open: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-    closed: { opacity: 0, y: 20, transition: { duration: 0.3 } },
+  // Outside click closes; Escape is handled separately below so we can also restore focus.
+  useDismiss([wrapperRef], close, { enabled: showDropDown, closeOnEscape: false });
+
+  // Only one menu is open app-wide: whatever set `showDropDown` false (search, mobile drawer,
+  // or this component) already handles that via the parent's single openMenu state.
+  useEffect(() => {
+    close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(openTimer.current);
+      window.clearTimeout(closeTimer.current);
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!canHover()) return;
+    window.clearTimeout(closeTimer.current);
+    openTimer.current = window.setTimeout(() => setShowDropDown(true), HOVER_OPEN_DELAY);
+  };
+
+  const handleMouseLeave = () => {
+    if (!canHover()) return;
+    window.clearTimeout(openTimer.current);
+    closeTimer.current = window.setTimeout(() => setShowDropDown(false), HOVER_CLOSE_DELAY);
+  };
+
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setShowDropDown(true);
+      requestAnimationFrame(() => firstLinkRef.current?.focus());
+    }
+  };
+
+  // On the wrapper (not just the trigger) so Escape works with focus anywhere inside the panel.
+  const handleWrapperKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape" && showDropDown) {
+      e.preventDefault();
+      close();
+      triggerRef.current?.focus();
+    }
+  };
+
+  const handleFocusOut = (e: React.FocusEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+      close();
+    }
   };
 
   return (
-    <div className="relative flex">
-      <div
-        className="text-gray-600 max-xl:text-xl relative whitespace-nowrap flex justify-center items-center gap-x-1 cursor-pointer hover:text-primary transition-colors"
+    <div
+      ref={wrapperRef}
+      className="relative hidden lg:flex"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onBlur={handleFocusOut}
+      onKeyDown={handleWrapperKeyDown}
+    >
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-expanded={showDropDown}
+        aria-haspopup="true"
+        aria-controls="category-dropdown-panel"
         onClick={() => setShowDropDown((prev) => !prev)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            setShowDropDown((prev) => !prev);
-          }
-        }}
-        tabIndex={0}
+        onKeyDown={handleTriggerKeyDown}
+        className="flex items-center justify-center gap-x-1 whitespace-nowrap text-gray-600 transition-colors hover:text-primary max-xl:text-xl"
       >
-        {t("nav.categories", "Categories")}
+        {t("nav.categories")}
         <BsChevronDown
-          className={cn("transition-all ease-in-out duration-300", {
-            "rotate-180": showDropDown,
-          })}
+          className={cn("transition-transform duration-200 ease-smooth", showDropDown && "rotate-180")}
         />
-      </div>
+      </button>
 
-      {showDropDown && (
-        <motion.div
-          className={cn(
-            "absolute bg-white min-w-[700px] w-full mt-12 p-5 rounded-md left-0 shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-gray-100 z-30"
-          )}
-          initial="closed"
-          animate="open"
-          exit="closed"
-          variants={dropdownVariants}
-        >
-          <div className="flex justify-between items-center text-gray-800 font-bold text-lg pb-3 mb-3 border-b border-gray-200">
-            <span>{t("products.topCategories", "Top Categories")}</span>
-            <Link
-              href="/shop"
-              className="text-xs text-primary font-medium hover:underline"
-              onClick={() => setShowDropDown(false)}
-            >
-              View All
-            </Link>
-          </div>
-          {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="w-full rounded-md bg-gray-100 animate-pulse h-16 p-2 flex gap-x-3 items-center">
-                  <div className="w-14 h-14 bg-gray-200 rounded-md shrink-0" />
-                  <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+      <AnimatePresence>
+        {showDropDown && (
+          <motion.div
+            id="category-dropdown-panel"
+            role="region"
+            aria-label={t("products.topCategories")}
+            className="absolute left-0 top-full z-(--z-dropdown) mt-2 w-full min-w-[700px] rounded-panel border border-gray-100 bg-white p-5 shadow-pop"
+            initial="closed"
+            animate="open"
+            exit="closed"
+            variants={dropdownVariants}
+          >
+            <div className="mb-3 flex items-center justify-between border-b border-gray-200 pb-3 text-lg font-bold text-gray-800">
+              <span>{t("products.topCategories")}</span>
+              <Link
+                href="/categories"
+                className="text-xs font-medium text-primary hover:underline"
+                onClick={close}
+              >
+                {t("nav.viewAll")}
+              </Link>
+            </div>
+            {isLoading ? (
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex h-16 w-full animate-pulse items-center gap-x-3 rounded-md bg-gray-100 p-2">
+                    <div className="h-14 w-14 shrink-0 rounded-md bg-gray-200" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-3/4 rounded-sm bg-gray-200" />
+                      <div className="h-3 w-1/2 rounded-sm bg-gray-200" />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1">
-              {categories.map((category) => (
-                <CategoryItem
-                  key={category.id}
-                  id={category.id}
-                  image={category.imageUrl}
-                  name={category.name}
-                  count={category.productCount || 0}
-                  onClick={() => setShowDropDown(false)}
-                />
-              ))}
-            </div>
-          )}
-        </motion.div>
-      )}
+                ))}
+              </div>
+            ) : categories && categories.length > 0 ? (
+              <div className="grid max-h-[380px] grid-cols-2 gap-3 overflow-y-auto pr-1 md:grid-cols-3">
+                {categories.map((category, i) => (
+                  <CategoryItem
+                    key={category.id}
+                    id={category.id}
+                    image={category.imageUrl}
+                    name={category.name}
+                    count={category.productCount || 0}
+                    onClick={close}
+                    linkRef={i === 0 ? firstLinkRef : undefined}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="py-6 text-center text-sm text-gray-500">{t("nav.noCategories")}</p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-const CategoryItem: React.FC<CategoryItemProps> = ({
-  id,
-  image,
-  name,
-  count,
-  brand = false,
-  onClick,
-}) => {
+const CategoryItem: React.FC<CategoryItemProps> = ({ id, image, name, count, onClick, linkRef }) => {
   const { t } = useI18nStore();
   const placeholderImg = "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=150&auto=format&fit=crop&q=80";
 
   return (
     <Link
+      ref={linkRef}
       href={`/shop?category=${encodeURIComponent(id)}`}
-      title={name}
       aria-label={name}
       onClick={onClick}
+      className="flex min-h-16 items-center justify-start gap-x-3 rounded-md border border-gray-100 bg-gray-50 p-2 pl-3 transition-colors hover:border-primary/30 hover:bg-gray-100"
     >
-      <div
-        className={cn(
-          "w-full rounded-md bg-gray-50 hover:bg-gray-100 transition-colors min-h-16 flex gap-x-3 p-2 pl-3 justify-start items-center border border-gray-100 hover:border-primary/30",
-          brand && "hover:border border-primary"
-        )}
-      >
-        <div className="bg-white rounded-md w-14 h-14 relative overflow-hidden flex-shrink-0 border border-gray-200">
-          <Image
-            src={image || placeholderImg}
-            alt={name}
-            fill
-            sizes="56px"
-            className="object-cover"
-          />
-        </div>
-        <div className="category-card-text">
-          <h6 className="text-sm font-semibold text-gray-800 hover:text-primary transition-colors">
-            {name}
-          </h6>
-          <p className="text-xs text-gray-500">
-            {count} {t("products.itemsAvailable", "Items Available")}
-          </p>
-        </div>
+      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
+        <Image src={image || placeholderImg} alt="" fill sizes="56px" className="object-cover" />
+      </div>
+      <div className="min-w-0">
+        <h6 className="truncate text-sm font-semibold text-gray-800">{name}</h6>
+        <p className="text-xs text-gray-500">
+          {count} {t("products.itemsAvailable")}
+        </p>
       </div>
     </Link>
   );

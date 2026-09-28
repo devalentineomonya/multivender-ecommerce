@@ -30,12 +30,12 @@ const BestStoreCard: React.FC<BestStoreCardProps> = ({ store }) => {
 
   // Animation Variants
   const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 12 },
     visible: { opacity: 1, y: 0 },
   };
 
   const logoVariants = {
-    hover: { scale: 1.2 },
+    hover: { scale: 1.05 },
   };
 
   const textVariants = {
@@ -46,19 +46,18 @@ const BestStoreCard: React.FC<BestStoreCardProps> = ({ store }) => {
   return (
     <Link href={link} className="block">
       <motion.div
-        className="best-store-card cursor-pointer"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       >
         {/* Image Section */}
         <motion.div
           className="relative z-0"
           variants={containerVariants}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="overflow-hidden rounded-md aspect-[16/10] relative">
+          <div className="overflow-hidden rounded-card aspect-[16/10] relative">
             <Image
               src={image}
               fill
@@ -87,12 +86,12 @@ const BestStoreCard: React.FC<BestStoreCardProps> = ({ store }) => {
         <motion.div
           className="mt-8"
           variants={textVariants}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          transition={{ duration: 0.32, delay: 0.08 }}
         >
           <h4 className="text-slate-900 font-bold">{name}</h4>
           <p className="text-xs font-semibold text-gray-500 my-1">{category}</p>
           <p className="text-xs font-semibold text-pink-500 flex gap-x-2 justify-start items-center">
-            <Image src={priceTag} alt="price-tag" loading="lazy" /> Delivered within 24 hours
+            <Image src={priceTag} alt="" loading="lazy" /> Delivered within 24 hours
           </p>
         </motion.div>
       </motion.div>

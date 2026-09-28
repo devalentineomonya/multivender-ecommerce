@@ -1,6 +1,7 @@
 import React from "react";
 import SectionLayout from "@/components/common/layouts/section/section-layout";
 import BestStoreCard, { type BestStoreData } from "../components/best-store-card";
+import { useI18nStore } from "@/lib/i18n/store";
 
 const DIVERSE_STORES: BestStoreData[] = [
   {
@@ -34,8 +35,9 @@ const DIVERSE_STORES: BestStoreData[] = [
 ];
 
 const BestStores = () => {
+  const { t } = useI18nStore();
   return (
-    <SectionLayout title="Best Selling Stores">
+    <SectionLayout title={t("home.bestStores.title")}>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 md:grid-cols-4 gap-x-3">
         {DIVERSE_STORES.map((store, index) => (
           <BestStoreCard key={index} store={store} />

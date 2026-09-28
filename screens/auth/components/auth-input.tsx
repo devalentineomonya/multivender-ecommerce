@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { BiHide, BiShow } from "react-icons/bi";
+import { useI18nStore } from "@/lib/i18n/store";
 
 interface AuthInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -26,6 +27,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
     },
     ref
   ) => {
+    const { t } = useI18nStore();
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
@@ -43,7 +45,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
             defaultValue={defaultValue}
             onChange={onChange}
             className={cn(
-              "peer w-full h-14 pt-5 pb-1.5 pl-4 pr-11 text-sm sm:text-base text-slate-900 bg-[#f7fbff] border border-gray-200 rounded-lg outline-none transition-all",
+              "peer w-full h-14 pt-5 pb-1.5 pl-4 pr-11 text-sm sm:text-base text-slate-900 bg-tint-blue border border-gray-200 rounded-lg outline-none transition-[border-color,background-color,box-shadow]",
               "focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white",
               className
             )}
@@ -52,7 +54,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
           <label
             htmlFor={name}
             className={cn(
-              "absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all duration-200 ease-out origin-[0]",
+              "absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-[top,transform,color] duration-200 ease-out origin-[0]",
               "peer-focus:top-3 peer-focus:-translate-y-0 peer-focus:text-xs peer-focus:text-primary peer-focus:font-medium",
               "peer-[:not(:placeholder-shown)]:top-3 peer-[:not(:placeholder-shown)]:-translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-slate-600 peer-[:not(:placeholder-shown)]:font-medium"
             )}
@@ -66,7 +68,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
               className="absolute right-3.5 text-gray-400 hover:text-slate-700 transition-colors cursor-pointer text-xl p-1"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
             >
               {showPassword ? <BiHide /> : <BiShow />}
             </button>

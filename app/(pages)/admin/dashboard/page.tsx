@@ -254,7 +254,7 @@ export default function AdminDashboard() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`py-3 px-5 text-sm font-bold capitalize transition-all border-b-2 cursor-pointer ${
+            className={`py-3 px-5 text-sm font-bold capitalize transition-colors border-b-2 cursor-pointer ${
               activeTab === tab
                 ? "border-primary text-primary"
                 : "border-transparent text-gray-500 hover:text-gray-900"

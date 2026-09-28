@@ -12,16 +12,13 @@ const PopularProducts = () => {
   const { data, isLoading } = useGetProducts({ label: "Popular", limit: 8 });
   const { t } = useI18nStore();
 
-  const fallbackProducts = [
-    { id: "p1", name: "Premium Wireless Headphones", price: 149, shortDescription: "Active noise cancelling with 40h battery life" },
-    { id: "p2", name: "Smart Fitness Watch", price: 99, shortDescription: "Heart rate monitor with GPS tracking" },
-    { id: "p3", name: "Ergonomic Laptop Stand", price: 39, shortDescription: "Aluminum adjustable height stand" },
-  ];
+  const products = data?.products ?? [];
 
-  const products = data?.products && data.products.length > 0 ? data.products : fallbackProducts;
+  // Hide the section when there is nothing real to show (never render placeholder products).
+  if (!isLoading && products.length === 0) return null;
 
   return (
-    <SectionLayout title={t("products.popularProducts", "Weekly Popular Products")} overflow>
+    <SectionLayout title={t("products.popularProducts")} overflow>
       {isLoading ? (
         <div className="flex gap-4 overflow-hidden py-2">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -39,7 +36,9 @@ const PopularProducts = () => {
                 id: item.id,
                 name: item.name,
                 price: item.price,
-                images: (item as any).images,
+                discount: item.discount,
+                stock: item.stock,
+                images: item.images,
                 shortDescription: item.shortDescription || "",
               }}
             />

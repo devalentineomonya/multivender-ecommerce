@@ -1,23 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BiMapPin } from "react-icons/bi";
+import { useI18nStore } from "@/lib/i18n/store";
+import type { TranslationKey } from "@/lib/i18n/translations";
 
-export const deliveryValidationSchema = z.object({
-  firstName: z.string().min(2, "First Name is required"),
-  lastName: z.string().min(2, "Last Name is required"),
-  address: z.string().min(3, "Street address is required"),
-  town: z.string().min(2, "City / Town is required"),
-  zip: z.string().optional(),
-  email: z.string().email("Invalid email address"),
-  number: z.string().min(8, "Valid phone number required"),
-  notes: z.string().optional(),
-});
+/** The field shape is locale-independent; only the validation messages change per locale. */
+function getDeliveryValidationSchema(t: (key: TranslationKey) => string) {
+  return z.object({
+    firstName: z.string().min(2, t("cart.delivery.errors.firstName")),
+    lastName: z.string().min(2, t("cart.delivery.errors.lastName")),
+    address: z.string().min(3, t("cart.delivery.errors.address")),
+    town: z.string().min(2, t("cart.delivery.errors.town")),
+    zip: z.string().optional(),
+    email: z.string().email(t("cart.delivery.errors.email")),
+    number: z.string().min(8, t("cart.delivery.errors.phone")),
+    notes: z.string().optional(),
+  });
+}
 
-export type DeliveryFormValues = z.infer<typeof deliveryValidationSchema>;
+export type DeliveryFormValues = z.infer<ReturnType<typeof getDeliveryValidationSchema>>;
 
 interface CartDeliveryInfoFormProps {
   values: DeliveryFormValues;
@@ -28,11 +33,14 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
   values,
   onChange,
 }) => {
+  const { t } = useI18nStore();
+  const schema = useMemo(() => getDeliveryValidationSchema(t), [t]);
+
   const {
     register,
     formState: { errors },
   } = useForm<DeliveryFormValues>({
-    resolver: zodResolver(deliveryValidationSchema),
+    resolver: zodResolver(schema),
     defaultValues: values,
     mode: "onChange",
   });
@@ -51,18 +59,14 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
     <div className="border border-gray-200 rounded-xl p-5 sm:p-6 mt-6 bg-white shadow-xs">
       <div className="flex items-center gap-2 mb-2">
         <BiMapPin className="text-xl text-primary" />
-        <h3 className="text-lg font-bold text-slate-900">
-          Delivery Address & Contact
-        </h3>
+        <h3 className="text-lg font-bold text-slate-900">{t("cart.delivery.heading")}</h3>
       </div>
-      <p className="text-xs text-gray-500 mb-5">
-        Please provide the exact destination where you wish your items delivered. Standard courier delivery fee applies.
-      </p>
+      <p className="text-xs text-gray-500 mb-5">{t("cart.delivery.description")}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            First Name*
+            {t("cart.delivery.firstName")}
           </label>
           <input
             {...register("firstName")}
@@ -78,7 +82,7 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
 
         <div>
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            Last Name*
+            {t("cart.delivery.lastName")}
           </label>
           <input
             {...register("lastName")}
@@ -94,13 +98,13 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
 
         <div className="sm:col-span-2">
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            Street Address / Apartment / Landmark*
+            {t("cart.delivery.address")}
           </label>
           <input
             {...register("address")}
             defaultValue={values.address}
             onChange={(e) => handleFieldChange("address", e.target.value)}
-            placeholder="e.g. 124 Moi Avenue, Block C, Apt 4B"
+            placeholder={t("cart.delivery.addressPlaceholder")}
             className="w-full border border-gray-200 px-3.5 py-2 rounded-lg text-sm outline-none focus:border-primary transition-colors"
           />
           {errors.address && (
@@ -110,13 +114,13 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
 
         <div>
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            City / Town*
+            {t("cart.delivery.town")}
           </label>
           <input
             {...register("town")}
             defaultValue={values.town}
             onChange={(e) => handleFieldChange("town", e.target.value)}
-            placeholder="e.g. Nairobi"
+            placeholder={t("cart.delivery.townPlaceholder")}
             className="w-full border border-gray-200 px-3.5 py-2 rounded-lg text-sm outline-none focus:border-primary transition-colors"
           />
           {errors.town && (
@@ -126,7 +130,7 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
 
         <div>
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            Postal / ZIP Code
+            {t("cart.delivery.zip")}
           </label>
           <input
             {...register("zip")}
@@ -139,7 +143,7 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
 
         <div>
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            Email Address*
+            {t("cart.delivery.email")}
           </label>
           <input
             type="email"
@@ -156,14 +160,14 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
 
         <div>
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            Phone Number*
+            {t("cart.delivery.phone")}
           </label>
           <input
             type="tel"
             {...register("number")}
             defaultValue={values.number}
             onChange={(e) => handleFieldChange("number", e.target.value)}
-            placeholder="+254 700 000 000"
+            placeholder={t("cart.delivery.phonePlaceholder")}
             className="w-full border border-gray-200 px-3.5 py-2 rounded-lg text-sm outline-none focus:border-primary transition-colors"
           />
           {errors.number && (
@@ -173,13 +177,13 @@ const CartDeliveryInfoForm: React.FC<CartDeliveryInfoFormProps> = ({
 
         <div className="sm:col-span-2">
           <label className="text-xs font-semibold text-slate-700 block mb-1">
-            Delivery Instructions / Rider Notes (Optional)
+            {t("cart.delivery.notes")}
           </label>
           <input
             {...register("notes")}
             defaultValue={values.notes}
             onChange={(e) => handleFieldChange("notes", e.target.value)}
-            placeholder="e.g. Ring the bell at gate 3"
+            placeholder={t("cart.delivery.notesPlaceholder")}
             className="w-full border border-gray-200 px-3.5 py-2 rounded-lg text-sm outline-none focus:border-primary transition-colors"
           />
         </div>

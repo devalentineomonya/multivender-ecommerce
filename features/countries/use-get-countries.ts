@@ -1,16 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono/hono";
+import type { CountryInfo } from "@/app/api/[[...route]]/(modules)/countries/countries";
 
-export interface CountryItem {
-  code: string;
-  name: string;
-  flag: string;
-  currency: string;
-  currencySymbol: string;
-  phoneCode: string;
-  defaultLocale: string;
-  exchangeRateToUSD: number;
-}
+export type CountryItem = CountryInfo;
 
 export const useGetCountries = (search?: string) => {
   return useQuery({
@@ -23,7 +15,7 @@ export const useGetCountries = (search?: string) => {
         throw new Error("Failed to fetch countries");
       }
       const data = await response.json();
-      return (data as any).data || [];
+      return data.data;
     },
     staleTime: 1000 * 60 * 30, // 30 minutes cache (static metadata)
   });

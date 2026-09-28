@@ -1,58 +1,70 @@
-import Link from "next/link";
-import useBrowserWidth from "@/hooks/useBrowserWidth";
+"use client";
 
-interface NavItem {
-  key: string;
-  title: string;
-  href: string;
-}
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useQueryState, parseAsString } from "nuqs";
+import { useI18nStore } from "@/lib/i18n/store";
+import { cn } from "@/lib/utils";
+import type { NavItem } from "./navbaritems";
 
 interface NavItemsProps {
   navItems: NavItem[];
-  activePage: number;
-  handlePageChange: (index: number) => void;
-  onEnterClick: (
-    event: React.KeyboardEvent<HTMLLIElement>,
-    index: number
-  ) => void;
+  /** "desktop": inline horizontal row with an underline indicator. "drawer": stacked, ≥44px touch targets. */
+  variant?: "desktop" | "drawer";
+  /** Called after navigating — the drawer uses this to close itself. */
+  onNavigate?: () => void;
 }
 
-const NavItems: React.FC<NavItemsProps> = ({
-  navItems,
-  activePage,
-  handlePageChange,
-  onEnterClick,
-}) => {
-  const { isMobile } = useBrowserWidth();
+function isActive(item: NavItem, pathname: string, label: string | null) {
+  if (item.href === "/") return pathname === "/";
+  if (item.titleKey === "nav.whatIsNew") return pathname === "/shop" && label === "New";
+  const hrefPath = item.href.split("?")[0];
+  return pathname === hrefPath || pathname.startsWith(`${hrefPath}/`);
+}
+
+const NavItems: React.FC<NavItemsProps> = ({ navItems, variant = "desktop", onNavigate }) => {
+  const { t } = useI18nStore();
+  const pathname = usePathname();
+  const [label] = useQueryState("label", parseAsString);
 
   return (
     <ul
-      className={`flex items-center ${
-        isMobile ? "flex-col justify-start text-xl" : "justify-center gap-x-8"
-      }`}
+      className={
+        variant === "desktop"
+          ? "hidden items-center gap-x-8 lg:flex"
+          : "flex flex-col gap-y-1"
+      }
     >
-      {navItems.map((navItem, i) => (
-        <li
-          key={navItem.key}
-          className={` text-gray-600 relative whitespace-nowrap flex justify-center items-center
-             gap-x-1 cursor-pointer before:absolute before:h-[2px] before:bg-primary before:bottom-0
-             before:w-[0%] hover:before:w-full before:transition-all before:ease-in-out before:duration-300 ${
-            activePage === i ? "before:w-full" : ""
-          }`}
-          onClick={() => handlePageChange(i)}
-          onKeyDown={(event) => onEnterClick(event, i)}
-          tabIndex={0}
-        >
-          <Link
-            href={navItem.href}
-            title={navItem.title}
-            aria-label={navItem.title}
+      {navItems.map((item, i) => {
+        const active = isActive(item, pathname, label);
+        return (
+          <li
+            key={item.key}
+            style={variant === "drawer" ? ({ "--i": i } as React.CSSProperties) : undefined}
+            className={variant === "drawer" ? "drawer-stagger motion-safe:fill-mode-both motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-2" : undefined}
           >
-            {navItem.title}
-          </Link>
-          {activePage === i && <hr className="bg-primary h-[3px] w-full" />}
-        </li>
-      ))}
+            <Link
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "relative flex items-center transition-colors hover:text-primary",
+                variant === "desktop"
+                  ? cn(
+                      "whitespace-nowrap py-2 text-gray-600 before:absolute before:bottom-0 before:h-0.5 before:w-0 before:bg-primary before:transition-[width] before:duration-300 before:ease-smooth hover:before:w-full",
+                      active && "text-primary before:w-full"
+                    )
+                  : cn(
+                      "min-h-11 w-full rounded-md px-3 py-2.5 text-base text-gray-700",
+                      active && "bg-primary/10 font-semibold text-primary"
+                    )
+              )}
+            >
+              {t(item.titleKey)}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 };

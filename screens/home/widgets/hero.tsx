@@ -27,22 +27,24 @@ import { BsHeartPulse } from "react-icons/bs";
 import { IoDiamondOutline } from "react-icons/io5";
 import { CiDeliveryTruck, CiMoneyCheck1 } from "react-icons/ci";
 import { TbMessageCircleQuestion } from "react-icons/tb";
+import { useI18nStore } from "@/lib/i18n/store";
 
 const Hero = () => {
+  const { t, formatPrice } = useI18nStore();
   // Sidebar Categories (11 core departments + View All)
   const categories = [
-    { name: "Fashion", icon: PiTShirtThin, href: "/shop?category=e019bd1a-da92-434e-89bd-02ba0c1e2f74" },
-    { name: "Home & Garden", icon: PiHouse, href: "/shop?category=4f0368a4-d1a8-4aff-b617-ce1d89f03e44" },
-    { name: "Electronics", icon: PiMonitorLight, href: "/shop?category=1c2b120c-9613-446c-86c1-39f4cb7c2e14" },
-    { name: "Smart Phones", icon: PiDeviceMobileCamera, href: "/shop?category=fa45f917-a98c-4056-b1f4-661e0182a2be" },
-    { name: "Computing", icon: PiBriefcaseLight, href: "/shop?category=bd80ff30-fcef-4028-8b56-c8c58fd2af3e" },
-    { name: "Health & Beauty", icon: BsHeartPulse, href: "/shop?category=87376ae2-cdd6-4278-a786-f6ac547aacb0" },
-    { name: "Food & Groceries", icon: PiCoffeeThin, href: "/shop?category=5d3bb81c-6916-41fe-b5e3-378ae96eea44" },
-    { name: "Furniture", icon: PiArmchair, href: "/shop?category=3e877fd1-f58a-43f5-bd57-7b73fed9add6" },
-    { name: "Toys & Games", icon: PiGameControllerLight, href: "/shop?category=5e39c632-3c17-4ea8-b678-ac15d0583547" },
-    { name: "Cooking", icon: PiBowlFoodThin, href: "/shop?category=6a5a768c-d786-43e5-8dd4-0a29548263dd" },
-    { name: "Books & Stationery", icon: PiBookOpenThin, href: "/shop?category=2739a8d3-96ee-4a1c-a1cc-f4acfefb6244" },
-    { name: "View All Categories", icon: null, href: "/categories" },
+    { name: t("home.hero.categories.fashion"), icon: PiTShirtThin, href: "/shop?category=e019bd1a-da92-434e-89bd-02ba0c1e2f74" },
+    { name: t("home.hero.categories.homeGarden"), icon: PiHouse, href: "/shop?category=4f0368a4-d1a8-4aff-b617-ce1d89f03e44" },
+    { name: t("home.hero.categories.electronics"), icon: PiMonitorLight, href: "/shop?category=1c2b120c-9613-446c-86c1-39f4cb7c2e14" },
+    { name: t("home.hero.categories.smartPhones"), icon: PiDeviceMobileCamera, href: "/shop?category=fa45f917-a98c-4056-b1f4-661e0182a2be" },
+    { name: t("home.hero.categories.computing"), icon: PiBriefcaseLight, href: "/shop?category=bd80ff30-fcef-4028-8b56-c8c58fd2af3e" },
+    { name: t("home.hero.categories.healthBeauty"), icon: BsHeartPulse, href: "/shop?category=87376ae2-cdd6-4278-a786-f6ac547aacb0" },
+    { name: t("home.hero.categories.foodGroceries"), icon: PiCoffeeThin, href: "/shop?category=5d3bb81c-6916-41fe-b5e3-378ae96eea44" },
+    { name: t("home.hero.categories.furniture"), icon: PiArmchair, href: "/shop?category=3e877fd1-f58a-43f5-bd57-7b73fed9add6" },
+    { name: t("home.hero.categories.toysGames"), icon: PiGameControllerLight, href: "/shop?category=5e39c632-3c17-4ea8-b678-ac15d0583547" },
+    { name: t("home.hero.categories.cooking"), icon: PiBowlFoodThin, href: "/shop?category=6a5a768c-d786-43e5-8dd4-0a29548263dd" },
+    { name: t("home.hero.categories.booksStationery"), icon: PiBookOpenThin, href: "/shop?category=2739a8d3-96ee-4a1c-a1cc-f4acfefb6244" },
+    { name: t("home.hero.categories.viewAll"), icon: null, href: "/categories" },
   ];
 
   // Alternating Hero Banners (left-to-right / right-to-left)
@@ -51,8 +53,8 @@ const Hero = () => {
       name: "Samsung Galaxy",
       image: image,
       offer: "30% OFF",
-      description: "Smart Phones",
-      category: "SMART PHONES",
+      description: t("home.hero.slide1.description"),
+      category: t("home.hero.slide1.category"),
       rtl: true, // Right to left as in user screenshot
       link: "/shop?search=Samsung",
     },
@@ -60,8 +62,8 @@ const Hero = () => {
       name: "Designer Summer Styles",
       image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&auto=format&fit=crop&q=80",
       offer: "50% OFF",
-      description: "Trending Collection",
-      category: "FASHION & APPAREL",
+      description: t("home.hero.slide2.description"),
+      category: t("home.hero.slide2.category"),
       rtl: false, // Left to right
       link: "/shop?category=e019bd1a-da92-434e-89bd-02ba0c1e2f74",
     },
@@ -69,34 +71,33 @@ const Hero = () => {
       name: "4K QLED & Smart Audio",
       image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=1600&auto=format&fit=crop&q=80",
       offer: "40% OFF",
-      description: "Home Entertainment",
-      category: "ELECTRONICS",
+      description: t("home.hero.slide3.description"),
+      category: t("home.hero.slide3.category"),
       rtl: true, // Right to left
       link: "/shop?category=1c2b120c-9613-446c-86c1-39f4cb7c2e14",
     },
   ];
 
-  // Additional Features from original screenshot
   const features = [
     {
       icon: CiDeliveryTruck,
-      title: "Free Delivery",
-      description: "For all orders over $99",
+      title: t("home.hero.features.freeDelivery.title"),
+      description: t("home.hero.features.freeDelivery.description", { amount: formatPrice(12900) }),
     },
     {
       icon: PiBriefcaseLight,
-      title: "Secure Payment",
-      description: "We ensure secure payment",
+      title: t("home.hero.features.securePayment.title"),
+      description: t("home.hero.features.securePayment.description"),
     },
     {
       icon: CiMoneyCheck1,
-      title: "Money Back Guarantee",
-      description: "Any back within 30 days",
+      title: t("home.hero.features.moneyBack.title"),
+      description: t("home.hero.features.moneyBack.description"),
     },
     {
       icon: TbMessageCircleQuestion,
-      title: "Customer Support",
-      description: "Call or email us 24/7",
+      title: t("home.hero.features.support.title"),
+      description: t("home.hero.features.support.description"),
     },
   ];
 
@@ -127,7 +128,7 @@ const Hero = () => {
           <ul className="flex flex-col justify-between h-full">
             {categories.map((item, index) => (
               <motion.li
-                className={`py-1 px-2 my-px text-xs xl:text-sm hover:pl-3 hover:text-primary transition-all ${
+                className={`py-1 px-2 my-px text-xs xl:text-sm hover:pl-3 hover:text-primary transition-[padding-left,color] ${
                   index === categories.length - 1
                     ? "font-bold text-xs xl:text-sm text-primary pt-1.5 border-t border-gray-200 mt-1"
                     : "border-b border-gray-100"

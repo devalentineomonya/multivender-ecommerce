@@ -5,117 +5,120 @@ import Image from "next/image";
 import MainLayout from "../main/main-layout";
 import { useQueryState, parseAsString } from "nuqs";
 import { useGetCategories } from "@/features/categories/use-get-categories";
-import testImage from "@/public/images/63e8c4e4aed3c6720e446aa1_airpod max-min.png";
+import { useGetProducts } from "@/features/products/use-get-products";
+import { useI18nStore } from "@/lib/i18n/store";
+import { cn } from "@/lib/utils";
+import type { ProductsVariant } from "@/components/shared/skeletons";
+import shopHeroImage from "@/public/images/banner-1.jpg";
+import dealsHeroImage from "@/public/images/banner-3.jpg";
 
-// Curated category banners
-const CATEGORY_BANNERS: Record<string, { title: string; subtitle: string; bg: string; image?: any }> = {
-  electronics: {
-    title: "Next-Gen Electronics & Smart Tech",
-    subtitle: "Up to 45% Off on 4K QLEDs, Audio & Computing",
-    bg: "bg-[#e8f5e9]",
-  },
-  fashion: {
-    title: "Trending Fashion & Designer Apparel",
-    subtitle: "Up to 50% Off on Footwear, Dresses & Streetwear",
-    bg: "bg-[#ffebee]",
-  },
-  home: {
-    title: "Modern Home & Kitchen Essentials",
-    subtitle: "Up to 40% Off on Cookware, Blenders & Living Decor",
-    bg: "bg-[#fff8e1]",
-  },
-  beauty: {
-    title: "Luxury Beauty, Serums & Wellness",
-    subtitle: "Up to 35% Off on Verified Authentic Skincare & Fragrances",
-    bg: "bg-[#fce4ec]",
-  },
-  sports: {
-    title: "Pro Athletics, Gym Gear & Outdoor Equipment",
-    subtitle: "Up to 50% Off on Training Kits, Flasks & Accessories",
-    bg: "bg-[#e0f2f1]",
-  },
-  books: {
-    title: "Computing, Office Supplies & Tech Essentials",
-    subtitle: "Up to 30% Off on Laptops, Storage & Office Stationery",
-    bg: "bg-[#e8eaf6]",
-  },
-};
-
-const ProductsLayoutHero = () => {
+/**
+ * Shop: bright, neutral catalog hero (21:9), copy in the empty right half.
+ * Deals: dark, high-contrast promo hero (3:1), copy on the left with the deal accent.
+ * Below md both stack image over text so copy never sits on the subject.
+ */
+const ProductsLayoutHero = ({ variant }: { variant: ProductsVariant }) => {
+  const isDeals = variant === "deals";
+  const { t, formatNumber } = useI18nStore();
   const [categoryParam] = useQueryState("category", parseAsString);
   const { data: categories } = useGetCategories();
 
-  // Find category name if categoryParam is an ID
-  const selectedCat = useMemo(() => {
-    if (!categoryParam) return null;
+  // Highest current discount, for the "Save up to N%" line (same sort as the Deals grid).
+  const { data: topDeal } = useGetProducts(
+    { hasDiscount: true, sort: "discount_desc", limit: 1 },
+    { enabled: isDeals }
+  );
+  const maxDiscount = topDeal?.products[0]?.discount ?? 0;
+
+  const selectedCategory = useMemo(() => {
+    if (isDeals || !categoryParam) return null;
     return categories?.find(
       (c) => c.id === categoryParam || c.name.toLowerCase() === categoryParam.toLowerCase()
     );
-  }, [categoryParam, categories]);
+  }, [isDeals, categoryParam, categories]);
 
-  // Determine banner details based on selected category or random selection
-  const banner = useMemo(() => {
-    if (selectedCat) {
-      const lower = selectedCat.name.toLowerCase();
-      for (const [key, val] of Object.entries(CATEGORY_BANNERS)) {
-        if (lower.includes(key)) return { ...val, catName: selectedCat.name };
+  const copy = isDeals
+    ? {
+        eyebrow: t("deals.hero.eyebrow"),
+        title: t("deals.hero.title"),
+        subtitle:
+          maxDiscount > 0
+            ? t("deals.hero.subtitleMax", { percent: formatNumber(maxDiscount / 100, { style: "percent" }) })
+            : t("deals.hero.subtitle"),
       }
-      return {
-        title: `Explore ${selectedCat.name}`,
-        subtitle: "Handpicked deals & verified seller warranties",
-        bg: "bg-[#e8f5e9]",
-        catName: selectedCat.name,
-      };
-    }
-
-    // Default or random selection when no category is selected
-    return {
-      title: "Grab up to 50% Off on Selected Marketplace Items",
-      subtitle: "Discover over 300+ authentic products with verified local delivery",
-      bg: "bg-[#ffe6cc]",
-      catName: "Marketplace Deals",
-    };
-  }, [selectedCat]);
+    : selectedCategory
+      ? {
+          eyebrow: t("shop.hero.eyebrowCategory"),
+          title: selectedCategory.name,
+          subtitle: t("shop.hero.subtitleCategory", { category: selectedCategory.name }),
+        }
+      : {
+          eyebrow: t("shop.hero.eyebrow"),
+          title: t("shop.hero.title"),
+          subtitle: t("shop.hero.subtitle"),
+        };
 
   return (
     <MainLayout>
-      <div
-        className={`${banner.bg} rounded-xl h-[30vh] md:h-80 flex justify-between items-center flex-col md:flex-row px-8 overflow-hidden mt-4 transition-colors duration-500`}
+      <section
+        aria-labelledby="products-hero-title"
+        className={cn(
+          "relative mt-4 overflow-hidden rounded-panel",
+          isDeals
+            ? "bg-neutral-900 text-white md:aspect-[3/1] lg:max-h-[360px]"
+            : "bg-gray-50 text-gray-900 md:aspect-[21/9] lg:max-h-[440px]"
+        )}
       >
-        {/* Text Section */}
-        <motion.div
-          key={banner.title}
-          className="flex-1 flex flex-col justify-center items-start text-left max-w-xl"
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="text-xs uppercase font-bold tracking-wider text-primary mb-2 bg-white/70 px-3 py-1 rounded-full">
-            {banner.catName}
-          </span>
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl text-gray-900 font-extrabold leading-tight">
-            {banner.title}
-          </h1>
-          <p className="text-sm sm:text-base text-gray-700 mt-2 font-medium">
-            {banner.subtitle}
-          </p>
-        </motion.div>
-
-        {/* Image Section */}
-        <motion.div
-          className="flex-1 flex justify-end items-end h-full max-h-72"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+        <div
+          className={cn(
+            "relative w-full md:absolute md:inset-0",
+            isDeals ? "aspect-[2/1] md:aspect-auto" : "aspect-video md:aspect-auto"
+          )}
         >
           <Image
-            className="w-auto h-full object-contain max-h-64 drop-shadow-md"
-            src={testImage}
-            alt="product-layout-image"
+            src={isDeals ? dealsHeroImage : shopHeroImage}
+            alt=""
+            fill
             priority
+            placeholder="blur"
+            sizes="(max-width: 1280px) 100vw, 1256px"
+            className={cn("object-cover", isDeals ? "object-[70%_center]" : "object-[20%_center]")}
           />
+          {isDeals && (
+            // Legibility scrim for white copy over the photo (desktop only; mobile copy sits below)
+            <div className="absolute inset-0 hidden bg-gradient-to-r from-black/75 via-black/40 to-transparent md:block" />
+          )}
+        </div>
+
+        <motion.div
+          key={copy.title}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+          className={cn(
+            "relative flex flex-col items-start gap-3 p-6 md:absolute md:inset-y-0 md:w-1/2 md:justify-center md:p-10 lg:p-14",
+            isDeals ? "md:left-0" : "md:right-0"
+          )}
+        >
+          <span
+            className={cn(
+              "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide",
+              isDeals ? "bg-deal text-white" : "bg-white/80 text-primary"
+            )}
+          >
+            {copy.eyebrow}
+          </span>
+          <h1
+            id="products-hero-title"
+            className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl"
+          >
+            {copy.title}
+          </h1>
+          <p className={cn("max-w-md text-sm sm:text-base", isDeals ? "text-white/80" : "text-gray-600")}>
+            {copy.subtitle}
+          </p>
         </motion.div>
-      </div>
+      </section>
     </MainLayout>
   );
 };
