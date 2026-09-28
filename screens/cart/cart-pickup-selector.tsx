@@ -3,6 +3,7 @@
 import React from "react";
 import { DEFAULT_PICKUP_STATIONS, type PickupStationOption } from "@/db/models/pickup-stations";
 import { BiStore, BiCheckCircle, BiTimeFive, BiPhoneCall, BiMapPin } from "react-icons/bi";
+import { useI18nStore } from "@/lib/i18n/store";
 
 interface CartPickupSelectorProps {
   selectedStation: PickupStationOption | null;
@@ -13,20 +14,19 @@ export default function CartPickupSelector({
   selectedStation,
   onSelectStation,
 }: CartPickupSelectorProps) {
+  const { t } = useI18nStore();
   return (
     <div className="border border-gray-200 rounded-xl p-5 sm:p-6 mt-6 bg-white shadow-xs">
       <div className="flex items-center gap-2 mb-2">
         <BiStore className="text-xl text-primary" />
         <h3 className="text-lg font-bold text-slate-900">
-          Select Pickup Station
+          {t("cart.pickup.selectHeading")}
         </h3>
         <span className="ml-auto bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-          Free Pickup
+          {t("cart.pickup.freeBadge")}
         </span>
       </div>
-      <p className="text-xs text-gray-500 mb-5">
-        Choose a convenient pickup hub near you. Your order will be prepared and held securely. Present your unique pickup verification code at the counter to collect.
-      </p>
+      <p className="text-xs text-gray-500 mb-5">{t("cart.pickup.description")}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {DEFAULT_PICKUP_STATIONS.map((station) => {
@@ -68,8 +68,8 @@ export default function CartPickupSelector({
               </div>
 
               <div className="mt-3 pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
-                <span className="text-emerald-600 font-semibold">Handling: FREE</span>
-                <span className="text-gray-400 text-[11px]">Ready in 24-48 hrs</span>
+                <span className="text-emerald-600 font-semibold">{t("cart.pickup.handlingFree")}</span>
+                <span className="text-gray-400 text-[11px]">{t("cart.pickup.readyIn")}</span>
               </div>
             </div>
           );

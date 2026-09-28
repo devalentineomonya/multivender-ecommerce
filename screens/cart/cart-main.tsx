@@ -11,8 +11,10 @@ import CartPayment from "./cart-payment";
 import CartDeliveryInfoForm, { type DeliveryFormValues } from "./cart-delivery-info-form";
 import CartPickupSelector from "./cart-pickup-selector";
 import { DEFAULT_PICKUP_STATIONS, type PickupStationOption } from "@/db/models/pickup-stations";
+import { useI18nStore } from "@/lib/i18n/store";
 
 const CartMain = () => {
+  const { t, tp } = useI18nStore();
   const items = useCartStore((state) => state.items);
   const [mounted, setMounted] = useState(false);
   const [fulfillmentType, setFulfillmentType] = useState<"delivery" | "pickup">("delivery");
@@ -63,16 +65,14 @@ const CartMain = () => {
         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-4xl mb-4">
           <BiShoppingBag />
         </div>
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">Your Cart is Empty</h2>
-        <p className="text-sm text-gray-500 max-w-md mb-6">
-          Looks like you haven&apos;t added any items to your shopping cart yet. Explore our wide selection of vendor products!
-        </p>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">{t("cart.empty.title")}</h2>
+        <p className="text-sm text-gray-500 max-w-md mb-6">{t("cart.empty.body")}</p>
         <Link
           href="/shop"
           className="bg-primary text-white hover:bg-slate-900 transition-colors py-3 px-8 rounded-full text-sm font-semibold flex items-center gap-2"
         >
           <BiArrowBack />
-          <span>Explore Products</span>
+          <span>{t("cart.empty.cta")}</span>
         </Link>
       </div>
     );
@@ -87,10 +87,10 @@ const CartMain = () => {
           <div className="border border-gray-200 rounded-2xl p-4 sm:p-6 bg-white shadow-xs">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-bold text-slate-900 text-lg sm:text-xl">
-                Cart Items ({items.reduce((acc, i) => acc + i.quantity, 0)})
+                {tp("cart.itemsHeading", items.reduce((acc, i) => acc + i.quantity, 0))}
               </h2>
               <Link href="/shop" className="text-xs text-primary font-semibold hover:underline">
-                + Continue Shopping
+                {t("cart.continueShopping")}
               </Link>
             </div>
 
@@ -104,7 +104,7 @@ const CartMain = () => {
           {/* Fulfillment Method Switcher */}
           <div className="mt-8">
             <h3 className="text-base font-bold text-slate-900 mb-3">
-              Choose How to Receive Your Order:
+              {t("cart.chooseFulfillment")}
             </h3>
 
             <div className="grid grid-cols-2 gap-3">
@@ -118,7 +118,7 @@ const CartMain = () => {
                 }`}
               >
                 <BsTruck className="text-xl" />
-                <span>Home Delivery</span>
+                <span>{t("cart.homeDelivery")}</span>
               </button>
 
               <button
@@ -131,7 +131,7 @@ const CartMain = () => {
                 }`}
               >
                 <BiStore className="text-xl" />
-                <span>Pickup Station</span>
+                <span>{t("cart.pickupStationLabel")}</span>
               </button>
             </div>
 
