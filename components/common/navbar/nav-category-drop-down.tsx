@@ -56,7 +56,7 @@ const NavCategoryDropDown: React.FC<NavCategoryDropDownProps> = ({
         }}
         tabIndex={0}
       >
-        {t("nav.categories", "Categories")}
+        {t("nav.categories")}
         <BsChevronDown
           className={cn("transition-all ease-in-out duration-300", {
             "rotate-180": showDropDown,
@@ -75,7 +75,7 @@ const NavCategoryDropDown: React.FC<NavCategoryDropDownProps> = ({
           variants={dropdownVariants}
         >
           <div className="flex justify-between items-center text-gray-800 font-bold text-lg pb-3 mb-3 border-b border-gray-200">
-            <span>{t("products.topCategories", "Top Categories")}</span>
+            <span>{t("products.topCategories")}</span>
             <Link
               href="/shop"
               className="text-xs text-primary font-medium hover:underline"
@@ -154,7 +154,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
             {name}
           </h6>
           <p className="text-xs text-gray-500">
-            {count} {t("products.itemsAvailable", "Items Available")}
+            {count} {t("products.itemsAvailable")}
           </p>
         </div>
       </div>

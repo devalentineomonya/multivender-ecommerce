@@ -77,7 +77,7 @@ const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) =>
         </Link>
         {product?.discount ? (
           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-            -{product.discount}% {t("products.discount", "OFF")}
+            -{product.discount}% {t("products.discount")}
           </span>
         ) : null}
       </div>
@@ -110,7 +110,7 @@ const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) =>
           <FaStar className="size-3.5" />
           <FaRegStar className="size-3.5 text-gray-300" />
           <span className="text-xs text-gray-500 ml-1">
-            4.8 (12 {t("products.reviews", "Reviews")})
+            4.8 (12 {t("products.reviews")})
           </span>
         </motion.div>
 
@@ -147,7 +147,7 @@ const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) =>
             transition={{ duration: 0.8, delay: 0.4 }}
             className="border-2 border-primary bg-primary text-white hover:bg-transparent hover:text-primary transition-colors py-2 px-5 rounded-md font-semibold text-sm cursor-pointer shadow-xs"
           >
-            {t("products.addToCart", "Add to Cart")}
+            {t("products.addToCart")}
           </motion.button>
 
           <motion.button

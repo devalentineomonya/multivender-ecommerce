@@ -69,7 +69,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
           rounded-[50px] group-hover/category:translate-x-[0%] group-hover/category:-translate-y-full"
           >
             <MdOutlineRemoveRedEye className="text-sm" />
-            <span className="text-gray-800">{t("products.quickView", "Quick View")}</span>
+            <span className="text-gray-800">{t("products.quickView")}</span>
           </div>
           <div
             className="flex items-center gap-2 text-xs font-medium uppercase transition-all
@@ -78,7 +78,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
             group-hover/category:translate-y-[0%] justify-center"
           >
             <IoCartOutline className="text-sm text-[hsl(50deg_100%_50%)]" />
-            <span className="text-[hsl(50deg_100%_50%)]">{t("nav.shopNow", "Shop Now")}</span>
+            <span className="text-[hsl(50deg_100%_50%)]">{t("nav.shopNow")}</span>
           </div>
         </button>
       </div>

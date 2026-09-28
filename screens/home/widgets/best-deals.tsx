@@ -23,7 +23,7 @@ const BestDeals = () => {
   const categories = categoriesData || [];
 
   return (
-    <SectionLayout title={t("products.bestDeals", "Today's Best Deals for you!")}>
+    <SectionLayout title={t("products.bestDeals")}>
       <>
         {/* Category filter pills */}
         <div className="flex justify-start items-center gap-2 sm:gap-4 mb-6 overflow-x-auto pb-2 scrollbar-none">

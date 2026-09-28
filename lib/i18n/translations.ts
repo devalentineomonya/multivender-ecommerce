@@ -1,172 +1,57 @@
-import { SupportedLocale } from "./config";
+import { DEFAULT_LOCALE, LOCALES, SupportedLocale } from "./config";
+import { en, type TranslationKey } from "./translations/en";
+import { fr } from "./translations/fr";
+import { de } from "./translations/de";
+import { es } from "./translations/es";
+import { sw } from "./translations/sw";
 
-export const translations: Record<SupportedLocale, Record<string, string>> = {
-  en: {
-    // Navbar & Common
-    "nav.telephone": "+254768133220",
-    "nav.shopNow": "Shop Now",
-    "nav.home": "Home",
-    "nav.categories": "Categories",
-    "nav.deals": "Deals",
-    "nav.whatIsNew": "What's New",
-    "nav.delivery": "Delivery",
-    "nav.searchPlaceholder": "Search Product...",
-    "nav.cart": "Cart",
-    "nav.account": "Account",
-    "nav.signIn": "Sign In",
-    "nav.signUp": "Sign Up",
-    "nav.dashboard": "Dashboard",
-    "nav.logout": "Log Out",
+export type { TranslationKey };
 
-    // Banner & Promotions
-    "banner.title": "Grab the Best Deals of the Season",
-    "banner.subtitle": "Up to 50% discount on top selected items",
-    "banner.shopNow": "Shop Now",
-
-    // Products & Categories
-    "products.topCategories": "Top Categories",
-    "products.trendingProducts": "Trending Products for you!",
-    "products.popularProducts": "Popular Products",
-    "products.bestSelling": "Best Selling Store",
-    "products.bestDeals": "Today's Best Deals",
-    "products.quickView": "Quick View",
-    "products.addToCart": "Add to Cart",
-    "products.itemsAvailable": "Items Available",
-    "products.reviews": "Reviews",
-    "products.inStock": "In Stock",
-    "products.outOfStock": "Out of Stock",
-    "products.discount": "OFF",
-  },
-  fr: {
-    "nav.telephone": "+254768133220",
-    "nav.shopNow": "Acheter maintenant",
-    "nav.home": "Accueil",
-    "nav.categories": "Catégories",
-    "nav.deals": "Offres",
-    "nav.whatIsNew": "Nouveautés",
-    "nav.delivery": "Livraison",
-    "nav.searchPlaceholder": "Rechercher un produit...",
-    "nav.cart": "Panier",
-    "nav.account": "Compte",
-    "nav.signIn": "Se connecter",
-    "nav.signUp": "S'inscrire",
-    "nav.dashboard": "Tableau de bord",
-    "nav.logout": "Déconnexion",
-
-    "banner.title": "Profitez des meilleures offres de la saison",
-    "banner.subtitle": "Jusqu'à 50% de réduction sur les meilleurs articles",
-    "banner.shopNow": "Acheter maintenant",
-
-    "products.topCategories": "Meilleures Catégories",
-    "products.trendingProducts": "Produits tendances pour vous !",
-    "products.popularProducts": "Produits Populaires",
-    "products.bestSelling": "Boutique la plus vendue",
-    "products.bestDeals": "Meilleures offres du jour",
-    "products.quickView": "Aperçu rapide",
-    "products.addToCart": "Ajouter au panier",
-    "products.itemsAvailable": "Articles disponibles",
-    "products.reviews": "Avis",
-    "products.inStock": "En stock",
-    "products.outOfStock": "Rupture de stock",
-    "products.discount": "DE RÉDUCTION",
-  },
-  de: {
-    "nav.telephone": "+254768133220",
-    "nav.shopNow": "Jetzt einkaufen",
-    "nav.home": "Startseite",
-    "nav.categories": "Kategorien",
-    "nav.deals": "Angebote",
-    "nav.whatIsNew": "Neuheiten",
-    "nav.delivery": "Lieferung",
-    "nav.searchPlaceholder": "Produkt suchen...",
-    "nav.cart": "Warenkorb",
-    "nav.account": "Konto",
-    "nav.signIn": "Anmelden",
-    "nav.signUp": "Registrieren",
-    "nav.dashboard": "Dashboard",
-    "nav.logout": "Abmelden",
-
-    "banner.title": "Sichern Sie sich die besten Angebote der Saison",
-    "banner.subtitle": "Bis zu 50% Rabatt auf ausgewählte Artikel",
-    "banner.shopNow": "Jetzt kaufen",
-
-    "products.topCategories": "Top-Kategorien",
-    "products.trendingProducts": "Angesagte Produkte für Sie!",
-    "products.popularProducts": "Beliebte Produkte",
-    "products.bestSelling": "Meistverkaufte Geschäfte",
-    "products.bestDeals": "Beste Angebote des Tages",
-    "products.quickView": "Schnellansicht",
-    "products.addToCart": "In den Warenkorb",
-    "products.itemsAvailable": "Artikel verfügbar",
-    "products.reviews": "Bewertungen",
-    "products.inStock": "Auf Lager",
-    "products.outOfStock": "Ausverkauft",
-    "products.discount": "RABATT",
-  },
-  es: {
-    "nav.telephone": "+254768133220",
-    "nav.shopNow": "Comprar ahora",
-    "nav.home": "Inicio",
-    "nav.categories": "Categorías",
-    "nav.deals": "Ofertas",
-    "nav.whatIsNew": "Novedades",
-    "nav.delivery": "Entrega",
-    "nav.searchPlaceholder": "Buscar producto...",
-    "nav.cart": "Carrito",
-    "nav.account": "Cuenta",
-    "nav.signIn": "Iniciar sesión",
-    "nav.signUp": "Registrarse",
-    "nav.dashboard": "Panel de control",
-    "nav.logout": "Cerrar sesión",
-
-    "banner.title": "Aprovecha las mejores ofertas de la temporada",
-    "banner.subtitle": "Hasta 50% de descuento en artículos seleccionados",
-    "banner.shopNow": "Comprar ahora",
-
-    "products.topCategories": "Categorías Principales",
-    "products.trendingProducts": "¡Productos de tendencia para ti!",
-    "products.popularProducts": "Productos Populares",
-    "products.bestSelling": "Tienda más vendida",
-    "products.bestDeals": "Las mejores ofertas de hoy",
-    "products.quickView": "Vista rápida",
-    "products.addToCart": "Añadir al carrito",
-    "products.itemsAvailable": "Artículos disponibles",
-    "products.reviews": "Reseñas",
-    "products.inStock": "En stock",
-    "products.outOfStock": "Agotado",
-    "products.discount": "DTO",
-  },
-  sw: {
-    "nav.telephone": "+254768133220",
-    "nav.shopNow": "Nunua Sasa",
-    "nav.home": "Nyumbani",
-    "nav.categories": "Aina za Bidhaa",
-    "nav.deals": "Ofa Maalum",
-    "nav.whatIsNew": "Vipya Sokoni",
-    "nav.delivery": "Uwasilishaji",
-    "nav.searchPlaceholder": "Tafuta Bidhaa...",
-    "nav.cart": "Kikapu",
-    "nav.account": "Akaunti",
-    "nav.signIn": "Ingia",
-    "nav.signUp": "Jisajili",
-    "nav.dashboard": "Dashibodi",
-    "nav.logout": "Ondoka",
-
-    "banner.title": "Pata Ofa Bora Zaidi Msimu Huu",
-    "banner.subtitle": "Punguzo la hadi 50% kwa bidhaa zilizochaguliwa",
-    "banner.shopNow": "Nunua Sasa",
-
-    "products.topCategories": "Aina Maarufu",
-    "products.trendingProducts": "Bidhaa Zinazovuma Zaidi!",
-    "products.popularProducts": "Bidhaa Maarufu",
-    "products.bestSelling": "Maduka Yanayoongoza kwa Mauzo",
-    "products.bestDeals": "Ofa Bora za Leo",
-    "products.quickView": "Tazama Haraka",
-    "products.addToCart": "Weka Kikapuni",
-    "products.itemsAvailable": "Bidhaa Zilizopo",
-    "products.reviews": "Maoni",
-    "products.inStock": "Ipo Sokoni",
-    "products.outOfStock": "Imekwisha",
-    "products.discount": "PUNGUZO",
-  },
+/** `en` is the source of truth; other locales may be partial and fall back to it. */
+export const translations: Record<SupportedLocale, Partial<Record<TranslationKey, string>>> = {
+  en,
+  fr,
+  de,
+  es,
+  sw,
 };
+
+export type TranslationVars = Record<string, string | number>;
+
+/** Base keys that have `.one` / `.other` plural variants, e.g. "cart.itemCount". */
+export type PluralKey = {
+  [K in TranslationKey]: K extends `${infer Base}.other` ? Base : never;
+}[TranslationKey];
+
+function interpolate(template: string, vars?: TranslationVars) {
+  if (!vars) return template;
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in vars ? String(vars[name]) : match
+  );
+}
+
+export function translate(locale: SupportedLocale, key: TranslationKey, vars?: TranslationVars) {
+  const template = translations[locale]?.[key] ?? translations[DEFAULT_LOCALE][key] ?? key;
+  return interpolate(template, vars);
+}
+
+const pluralRulesCache = new Map<SupportedLocale, Intl.PluralRules>();
+
+/** Picks `${key}.one` / `${key}.other` (or another CLDR category if present) and injects `{count}`. */
+export function translatePlural(
+  locale: SupportedLocale,
+  key: PluralKey,
+  count: number,
+  vars?: TranslationVars
+) {
+  let rules = pluralRulesCache.get(locale);
+  if (!rules) {
+    rules = new Intl.PluralRules(LOCALES[locale].intl);
+    pluralRulesCache.set(locale, rules);
+  }
+  const category = rules.select(count);
+  const specific = `${key}.${category}` as TranslationKey;
+  const hasCategory = (translations[locale]?.[specific] ?? translations[DEFAULT_LOCALE][specific]) !== undefined;
+  const chosen = hasCategory ? specific : (`${key}.other` as TranslationKey);
+  return translate(locale, chosen, { count, ...vars });
+}

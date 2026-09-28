@@ -7,6 +7,7 @@ import { BiLock, BiCreditCard, BiCheckCircle } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { useCartStore } from "@/lib/zustand/cart-store";
 import { useI18nStore } from "@/lib/i18n/store";
+import { DEFAULT_CURRENCY } from "@/lib/i18n/config";
 import type { DeliveryFormValues } from "./cart-delivery-info-form";
 import type { PickupStationOption } from "@/db/models/pickup-stations";
 import footerPaymentMethod from "@/components/common/footer/footerpaymentmethods";
@@ -23,7 +24,9 @@ const CartPayment: React.FC<CartPaymentProps> = ({
   pickupStation,
 }) => {
   const router = useRouter();
-  const { formatPrice, currency } = useI18nStore();
+  const { formatPrice } = useI18nStore();
+  // Prices are stored in KES; the selected currency only affects display, so always charge in KES.
+  const chargeCurrency = DEFAULT_CURRENCY;
   const items = useCartStore((state) => state.items);
   const subtotal = useCartStore((state) => state.subtotal());
   const clearCart = useCartStore((state) => state.clearCart);
@@ -99,7 +102,7 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           totalAmount,
           shippingFee,
           discountAmount,
-          currency,
+          currency: chargeCurrency,
           customerEmail: deliveryInfo.email,
           customerName: `${deliveryInfo.firstName} ${deliveryInfo.lastName}`.trim() || "Customer",
           customerPhone: deliveryInfo.number,
@@ -202,7 +205,7 @@ const CartPayment: React.FC<CartPaymentProps> = ({
           key: publicKey,
           email: deliveryInfo.email,
           amount: Math.round(totalAmount * 100),
-          currency,
+          currency: chargeCurrency,
           reference,
           metadata: {
             fulfillmentType,

@@ -30,7 +30,7 @@ const MostSelling = () => {
   const products = data?.products && data.products.length > 0 ? data.products : fallbackProducts;
 
   return (
-    <SectionLayout title={t("products.bestSelling", "Most Selling Products")} overflow>
+    <SectionLayout title={t("products.bestSelling")} overflow>
       {isLoading ? (
         <div className="flex gap-4 overflow-hidden py-2">
           {Array.from({ length: 4 }).map((_, i) => (

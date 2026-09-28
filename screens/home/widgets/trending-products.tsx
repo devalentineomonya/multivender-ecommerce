@@ -13,7 +13,7 @@ const TrendingProducts = () => {
   const products = data?.products || [];
 
   return (
-    <SectionLayout title={t("products.trendingProducts", "Trending Products for you!")}>
+    <SectionLayout title={t("products.trendingProducts")}>
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-64 rounded-xl bg-gray-100 animate-pulse flex flex-col justify-end p-6 space-y-3">
