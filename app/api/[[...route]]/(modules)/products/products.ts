@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { eq, desc, asc, ilike, and, or, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, asc, ilike, and, or, gt, gte, lte, sql } from "drizzle-orm";
 import { db } from "@/db/drizzle";
 import { productTable } from "@/db/models/product";
 import { categoryTable } from "@/db/models/category";
@@ -19,8 +19,7 @@ const productsRouter = new Hono()
         minPrice,
         maxPrice,
         budgetTier,
-        isHot,
-        isSponsored,
+        hasDiscount,
         page = 1,
         limit = 20,
         sort = "newest",
@@ -30,8 +29,16 @@ const productsRouter = new Hono()
 
       const conditions = [];
 
-      if (label) {
+      // "Hot" and "Sponsored" are stored as booleans, not label enum values (see POST below)
+      let { isHot, isSponsored } = query;
+      if (label === "Hot") isHot = true;
+      else if (label === "Sponsored") isSponsored = true;
+      else if (label) {
         conditions.push(sql`${productTable.label}::text = ${label}`);
+      }
+
+      if (hasDiscount) {
+        conditions.push(gt(productTable.discount, 0));
       }
 
       if (budgetTier) {
@@ -47,7 +54,8 @@ const productsRouter = new Hono()
       }
 
       if (search && search.trim() !== "") {
-        const searchTerm = `%${search.trim()}%`;
+        // Escape LIKE wildcards so "%" and "_" typed by users match literally
+        const searchTerm = `%${search.trim().replace(/[\\%_]/g, (ch) => `\\${ch}`)}%`;
         conditions.push(
           or(
             ilike(productTable.name, searchTerm),
@@ -110,6 +118,9 @@ const productsRouter = new Hono()
           break;
         case "popular":
           orderByClause = desc(productTable.stock);
+          break;
+        case "discount_desc":
+          orderByClause = desc(productTable.discount);
           break;
         case "newest":
         default:

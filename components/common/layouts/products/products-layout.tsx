@@ -1,21 +1,15 @@
 import { Suspense } from "react";
 import ProductsLayoutHero from "./products-layout-hero";
 import ProductsLayoutMain from "./products-layout-main";
+import { ProductsPageSkeleton, type ProductsVariant } from "@/components/shared/skeletons";
 
-const ProductsLayout = () => {
+const ProductsLayout = ({ variant }: { variant: ProductsVariant }) => {
   return (
-    <Suspense
-      fallback={
-        <div className="w-full min-h-[400px] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
-        </div>
-      }
-    >
-      <ProductsLayoutHero />
-      <ProductsLayoutMain />
+    <Suspense fallback={<ProductsPageSkeleton variant={variant} />}>
+      <ProductsLayoutHero variant={variant} />
+      <ProductsLayoutMain variant={variant} />
     </Suspense>
   );
 };
 
 export default ProductsLayout;
-

@@ -28,6 +28,48 @@ export const ProductCardSkeleton: React.FC = () => {
   );
 };
 
+export type ProductsVariant = "shop" | "deals";
+
+/** Grid classes shared by the Shop/Deals grids and their skeletons, so loading → loaded never reflows. */
+export const PRODUCT_GRID_CLASS: Record<ProductsVariant, string> = {
+  shop: "grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4",
+  deals: "grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-3",
+};
+
+export const ProductGridSkeleton: React.FC<{ variant: ProductsVariant; count?: number }> = ({
+  variant,
+  count = variant === "deals" ? 6 : 8,
+}) => (
+  <div className={PRODUCT_GRID_CLASS[variant]}>
+    {Array.from({ length: count }).map((_, i) => (
+      <ProductCardSkeleton key={i} />
+    ))}
+  </div>
+);
+
+/** Full Shop/Deals page placeholder: hero, controls bar, grid. Used by route loading.tsx and Suspense. */
+export const ProductsPageSkeleton: React.FC<{ variant: ProductsVariant }> = ({ variant }) => (
+  <div className="flex w-full justify-center" aria-busy="true">
+    <div className="container max-w-7xl px-3">
+      <div
+        className={
+          variant === "deals"
+            ? "mt-4 aspect-[2/1] w-full animate-pulse rounded-panel bg-gray-800 md:aspect-[3/1] lg:max-h-[360px]"
+            : "mt-4 aspect-video w-full animate-pulse rounded-panel bg-gray-100 md:aspect-[21/9] lg:max-h-[440px]"
+        }
+      />
+      <div className="mt-3 flex h-[62px] items-center justify-between border-y border-gray-200">
+        <div className="h-8 w-28 animate-pulse rounded-lg bg-gray-100" />
+        <div className="h-8 w-40 animate-pulse rounded-lg bg-gray-100" />
+      </div>
+      <div className="mt-14 h-9 w-48 animate-pulse rounded-md bg-gray-200" />
+      <div className="mt-10">
+        <ProductGridSkeleton variant={variant} />
+      </div>
+    </div>
+  </div>
+);
+
 export const CategoryCardSkeleton: React.FC = () => {
   return (
     <div className="bg-gray-100/80 rounded-xl p-4 flex flex-col items-center gap-3 animate-pulse min-w-[140px]">

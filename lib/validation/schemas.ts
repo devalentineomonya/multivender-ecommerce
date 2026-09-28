@@ -49,6 +49,9 @@ export const productLabelSchema = z.enum([
   "Sponsored",
 ]);
 
+// z.coerce.boolean() turns the string "false" into true, so parse query booleans explicitly.
+const queryBoolean = z.enum(["true", "false"]).transform((v) => v === "true");
+
 export const productQuerySchema = z.object({
   category: z.string().optional(),
   brand: z.string().optional(),
@@ -57,11 +60,12 @@ export const productQuerySchema = z.object({
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
   budgetTier: z.enum(["budget", "mid", "premium"]).optional(),
-  isHot: z.coerce.boolean().optional(),
-  isSponsored: z.coerce.boolean().optional(),
+  isHot: queryBoolean.optional(),
+  isSponsored: queryBoolean.optional(),
+  hasDiscount: queryBoolean.optional(),
   page: z.coerce.number().min(1).default(1).optional(),
   limit: z.coerce.number().min(1).max(100).default(20).optional(),
-  sort: z.enum(["newest", "price_asc", "price_desc", "popular"]).default("newest").optional(),
+  sort: z.enum(["newest", "price_asc", "price_desc", "popular", "discount_desc"]).default("newest").optional(),
 });
 
 export const createProductSchema = z.object({
