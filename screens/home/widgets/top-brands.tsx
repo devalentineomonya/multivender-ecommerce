@@ -1,6 +1,7 @@
 import SectionLayout from "@/components/common/layouts/section/section-layout";
 import React from "react";
 import BrandCard, { type BrandCardData } from "../components/brand-card";
+import { useI18nStore } from "@/lib/i18n/store";
 
 const DIVERSE_BRANDS: BrandCardData[] = [
   {
@@ -62,8 +63,9 @@ const DIVERSE_BRANDS: BrandCardData[] = [
 ];
 
 const TopBrands = () => {
+  const { t } = useI18nStore();
   return (
-    <SectionLayout title="Choose by Brand" overflow>
+    <SectionLayout title={t("home.topBrands.title")} overflow>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {DIVERSE_BRANDS.map((brand, index) => (
           <BrandCard key={index} brand={brand} />

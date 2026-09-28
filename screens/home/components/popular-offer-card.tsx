@@ -5,6 +5,7 @@ import { StaticImageData } from "next/image";
 import { motion } from "framer-motion";
 
 import Link from "next/link";
+import { useI18nStore } from "@/lib/i18n/store";
 
 interface PopularOfferCardProps {
   offer: {
@@ -23,6 +24,7 @@ const PopularOfferCard: React.FC<PopularOfferCardProps> = ({
   bg,
   text,
 }) => {
+  const { t, formatPrice } = useI18nStore();
   // Animation Variants
   const textVariants = {
     hidden: { opacity: 0, y: 12 },
@@ -49,11 +51,8 @@ const PopularOfferCard: React.FC<PopularOfferCardProps> = ({
         variants={textVariants}
         transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="text-slate-900 font-bold">Save</p>
-        <h2 className="font-bold text-5xl my-2">
-          <sup className="text-3xl">$</sup>
-          {offer.value}
-        </h2>
+        <p className="text-slate-900 font-bold">{t("home.popularOffers.save")}</p>
+        <h2 className="font-bold text-5xl my-2 tabular-nums">{formatPrice(offer.value)}</h2>
         <p className="text-slate-900 pb-1 text-xl sm:text-base">
           {offer.description}
         </p>

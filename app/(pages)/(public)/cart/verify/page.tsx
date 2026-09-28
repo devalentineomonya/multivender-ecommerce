@@ -5,6 +5,7 @@ import { db } from "@/db/drizzle";
 import { orderTable } from "@/db/models/order";
 import { BiCheckCircle, BiStore, BiCopy, BiShoppingBag } from "react-icons/bi";
 import { BsTruck } from "react-icons/bs";
+import { getServerTranslator } from "@/lib/i18n/server";
 
 interface VerifyPageProps {
   searchParams: Promise<{ reference?: string }>;
@@ -12,16 +13,15 @@ interface VerifyPageProps {
 
 export default async function CartVerifyPage({ searchParams }: VerifyPageProps) {
   const { reference } = await searchParams;
+  const { t, formatPrice } = await getServerTranslator();
 
   if (!reference) {
     return (
       <main className="max-w-3xl mx-auto px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold text-slate-800">No Transaction Reference Provided</h1>
-        <p className="text-sm text-gray-500 mt-2 mb-6">
-          Unable to locate transaction details without a valid reference.
-        </p>
+        <h1 className="text-2xl font-bold text-slate-800">{t("verify.noReference.title")}</h1>
+        <p className="text-sm text-gray-500 mt-2 mb-6">{t("verify.noReference.body")}</p>
         <Link href="/" className="inline-block bg-primary text-white px-6 py-2.5 rounded-full text-sm font-semibold">
-          Return to Storefront
+          {t("verify.noReference.cta")}
         </Link>
       </main>
     );
@@ -47,30 +47,30 @@ export default async function CartVerifyPage({ searchParams }: VerifyPageProps) 
         </div>
 
         <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-wider">
-          Payment Confirmed
+          {t("verify.confirmed")}
         </span>
 
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-3">
-          Thank you for your order!
-        </h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-3">{t("verify.thankYou")}</h1>
         <p className="text-sm text-gray-600 max-w-md mx-auto mt-2">
-          Your payment was successfully processed via <strong>Paystack</strong>. A receipt and order notification has been dispatched to your email.
+          {t("verify.paymentProcessed", { provider: "Paystack" })}
         </p>
 
         {/* Reference & Status */}
         <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 my-6 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div>
-            <span className="text-gray-500">Order Reference:</span>
+            <span className="text-gray-500">{t("verify.orderReference")}</span>
             <div className="font-mono font-bold text-sm text-slate-900 mt-0.5">{reference}</div>
           </div>
           <div>
-            <span className="text-gray-500">Payment Status:</span>
-            <div className="font-bold text-emerald-600 capitalize mt-0.5">{order?.paymentStatus || "Paid"}</div>
+            <span className="text-gray-500">{t("verify.paymentStatus")}</span>
+            <div className="font-bold text-emerald-600 capitalize mt-0.5">
+              {order?.paymentStatus || t("verify.statusPaid")}
+            </div>
           </div>
           <div>
-            <span className="text-gray-500">Total Amount:</span>
-            <div className="font-bold text-slate-900 text-sm mt-0.5">
-              KES {order?.totalAmount ? Number(order.totalAmount).toLocaleString() : ""}
+            <span className="text-gray-500">{t("verify.totalAmount")}</span>
+            <div className="font-bold text-slate-900 text-sm mt-0.5 tabular-nums">
+              {order?.totalAmount ? formatPrice(Number(order.totalAmount)) : ""}
             </div>
           </div>
         </div>
@@ -80,21 +80,19 @@ export default async function CartVerifyPage({ searchParams }: VerifyPageProps) 
           <div className="bg-blue-50/70 border-2 border-dashed border-blue-400 rounded-2xl p-6 my-6 text-center">
             <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">
               <BiStore className="text-lg" />
-              <span>Self-Pickup Verification PIN</span>
+              <span>{t("verify.pickup.pinHeading")}</span>
             </div>
             <div className="text-3xl sm:text-4xl font-mono font-black text-blue-900 tracking-widest my-2">
               {order?.pickupCode || "PK-CONFIRMED"}
             </div>
-            <p className="text-xs text-blue-700 max-w-sm mx-auto">
-              Please present this PIN code and your ID at the pickup counter when collecting your package.
-            </p>
+            <p className="text-xs text-blue-700 max-w-sm mx-auto">{t("verify.pickup.instructions")}</p>
 
             {pickupStation && (
               <div className="mt-5 pt-4 border-t border-blue-200 text-left text-xs text-slate-800 space-y-1 bg-white/70 p-4 rounded-xl">
-                <div><strong>Station:</strong> {pickupStation.name}</div>
-                <div><strong>Address:</strong> {pickupStation.address}, {pickupStation.city}</div>
-                <div><strong>Operating Hours:</strong> {pickupStation.operatingHours}</div>
-                <div><strong>Contact:</strong> {pickupStation.phoneNumber}</div>
+                <div><strong>{t("verify.pickup.station")}</strong> {pickupStation.name}</div>
+                <div><strong>{t("verify.pickup.address")}</strong> {pickupStation.address}, {pickupStation.city}</div>
+                <div><strong>{t("verify.pickup.hours")}</strong> {pickupStation.operatingHours}</div>
+                <div><strong>{t("verify.pickup.contact")}</strong> {pickupStation.phoneNumber}</div>
               </div>
             )}
           </div>
@@ -102,14 +100,12 @@ export default async function CartVerifyPage({ searchParams }: VerifyPageProps) 
           <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-6 my-6 text-left text-xs text-slate-800">
             <div className="flex items-center gap-2 font-bold text-emerald-800 text-sm mb-2">
               <BsTruck className="text-lg" />
-              <span>Home Delivery in Progress</span>
+              <span>{t("verify.delivery.heading")}</span>
             </div>
-            <p className="text-gray-600 mb-3">
-              Your items are being packed by our verified merchants and will be handed over to our courier partner for direct door delivery.
-            </p>
+            <p className="text-gray-600 mb-3">{t("verify.delivery.body")}</p>
             <div className="text-gray-700 space-y-1">
-              <div><strong>Recipient:</strong> {order?.customerEmail}</div>
-              <div><strong>Status:</strong> {order?.status || "Processing"}</div>
+              <div><strong>{t("verify.delivery.recipient")}</strong> {order?.customerEmail}</div>
+              <div><strong>{t("verify.delivery.status")}</strong> {order?.status || t("verify.delivery.statusProcessing")}</div>
             </div>
           </div>
         )}
@@ -117,7 +113,9 @@ export default async function CartVerifyPage({ searchParams }: VerifyPageProps) 
         {/* Purchased Items List */}
         {items.length > 0 && (
           <div className="text-left my-6 border border-gray-100 rounded-xl p-4 bg-white">
-            <h3 className="font-bold text-sm text-slate-900 mb-3">Purchased Items ({items.length})</h3>
+            <h3 className="font-bold text-sm text-slate-900 mb-3">
+              {t("verify.items.heading", { count: items.length })}
+            </h3>
             <div className="divide-y divide-gray-100">
               {items.map((item: any, i: number) => (
                 <div key={i} className="py-2.5 flex justify-between items-center text-xs">
@@ -125,11 +123,13 @@ export default async function CartVerifyPage({ searchParams }: VerifyPageProps) 
                     <span className="font-semibold text-slate-800">{item.name}</span>
                     <span className="text-gray-500 ml-2">x{item.quantity}</span>
                     {item.storeName && (
-                      <div className="text-[11px] text-primary">Merchant: {item.storeName}</div>
+                      <div className="text-[11px] text-primary">
+                        {t("verify.items.merchant", { name: item.storeName })}
+                      </div>
                     )}
                   </div>
-                  <span className="font-bold text-slate-900">
-                    KES {(item.price * item.quantity).toLocaleString()}
+                  <span className="font-bold text-slate-900 tabular-nums">
+                    {formatPrice(item.price * item.quantity)}
                   </span>
                 </div>
               ))}
@@ -143,13 +143,13 @@ export default async function CartVerifyPage({ searchParams }: VerifyPageProps) 
             href="/user/dashboard"
             className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800 px-6 py-3 rounded-full text-xs font-bold transition-colors"
           >
-            View in Dashboard
+            {t("verify.actions.dashboard")}
           </Link>
           <Link
             href="/shop"
             className="w-full sm:w-auto bg-primary text-white hover:opacity-90 px-6 py-3 rounded-full text-xs font-bold transition-opacity"
           >
-            Continue Shopping
+            {t("verify.actions.continueShopping")}
           </Link>
         </div>
       </div>

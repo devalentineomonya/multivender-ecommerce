@@ -33,7 +33,7 @@ interface ProductDetailProps {
 
 export default function ProductDetailMain({ product }: ProductDetailProps) {
   const router = useRouter();
-  const { formatPrice, formatNumber, t } = useI18nStore();
+  const { formatPrice, formatNumber, t, tp } = useI18nStore();
   const discount = product.discount && product.discount > 0 ? product.discount : 0;
   const discountText = formatNumber(discount / 100, { style: "percent" });
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
@@ -65,7 +65,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
 
   const handleAddToCart = () => {
     if (product.stock <= 0) {
-      toast.error("This product is currently out of stock");
+      toast.error(t("product.outOfStockToast"));
       return;
     }
 
@@ -82,7 +82,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
       stock: product.stock,
     });
 
-    toast.success(`Added ${quantity}x "${product.name}" to cart!`);
+    toast.success(t("product.addedToCartToast", { quantity, name: product.name }));
   };
 
   const handleBuyNow = () => {
@@ -104,11 +104,11 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
       {/* Breadcrumb navigation */}
       <nav className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-primary transition-colors">
-          Home
+          {t("nav.home")}
         </Link>
         <span>/</span>
         <Link href="/shop" className="hover:text-primary transition-colors">
-          Shop
+          {t("nav.shop")}
         </Link>
         <span>/</span>
         <span className="text-gray-900 font-medium truncate max-w-xs sm:max-w-md">
@@ -170,15 +170,15 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
           {/* Product Label / Category */}
           <div className="flex items-center gap-2 mb-2">
             <span className="bg-primary/10 text-primary text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
-              {product.label || "Exclusive"}
+              {product.label || t("product.exclusive")}
             </span>
             {product.stock > 0 ? (
               <span className="text-emerald-700 bg-emerald-50 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <BiCheck className="text-base" /> In Stock ({product.stock} available)
+                <BiCheck className="text-base" /> {t("product.inStockCount", { count: product.stock })}
               </span>
             ) : (
               <span className="text-red-700 bg-red-50 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                Out of Stock
+                {t("products.outOfStock")}
               </span>
             )}
           </div>
@@ -208,8 +208,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
             />
           ) : (
             <p className="text-sm text-gray-600 leading-relaxed mb-6">
-              {product.shortDescription ||
-                "Experience premium quality and exceptional craftsmanship built for daily convenience and reliable endurance."}
+              {product.shortDescription || t("product.defaultDescription")}
             </p>
           )}
 
@@ -219,7 +218,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
           {availableSizes.length > 0 && (
             <div className="mb-6">
               <label className="block text-xs font-bold uppercase text-gray-500 tracking-wider mb-2">
-                Select Size
+                {t("product.selectSize")}
               </label>
               <div className="flex flex-wrap gap-2">
                 {availableSizes.map((sz: string) => (
@@ -244,7 +243,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
           {availableColors.length > 0 && (
             <div className="mb-6">
               <label className="block text-xs font-bold uppercase text-gray-500 tracking-wider mb-2">
-                Select Color: <span className="font-normal text-slate-800 capitalize">{selectedColor}</span>
+                {t("product.selectColor")} <span className="font-normal text-slate-800 capitalize">{selectedColor}</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {availableColors.map((cl: any) => {
@@ -275,11 +274,11 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
                   <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                    In Your Cart ({cartItem.quantity} {cartItem.quantity === 1 ? "item" : "items"})
+                    {tp("product.cartItemCount", cartItem.quantity)}
                   </span>
                 </div>
                 <span className="text-xs font-medium text-gray-500">
-                  Subtotal: <strong className="text-slate-900">{formatPrice(cartItem.price * cartItem.quantity)}</strong>
+                  {t("product.subtotal")} <strong className="text-slate-900">{formatPrice(cartItem.price * cartItem.quantity)}</strong>
                 </span>
               </div>
 
@@ -291,13 +290,13 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                     onClick={() => {
                       if (cartItem.quantity <= 1) {
                         removeItem(cartItem.id);
-                        toast.info(`Removed "${product.name}" from cart`);
+                        toast.info(t("product.removedFromCartToast", { name: product.name }));
                       } else {
                         updateQuantity(cartItem.id, cartItem.quantity - 1);
                       }
                     }}
                     className="p-3 text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
-                    aria-label="Decrease quantity"
+                    aria-label={t("products.decreaseQuantity")}
                   >
                     <BiMinus className="text-sm" />
                   </button>
@@ -310,11 +309,11 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                       if (cartItem.quantity < (product.stock || 99)) {
                         updateQuantity(cartItem.id, cartItem.quantity + 1);
                       } else {
-                        toast.warning(`Only ${product.stock} items available in stock`);
+                        toast.warning(t("product.maxStockToast", { stock: product.stock }));
                       }
                     }}
                     className="p-3 text-slate-700 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
-                    aria-label="Increase quantity"
+                    aria-label={t("products.increaseQuantity")}
                     disabled={cartItem.quantity >= (product.stock || 99)}
                   >
                     <BiPlus className="text-sm" />
@@ -327,7 +326,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                   className="flex-1 min-w-[140px] py-3 px-5 rounded-xl font-bold text-sm bg-primary text-white hover:opacity-95 text-center transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
                 >
                   <BsCartCheck className="text-base" />
-                  View in Cart
+                  {t("product.viewInCart")}
                 </Link>
 
                 {/* Remove item button */}
@@ -335,11 +334,11 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                   type="button"
                   onClick={() => {
                     removeItem(cartItem.id);
-                    toast.info(`Removed "${product.name}" from cart`);
+                    toast.info(t("product.removedFromCartToast", { name: product.name }));
                   }}
                   className="p-3 rounded-xl text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                  title="Remove from cart"
-                  aria-label="Remove from cart"
+                  title={t("product.removeFromCart")}
+                  aria-label={t("product.removeFromCart")}
                 >
                   <BsTrash className="text-base" />
                 </button>
@@ -350,7 +349,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
               {/* Quantity Selector */}
               <div className="flex items-center gap-4 mb-6">
                 <span className="text-xs font-bold uppercase text-gray-500 tracking-wider">
-                  Quantity:
+                  {t("product.quantity")}
                 </span>
                 <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
                   <button
@@ -381,7 +380,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                   disabled={product.stock <= 0}
                   className="w-full py-3.5 px-6 rounded-xl font-bold text-sm bg-primary text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Add to Cart
+                  {t("products.addToCart")}
                 </button>
                 <button
                   type="button"
@@ -389,7 +388,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
                   disabled={product.stock <= 0}
                   className="w-full py-3.5 px-6 rounded-xl font-bold text-sm bg-slate-900 text-white hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Buy Now
+                  {t("product.buyNow")}
                 </button>
               </div>
             </>
@@ -400,18 +399,21 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
             <div className="flex items-center gap-2.5">
               <BiStore className="text-lg text-primary" />
               <span>
-                Sold by: <strong>{product.storeName || "Official Marketplace Seller"}</strong>
+                {t("product.soldBy")} <strong>{product.storeName || t("product.officialSeller")}</strong>
               </span>
             </div>
             <div className="flex items-center gap-2.5">
               <BsTruck className="text-lg text-emerald-600" />
               <span>
-                Available for <strong>Express Home Delivery</strong> & <strong>Pickup Station collection</strong>.
+                {t("product.deliveryAvailability", {
+                  delivery: t("product.expressDelivery"),
+                  pickup: t("product.pickupCollection"),
+                })}
               </span>
             </div>
             <div className="flex items-center gap-2.5">
               <BsShieldCheck className="text-lg text-blue-600" />
-              <span>Secure checkout with Paystack. 100% Buyer Protection Guarantee.</span>
+              <span>{t("product.secureCheckout")}</span>
             </div>
           </div>
         </div>
@@ -420,7 +422,7 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
       {/* Long Description and Specs Section */}
       {product.longDescription && (
         <section className="mt-16 border-t border-gray-100 pt-10">
-          <h2 className="text-xl font-bold text-slate-900 mb-4">Product Details & Specifications</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-4">{t("product.detailsHeading")}</h2>
           <div
             className="prose prose-slate max-w-none text-sm text-gray-700 leading-relaxed [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-slate-900 [&_h3]:mt-6 [&_h3]:mb-2 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1.5 [&_ol]:mb-4 [&_li]:text-gray-600 [&_strong]:font-semibold [&_strong]:text-slate-900 [&_em]:italic"
             dangerouslySetInnerHTML={{ __html: product.longDescription }}

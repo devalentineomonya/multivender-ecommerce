@@ -4,21 +4,20 @@ import cardThree from "@/public/images/63ea1a963f08a8c3dcd7c945_visa card 03.svg
 import MainLayout from "@/components/common/layouts/main/main-layout";
 import Image from "next/image";
 import Link from "next/link";
+import { useI18nStore } from "@/lib/i18n/store";
 const PromotionBanner = () => {
+  const { t } = useI18nStore();
   return (
     <MainLayout className="bg-tint-peach mt-24">
       <div className="h-80 max-w6xl flex justify-between items-center px-10 mx-auto">
         <div className="w-full">
-          <h1 className="font-bold text-5xl text-black mb-4">
-            {" "}
-            Get 5% Cash Discount
-          </h1>
+          <h1 className="font-bold text-5xl text-black mb-4">{t("home.promoBanner.title")}</h1>
           <p className="font-semibold text-slate-800 pl-4 flex gap-x-3">
-            on
+            {t("home.promoBanner.on")}
             <Link
               href="/shop"
-              title="Start Shopping"
-              aria-label="Start Shopping"
+              title={t("home.promoBanner.startShopping")}
+              aria-label={t("home.promoBanner.startShopping")}
             >
               ShoppingCart.com
             </Link>
@@ -27,9 +26,9 @@ const PromotionBanner = () => {
           <Link
             href="/deals"
             className="inline-block py-3 px-10 rounded-full bg-primary text-white hover:bg-black mt-4 transition-colors font-semibold text-sm"
-            title="Explore Deals"
+            title={t("home.promoBanner.exploreDeals")}
           >
-            Learn More
+            {t("common.learnMore")}
           </Link>
         </div>
         <div className="relative h-full w-full flex items-center justify-end pr-4">

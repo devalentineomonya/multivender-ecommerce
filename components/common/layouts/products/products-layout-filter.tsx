@@ -6,23 +6,36 @@ import { BsCheck2, BsX } from "react-icons/bs";
 import { motion } from "framer-motion";
 import MainLayout from "../main/main-layout";
 import { useGetCategories } from "@/features/categories/use-get-categories";
+import { useI18nStore } from "@/lib/i18n/store";
+import type { TranslationKey } from "@/lib/i18n/translations";
 
-const PRICE_RANGES = [
-  { label: "All Prices", min: null, max: null },
-  { label: "Under KSh 1,000", min: 0, max: 1000 },
-  { label: "KSh 1,000 - 5,000", min: 1000, max: 5000 },
-  { label: "KSh 5,000 - 20,000", min: 5000, max: 20000 },
-  { label: "Above KSh 20,000", min: 20000, max: null },
+const PRICE_RANGE_BOUNDS: { min: number | null; max: number | null }[] = [
+  { min: null, max: null },
+  { min: 0, max: 1000 },
+  { min: 1000, max: 5000 },
+  { min: 5000, max: 20000 },
+  { min: 20000, max: null },
 ];
 
-const SORT_OPTIONS = [
-  { value: "newest", label: "Newest Arrivals" },
-  { value: "price_asc", label: "Price: Low to High" },
-  { value: "price_desc", label: "Price: High to Low" },
-  { value: "popular", label: "Most Popular" },
+const SORT_OPTIONS: { value: string; labelKey: TranslationKey }[] = [
+  { value: "newest", labelKey: "sort.newest" },
+  { value: "price_asc", labelKey: "sort.price_asc" },
+  { value: "price_desc", labelKey: "sort.price_desc" },
+  { value: "popular", labelKey: "sort.popular" },
+];
+
+const LABEL_OPTIONS: { val: string; labelKey: TranslationKey }[] = [
+  { val: "", labelKey: "filter.labels.all" },
+  { val: "Hot", labelKey: "filter.labels.hot" },
+  { val: "New", labelKey: "filter.labels.new" },
+  { val: "Featured", labelKey: "filter.labels.featured" },
+  { val: "Trending", labelKey: "filter.labels.trending" },
+  { val: "BestSelling", labelKey: "filter.labels.bestSelling" },
+  { val: "Sponsored", labelKey: "filter.labels.sponsored" },
 ];
 
 export default function ScalableFilters() {
+  const { t, formatPrice } = useI18nStore();
   const [isOpen, setIsOpen] = useState(false);
 
   // nuqs URL query state management
@@ -35,6 +48,15 @@ export default function ScalableFilters() {
   const [budgetTier, setBudgetTier] = useQueryState("budgetTier", parseAsString.withDefault(""));
 
   const { data: categories } = useGetCategories();
+
+  const priceRangeLabel = (min: number | null, max: number | null) => {
+    if (min === null && max === null) return t("filter.priceRanges.all");
+    if (min === 0 && max !== null) return t("filter.priceRanges.under", { amount: formatPrice(max) });
+    if (min !== null && max !== null)
+      return t("filter.priceRanges.between", { min: formatPrice(min), max: formatPrice(max) });
+    if (min !== null && max === null) return t("filter.priceRanges.above", { amount: formatPrice(min) });
+    return "";
+  };
 
   // Active filter count
   let activeFilterCount = 0;
@@ -61,7 +83,7 @@ export default function ScalableFilters() {
     <MainLayout className="bg-white mt-3">
       <section aria-labelledby="filter-heading" className="relative z-10 border-t border-b border-gray-200">
         <h2 id="filter-heading" className="sr-only">
-          Filters
+          {t("filter.filtersLabel")}
         </h2>
         <div className="py-4 px-4 sm:px-6 lg:px-8">
           <div className="w-full flex flex-wrap items-center justify-between gap-4 text-sm">
@@ -70,14 +92,19 @@ export default function ScalableFilters() {
               <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
-                className={`group px-3 py-1.5 rounded-lg border font-medium flex items-center gap-2 transition-all ${
+                aria-expanded={isOpen}
+                className={`group px-3 py-1.5 rounded-lg border font-medium flex items-center gap-2 transition-colors ${
                   isOpen || activeFilterCount > 0
                     ? "bg-primary text-white border-primary"
                     : "bg-white text-gray-700 border-gray-300 hover:border-primary"
                 }`}
               >
                 <BiFilter className="w-5 h-5" />
-                <span>Filters {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
+                <span>
+                  {activeFilterCount > 0
+                    ? t("filter.filtersCount", { count: activeFilterCount })
+                    : t("filter.filtersLabel")}
+                </span>
               </button>
 
               {activeFilterCount > 0 && (
@@ -87,14 +114,14 @@ export default function ScalableFilters() {
                   className="text-xs text-gray-500 hover:text-red-600 transition-colors flex items-center gap-1 font-medium"
                 >
                   <BsX className="text-base" />
-                  Clear all
+                  {t("filter.clearAll")}
                 </button>
               )}
             </div>
 
             {/* Quick Sort Dropdown */}
             <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-500 font-medium">Sort by:</span>
+              <span className="text-xs text-gray-500 font-medium">{t("filter.sortBy")}</span>
               <select
                 value={sort || "newest"}
                 onChange={(e) => setSort(e.target.value)}
@@ -102,7 +129,7 @@ export default function ScalableFilters() {
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </option>
                 ))}
               </select>
@@ -114,7 +141,7 @@ export default function ScalableFilters() {
             <div className="flex flex-wrap items-center gap-2 pt-3">
               {category && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
-                  Category: {selectedCategoryName || category}
+                  {t("filter.categoryBadge", { name: selectedCategoryName || category })}
                   <button type="button" onClick={() => setCategory(null)} className="hover:text-emerald-700">
                     <BsX className="text-sm" />
                   </button>
@@ -122,7 +149,7 @@ export default function ScalableFilters() {
               )}
               {search && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
-                  Search: &quot;{search}&quot;
+                  {t("filter.searchBadge", { query: search })}
                   <button type="button" onClick={() => setSearch(null)} className="hover:text-emerald-700">
                     <BsX className="text-sm" />
                   </button>
@@ -130,7 +157,10 @@ export default function ScalableFilters() {
               )}
               {(minPrice !== null || maxPrice !== null) && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
-                  Price: KSh {minPrice || 0} - {maxPrice ? `KSh ${maxPrice}` : "Above"}
+                  {t("filter.priceBadge", {
+                    min: formatPrice(minPrice || 0),
+                    max: maxPrice ? formatPrice(maxPrice) : t("filter.above"),
+                  })}
                   <button
                     type="button"
                     onClick={() => {
@@ -151,6 +181,7 @@ export default function ScalableFilters() {
         <motion.div
           initial={false}
           animate={{ height: isOpen ? "auto" : 0 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="overflow-hidden border-t border-gray-100 bg-gray-50/60"
         >
           <div className="py-6 px-4 sm:px-6 lg:px-8">
@@ -158,7 +189,7 @@ export default function ScalableFilters() {
               {/* Category Filter */}
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
-                  Department
+                  {t("filter.department")}
                 </h4>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto pr-2">
                   <button
@@ -168,7 +199,7 @@ export default function ScalableFilters() {
                       !category ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    <span>All Departments</span>
+                    <span>{t("filter.allDepartments")}</span>
                     {!category && <BsCheck2 />}
                   </button>
                   {categories?.map((cat) => (
@@ -190,10 +221,10 @@ export default function ScalableFilters() {
               {/* Price Filter */}
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
-                  Price Range (KES)
+                  {t("filter.priceRangeHeading")}
                 </h4>
                 <div className="space-y-1.5">
-                  {PRICE_RANGES.map((pr, idx) => {
+                  {PRICE_RANGE_BOUNDS.map((pr, idx) => {
                     const isSelected = minPrice === pr.min && maxPrice === pr.max;
                     return (
                       <button
@@ -212,7 +243,7 @@ export default function ScalableFilters() {
                           isSelected ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
                         }`}
                       >
-                        <span>{pr.label}</span>
+                        <span>{priceRangeLabel(pr.min, pr.max)}</span>
                         {isSelected && <BsCheck2 />}
                       </button>
                     );
@@ -223,18 +254,10 @@ export default function ScalableFilters() {
               {/* Product Label Filter */}
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
-                  Product Label
+                  {t("filter.productLabel")}
                 </h4>
                 <div className="space-y-1.5">
-                  {[
-                    { val: "", name: "All Labels" },
-                    { val: "Hot", name: "🔥 Hot Deals" },
-                    { val: "New", name: "✨ New Arrivals" },
-                    { val: "Featured", name: "⭐ Featured" },
-                    { val: "Trending", name: "📈 Trending" },
-                    { val: "BestSelling", name: "🏆 Best Selling" },
-                    { val: "Sponsored", name: "🚀 Sponsored" },
-                  ].map((l) => {
+                  {LABEL_OPTIONS.map((l) => {
                     const isSelected = (!label && !l.val) || label === l.val;
                     return (
                       <button
@@ -245,7 +268,7 @@ export default function ScalableFilters() {
                           isSelected ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
                         }`}
                       >
-                        <span>{l.name}</span>
+                        <span>{t(l.labelKey)}</span>
                         {isSelected && <BsCheck2 />}
                       </button>
                     );
@@ -256,14 +279,14 @@ export default function ScalableFilters() {
               {/* Keyword Search Filter */}
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
-                  Keyword Filter
+                  {t("filter.keywordFilter")}
                 </h4>
                 <div className="relative">
                   <input
                     type="text"
                     value={search || ""}
                     onChange={(e) => setSearch(e.target.value || null)}
-                    placeholder="Search titles, brands..."
+                    placeholder={t("filter.keywordPlaceholder")}
                     className="w-full text-xs px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                   />
                   {search && (
@@ -276,9 +299,7 @@ export default function ScalableFilters() {
                     </button>
                   )}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-2">
-                  Filters dynamically update the URL parameters and catalog in real time.
-                </p>
+                <p className="text-[11px] text-gray-400 mt-2">{t("filter.keywordHint")}</p>
               </div>
             </div>
           </div>
