@@ -30,4 +30,13 @@ export const sw: Partial<Record<TranslationKey, string>> = {
   "products.inStock": "Ipo Sokoni",
   "products.outOfStock": "Imekwisha",
   "products.discount": "PUNGUZO",
+  "products.originalPrice": "Bei ya awali",
+  "products.discountLabel": "Punguzo la {percent}",
+  "products.addToWishlist": "Ongeza {name} kwenye orodha ya matamanio",
+  "products.removeFromWishlist": "Ondoa {name} kwenye orodha ya matamanio",
+  "products.decreaseQuantity": "Punguza idadi",
+  "products.increaseQuantity": "Ongeza idadi",
+  "products.quantityInCart": "{count} kikapuni",
+  "products.maxStockReached": "Kikomo cha bidhaa kimefikiwa",
+  "products.addedToCart": "{name} imewekwa kikapuni",
 };

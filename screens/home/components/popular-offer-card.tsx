@@ -25,29 +25,29 @@ const PopularOfferCard: React.FC<PopularOfferCardProps> = ({
 }) => {
   // Animation Variants
   const textVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
+    hidden: { opacity: 0, y: 12 },
+    visible: { opacity: 1, y: 0 },
   };
 
   const imageVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1 },
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
   };
 
   return (
     <Link href={offer.href || "/shop"} className="block group">
       <motion.div
-        className={`w-full h-fit sm:min-h-[400px] rounded-lg overflow-hidden grid grid-rows-2 ${text} transition-transform group-hover:scale-[1.02]`}
+        className={`w-full h-fit sm:min-h-[400px] rounded-card overflow-hidden grid grid-rows-2 ${text}`}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       >
       {/* Text Section */}
       <motion.div
         className={`px-3 py-5 ${bg}`}
         variants={textVariants}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       >
         <p className="text-slate-900 font-bold">Save</p>
         <h2 className="font-bold text-5xl my-2">
@@ -63,10 +63,10 @@ const PopularOfferCard: React.FC<PopularOfferCardProps> = ({
       <motion.div
         className="overflow-hidden"
         variants={imageVariants}
-        transition={{ duration: 0.7, delay: 0.2 }}
+        transition={{ duration: 0.32, delay: 0.08 }}
       >
         <Image
-          className="h-full rounded-b-lg w-full hover:scale-[1.15] transition-transform duration-300"
+          className="h-full w-full object-cover transition-transform duration-300 ease-smooth group-hover:scale-105"
           src={offer.image}
           alt={offer.name}
           loading="lazy"

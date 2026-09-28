@@ -1,175 +1,102 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaStar, FaRegStar } from "react-icons/fa";
-import { GoHeart, GoHeartFill } from "react-icons/go";
 import defaultImg from "@/public/images/63e8c4e563db5560c31bbfce_leptop sleeve macbook-min.png";
 import { useI18nStore } from "@/lib/i18n/store";
-import { useCartStore } from "@/lib/zustand/cart-store";
-import { toast } from "react-toastify";
+import { getOriginalPrice } from "@/lib/utils";
 import type { ProductItem } from "@/features/products/use-get-products";
+import CartActionButtons from "@/components/shared/product-card/cart-action-buttons";
+import ProductLike from "@/components/shared/product-card/product-like";
 
 interface TrendingProductCardProps {
-  product?: ProductItem;
+  product: ProductItem;
 }
 
-const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) => {
-  const [liked, setLiked] = useState(false);
-  const { formatPrice, t } = useI18nStore();
-  const addItem = useCartStore((state) => state.addItem);
-
-  const title = product?.name || "Laptop sleeve macbook";
-  const price = product ? product.price : 20;
-  const description =
-    product?.shortDescription ||
-    "High quality durable accessory crafted with premium materials for everyday convenience.";
-  const rawFirstImg =
-    Array.isArray(product?.images) && product.images.length > 0
-      ? product.images[0]
-      : null;
-
-  const getValidImg = (img: any) => {
-    if (!img) return defaultImg;
-    if (typeof img === "object") return img;
-    if (typeof img === "string") {
-      const trimmed = img.trim();
-      if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) {
-        return trimmed;
-      }
+const getValidImg = (img: unknown) => {
+  if (typeof img === "string") {
+    const trimmed = img.trim();
+    if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) {
+      return trimmed;
     }
-    return defaultImg;
-  };
+  }
+  return defaultImg;
+};
 
-  const firstImage = getValidImg(rawFirstImg);
+const TrendingProductCard: React.FC<TrendingProductCardProps> = ({ product }) => {
+  const { formatPrice, formatNumber, t } = useI18nStore();
 
-  const handleAddToCart = () => {
-    addItem({
-      productId: product?.id ? String(product.id) : "trending-default",
-      name: title,
-      price: price,
-      image: typeof firstImage === "string" ? firstImage : undefined,
-      quantity: 1,
-    });
-    toast.success(`Added ${title} to cart!`);
-  };
-
-  const textAnimation = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const productLink = product ? `/product/${product.id}` : "/shop";
+  const image = getValidImg(product.images?.[0]);
+  const productLink = `/product/${product.id}`;
+  const discount = product.discount && product.discount > 0 ? product.discount : 0;
+  const discountText = formatNumber(discount / 100, { style: "percent" });
 
   return (
-    <div className="w-full border border-gray-200 rounded-lg overflow-hidden p-2 grid grid-cols-12 bg-white shadow-xs hover:shadow-md transition-shadow">
-      <div className="col-span-12 sm:col-span-5 h-64 sm:h-auto bg-gray-50 relative rounded-md overflow-hidden">
-        <Link href={productLink} className="block w-full h-full relative">
+    <article className="card-surface card-interactive grid w-full grid-cols-12 overflow-hidden p-2">
+      <div className="relative col-span-12 h-64 overflow-hidden rounded-md bg-gray-50 sm:col-span-5 sm:h-auto">
+        <Link href={productLink} className="relative block size-full" tabIndex={-1} aria-hidden="true">
           <Image
-            src={firstImage}
-            alt={title}
+            src={image}
+            alt=""
             fill
             sizes="(max-width: 640px) 100vw, 40vw"
-            className="object-contain p-4 hover:scale-105 transition-transform duration-300"
+            className="object-contain p-4"
           />
         </Link>
-        {product?.discount ? (
-          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-            -{product.discount}% {t("products.discount")}
+        {discount > 0 && (
+          <span
+            className="absolute left-2 top-2 rounded-full bg-deal px-2.5 py-1 text-xs font-semibold text-white tabular-nums"
+            aria-label={t("products.discountLabel", { percent: discountText })}
+          >
+            -{discountText}
           </span>
-        ) : null}
+        )}
+        <ProductLike productId={String(product.id)} productName={product.name} />
       </div>
 
-      <div className="col-span-12 sm:col-span-7 flex flex-col justify-center p-4">
-        <Link href={productLink}>
-          <motion.h2
-            variants={textAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="text-lg sm:text-xl font-bold text-gray-900 hover:text-primary transition-colors line-clamp-1"
-          >
-            {title}
-          </motion.h2>
-        </Link>
+      <motion.div
+        className="col-span-12 flex flex-col justify-center gap-2 p-4 sm:col-span-7"
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <h3 className="line-clamp-1 text-lg font-semibold text-gray-900 sm:text-xl">
+          <Link href={productLink} className="transition-colors hover:text-primary">
+            {product.name}
+          </Link>
+        </h3>
 
-        <motion.div
-          variants={textAnimation}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex items-center gap-x-1 my-1 text-amber-400"
-        >
-          <FaStar className="size-3.5" />
-          <FaStar className="size-3.5" />
-          <FaStar className="size-3.5" />
-          <FaStar className="size-3.5" />
-          <FaRegStar className="size-3.5 text-gray-300" />
-          <span className="text-xs text-gray-500 ml-1">
-            4.8 (12 {t("products.reviews")})
-          </span>
-        </motion.div>
-
-        <motion.h3
-          variants={textAnimation}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-primary font-bold text-2xl my-2"
-        >
-          {formatPrice(price)}
-        </motion.h3>
-
-        <motion.p
-          variants={textAnimation}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="text-xs sm:text-sm text-gray-500 line-clamp-2"
-        >
-          {description}
-        </motion.p>
-
-        <div className="flex items-center gap-x-3 mt-4">
-          <motion.button
-            type="button"
-            onClick={handleAddToCart}
-            variants={textAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="border-2 border-primary bg-primary text-white hover:bg-transparent hover:text-primary transition-colors py-2 px-5 rounded-md font-semibold text-sm cursor-pointer shadow-xs"
-          >
-            {t("products.addToCart")}
-          </motion.button>
-
-          <motion.button
-            type="button"
-            aria-label="Wishlist"
-            onClick={() => setLiked(!liked)}
-            variants={textAnimation}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.5 }}
-            className="h-10 w-10 flex justify-center items-center rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-          >
-            {liked ? (
-              <GoHeartFill className="size-6 text-red-500" />
-            ) : (
-              <GoHeart className="size-6 text-gray-400 hover:text-red-500 transition-colors" />
-            )}
-          </motion.button>
+        <div className="flex flex-wrap items-baseline gap-x-2">
+          <span className="text-2xl font-semibold text-primary tabular-nums">{formatPrice(product.price)}</span>
+          {discount > 0 && (
+            <s className="text-sm text-gray-400 tabular-nums">
+              <span className="sr-only">{t("products.originalPrice")}: </span>
+              {formatPrice(getOriginalPrice(product.price, discount))}
+            </s>
+          )}
         </div>
-      </div>
-    </div>
+
+        {product.shortDescription && (
+          <p className="line-clamp-2 text-xs text-gray-500 sm:text-sm">{product.shortDescription}</p>
+        )}
+
+        <div className="pt-2">
+          <CartActionButtons
+            productId={String(product.id)}
+            product={{
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: typeof image === "string" ? image : undefined,
+            }}
+            currentStock={product.stock}
+          />
+        </div>
+      </motion.div>
+    </article>
   );
 };
 

@@ -12,22 +12,10 @@ const MostSelling = () => {
   const { data, isLoading } = useGetProducts({ label: "MostSelling", limit: 6 });
   const { t } = useI18nStore();
 
-  const fallbackProducts = [
-    {
-      id: "ms-1",
-      name: "Smart OLED 4K Ultra HD Display",
-      price: 1199,
-      shortDescription: "Infinite contrast, 120Hz gaming refresh rate, and Dolby Vision.",
-    },
-    {
-      id: "ms-2",
-      name: "Sony WH-1000XM5 Wireless Headphones",
-      price: 398,
-      shortDescription: "Industry-leading noise canceling with dual processors and 8 microphones.",
-    },
-  ];
+  const products = data?.products ?? [];
 
-  const products = data?.products && data.products.length > 0 ? data.products : fallbackProducts;
+  // Hide the section when there is nothing real to show (never render placeholder products).
+  if (!isLoading && products.length === 0) return null;
 
   return (
     <SectionLayout title={t("products.bestSelling")} overflow>
@@ -48,7 +36,9 @@ const MostSelling = () => {
                 id: p.id,
                 name: p.name,
                 price: p.price,
-                images: (p as any).images,
+                discount: p.discount,
+                stock: p.stock,
+                images: p.images,
                 shortDescription: p.shortDescription || "",
               }}
             />

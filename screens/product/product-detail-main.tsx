@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next-nprogress-bar";
-import { BsStarFill, BsStarHalf, BsShieldCheck, BsTruck, BsCartCheck, BsTrash } from "react-icons/bs";
+import { BsShieldCheck, BsTruck, BsCartCheck, BsTrash } from "react-icons/bs";
 import { BiStore, BiArrowBack, BiPlus, BiMinus, BiCheck } from "react-icons/bi";
 import { useCartStore } from "@/lib/zustand/cart-store";
 import { useI18nStore } from "@/lib/i18n/store";
+import { getOriginalPrice } from "@/lib/utils";
 import { toast } from "react-toastify";
 import defaultProductImg from "@/public/images/63e8c4e4aed3c6720e446aa1_airpod max-min.png";
 
@@ -32,7 +33,9 @@ interface ProductDetailProps {
 
 export default function ProductDetailMain({ product }: ProductDetailProps) {
   const router = useRouter();
-  const { formatPrice } = useI18nStore();
+  const { formatPrice, formatNumber, t } = useI18nStore();
+  const discount = product.discount && product.discount > 0 ? product.discount : 0;
+  const discountText = formatNumber(discount / 100, { style: "percent" });
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
   const cartItem = items.find((i) => i.productId === product.id);
   const isInCart = Boolean(cartItem);
@@ -126,11 +129,14 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-contain p-6"
             />
-            {product.discount ? (
-              <span className="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                -{product.discount}% OFF
+            {discount > 0 && (
+              <span
+                className="absolute top-4 left-4 rounded-full bg-deal px-3 py-1 text-xs font-semibold text-white tabular-nums"
+                aria-label={t("products.discountLabel", { percent: discountText })}
+              >
+                -{discountText}
               </span>
-            ) : null}
+            )}
           </div>
 
           {/* Thumbnails */}
@@ -181,28 +187,17 @@ export default function ProductDetailMain({ product }: ProductDetailProps) {
             {product.name}
           </h1>
 
-          {/* Ratings */}
-          <div className="flex items-center gap-2 mt-2 mb-4">
-            <div className="flex text-amber-400 text-sm">
-              <BsStarFill />
-              <BsStarFill />
-              <BsStarFill />
-              <BsStarFill />
-              <BsStarHalf />
-            </div>
-            <span className="text-xs text-gray-500 font-medium">4.5 (28 customer reviews)</span>
-          </div>
-
           {/* Price */}
           <div className="flex items-baseline gap-3 my-3">
-            <span className="text-3xl font-black text-primary">
+            <span className="text-3xl font-black text-primary tabular-nums">
               {formatPrice(product.price)}
             </span>
-            {product.discount ? (
-              <span className="text-lg text-gray-400 line-through">
-                {formatPrice(Math.round(product.price * (1 + product.discount / 100)))}
-              </span>
-            ) : null}
+            {discount > 0 && (
+              <s className="text-lg text-gray-400 tabular-nums">
+                <span className="sr-only">{t("products.originalPrice")}: </span>
+                {formatPrice(getOriginalPrice(product.price, discount))}
+              </s>
+            )}
           </div>
 
           {/* Short description */}

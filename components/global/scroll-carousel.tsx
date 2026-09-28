@@ -36,7 +36,7 @@ const ScrollCarousel: React.FC<ScrollCarouselProps> = ({ children }) => {
   return (
     <div className="relative w-full h-fit overflow-hidden hide-scrollbar">
       <div
-        className="flex overflow-x-auto overflow-y-hidden scroll-smooth pb-3 overscroll-x-contain touch-pan-x hide-scrollbar scrollbar-none [&::-webkit-scrollbar]:hidden *:flex-none *:mx-[5px] *:w-[calc(100%-10px)] sm:*:w-[calc(50%-10px)] md:*:w-[calc(33.33%-10px)] xl:*:w-[calc(25%-10px)]"
+        className="flex overflow-x-auto overflow-y-hidden scroll-smooth pt-1 pb-3 overscroll-x-contain touch-pan-x hide-scrollbar scrollbar-none [&::-webkit-scrollbar]:hidden *:flex-none *:mx-[5px] *:w-[calc(100%-10px)] sm:*:w-[calc(50%-10px)] md:*:w-[calc(33.33%-10px)] xl:*:w-[calc(25%-10px)]"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         ref={carouselRef}
       >

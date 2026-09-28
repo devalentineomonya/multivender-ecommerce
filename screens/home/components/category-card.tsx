@@ -37,50 +37,34 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
 
   return (
     <Link href={href} className="block group/category my-2">
-      <div
-        className="relative overflow-hidden rounded-md w-full aspect-[1/1.3] bg-white flex flex-col justify-end
-      items-center pb-4 cursor-pointer border border-gray-200 group-hover/category:shadow-[0_5px_20px_rgba(0,_0,_0,_0.08)] group-hover/category:border-transparent transition-all"
-      >
+      <div className="card-surface card-interactive relative flex aspect-[1/1.3] w-full flex-col items-center justify-end overflow-hidden pb-4">
         <Image
           src={imgSrc}
           alt={name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-          priority
-          className="w-full h-full object-cover group-hover/category:scale-105 transition-transform duration-500"
+          className="h-full w-full object-cover"
         />
-
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
         {/* Category title badge */}
         <div className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-full text-xs font-semibold text-gray-800 shadow-xs">
           {name}
         </div>
 
-        <button
-          type="button"
-          className="relative overflow-hidden cursor-pointer rounded-[50px]
-        border-[solid] border-[hsl(50deg_100%_50%)] outline-none z-10 bg-white/95 px-3 py-1 shadow-md"
+        {/* Decorative label swap; the whole card is the link */}
+        <span
+          aria-hidden="true"
+          className="relative z-10 overflow-hidden rounded-full bg-white/95 px-3 py-1 shadow-card"
         >
-          <div
-            className="flex items-center gap-2 text-xs font-semibold
-           uppercase transition-all duration-300 ease
-          rounded-[50px] group-hover/category:translate-x-[0%] group-hover/category:-translate-y-full"
-          >
+          <span className="flex items-center gap-2 text-xs font-semibold uppercase transition-transform duration-300 ease-smooth group-hover/category:-translate-y-full">
             <MdOutlineRemoveRedEye className="text-sm" />
             <span className="text-gray-800">{t("products.quickView")}</span>
-          </div>
-          <div
-            className="flex items-center gap-2 text-xs font-medium uppercase transition-all
-           duration-300 ease rounded-[50px] absolute
-           translate-x-[0%] translate-y-full inset-0 group-hover/category:translate-x-[0%]
-            group-hover/category:translate-y-[0%] justify-center"
-          >
-            <IoCartOutline className="text-sm text-[hsl(50deg_100%_50%)]" />
-            <span className="text-[hsl(50deg_100%_50%)]">{t("nav.shopNow")}</span>
-          </div>
-        </button>
+          </span>
+          <span className="absolute inset-0 flex translate-y-full items-center justify-center gap-2 text-xs font-semibold uppercase text-primary transition-transform duration-300 ease-smooth group-hover/category:translate-y-0">
+            <IoCartOutline className="text-sm" />
+            <span>{t("nav.shopNow")}</span>
+          </span>
+        </span>
       </div>
     </Link>
   );

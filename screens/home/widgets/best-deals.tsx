@@ -71,6 +71,8 @@ const BestDeals = () => {
                   id: prod.id,
                   name: prod.name,
                   price: prod.price,
+                  discount: prod.discount,
+                  stock: prod.stock,
                   images: prod.images,
                   shortDescription: prod.shortDescription || "",
                 }}

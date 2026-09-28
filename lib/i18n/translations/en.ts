@@ -28,6 +28,15 @@ export const en = {
   "products.inStock": "In Stock",
   "products.outOfStock": "Out of Stock",
   "products.discount": "OFF",
+  "products.originalPrice": "Original price",
+  "products.discountLabel": "{percent} off",
+  "products.addToWishlist": "Add {name} to wishlist",
+  "products.removeFromWishlist": "Remove {name} from wishlist",
+  "products.decreaseQuantity": "Decrease quantity",
+  "products.increaseQuantity": "Increase quantity",
+  "products.quantityInCart": "{count} in cart",
+  "products.maxStockReached": "Maximum stock limit reached",
+  "products.addedToCart": "Added {name} to cart",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;

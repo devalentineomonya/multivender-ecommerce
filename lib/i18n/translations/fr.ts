@@ -30,4 +30,13 @@ export const fr: Partial<Record<TranslationKey, string>> = {
   "products.inStock": "En stock",
   "products.outOfStock": "Rupture de stock",
   "products.discount": "DE RÉDUCTION",
+  "products.originalPrice": "Prix d'origine",
+  "products.discountLabel": "{percent} de réduction",
+  "products.addToWishlist": "Ajouter {name} à la liste de souhaits",
+  "products.removeFromWishlist": "Retirer {name} de la liste de souhaits",
+  "products.decreaseQuantity": "Diminuer la quantité",
+  "products.increaseQuantity": "Augmenter la quantité",
+  "products.quantityInCart": "{count} dans le panier",
+  "products.maxStockReached": "Limite de stock atteinte",
+  "products.addedToCart": "{name} ajouté au panier",
 };

@@ -12,22 +12,10 @@ const BestSelling = () => {
   const { data, isLoading } = useGetProducts({ label: "BestSelling", limit: 6 });
   const { t } = useI18nStore();
 
-  const fallbackProducts = [
-    {
-      id: "bs-1",
-      name: "Minimalist Scandinavian Ceramic Vase",
-      price: 45,
-      shortDescription: "Handcrafted matte ceramic decorative vase for modern interior spaces.",
-    },
-    {
-      id: "bs-2",
-      name: "Leather Weekender Duffle Bag",
-      price: 129,
-      shortDescription: "Full grain genuine leather weekender duffle bag with brass hardware.",
-    },
-  ];
+  const products = data?.products ?? [];
 
-  const products = data?.products && data.products.length > 0 ? data.products : fallbackProducts;
+  // Hide the section when there is nothing real to show (never render placeholder products).
+  if (!isLoading && products.length === 0) return null;
 
   return (
     <SectionLayout title={t("products.bestSelling")} overflow>
@@ -48,7 +36,9 @@ const BestSelling = () => {
                 id: p.id,
                 name: p.name,
                 price: p.price,
-                images: (p as any).images,
+                discount: p.discount,
+                stock: p.stock,
+                images: p.images,
                 shortDescription: p.shortDescription || "",
               }}
             />

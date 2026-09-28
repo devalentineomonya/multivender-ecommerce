@@ -4,6 +4,7 @@ import React from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { useCartStore } from "@/lib/zustand/cart-store";
 import { toast } from "react-toastify";
+import { useI18nStore } from "@/lib/i18n/store";
 
 interface CartActionButtonsProps {
   productId: string;
@@ -23,6 +24,7 @@ const CartActionButtons: React.FC<CartActionButtonsProps> = ({
   product,
   currentStock = 99,
 }) => {
+  const { t } = useI18nStore();
   const items = useCartStore((state) => state.items);
   const addItem = useCartStore((state) => state.addItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -35,7 +37,7 @@ const CartActionButtons: React.FC<CartActionButtonsProps> = ({
     e.stopPropagation();
 
     if (currentQuantity >= currentStock) {
-      toast.warning("Maximum stock limit reached");
+      toast.warning(t("products.maxStockReached"));
       return;
     }
 
@@ -48,7 +50,7 @@ const CartActionButtons: React.FC<CartActionButtonsProps> = ({
         vendorId: product.vendorId,
         quantity: 1,
       });
-      toast.success(`Added ${product.name} to cart`);
+      toast.success(t("products.addedToCart", { name: product.name }));
     } else {
       updateQuantity(productId, currentQuantity + 1);
     }
@@ -62,36 +64,49 @@ const CartActionButtons: React.FC<CartActionButtonsProps> = ({
     }
   };
 
+  if (currentQuantity === 0 && currentStock <= 0) {
+    return (
+      <button
+        type="button"
+        disabled
+        className="w-full sm:w-auto py-2 px-5 rounded-full text-xs font-semibold border border-gray-200 text-gray-400 cursor-not-allowed"
+      >
+        {t("products.outOfStock")}
+      </button>
+    );
+  }
+
   if (currentQuantity === 0) {
     return (
       <button
         type="button"
         onClick={handleIncrease}
-        className="w-full sm:w-auto bg-primary text-white hover:bg-slate-900 transition-colors py-2 px-5 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+        className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90 transition-colors py-2 px-5 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5"
       >
         <AiOutlinePlus className="text-sm" />
-        <span>Add to Cart</span>
+        <span>{t("products.addToCart")}</span>
       </button>
     );
   }
 
   return (
-    <div className="flex justify-between items-center gap-x-3 rounded-full border border-primary py-1 px-4 w-fit bg-primary/5">
+    <div className="flex justify-between items-center gap-x-1 rounded-full border border-primary w-fit bg-primary/5">
       <button
         type="button"
-        title="Decrease quantity"
-        aria-label="Decrease quantity"
-        className="hover:text-primary transition-colors cursor-pointer text-xs"
+        aria-label={t("products.decreaseQuantity")}
+        className="flex size-8 items-center justify-center rounded-full text-xs transition-colors hover:text-primary"
         onClick={handleDecrease}
       >
         <AiOutlineMinus />
       </button>
-      <span className="font-bold text-xs text-slate-800 px-1">{currentQuantity}</span>
+      <span className="min-w-5 text-center font-bold text-xs text-slate-800 tabular-nums" aria-live="polite">
+        <span className="sr-only">{t("products.quantityInCart", { count: currentQuantity })}</span>
+        <span aria-hidden="true">{currentQuantity}</span>
+      </span>
       <button
         type="button"
-        title="Increase quantity"
-        aria-label="Increase quantity"
-        className="hover:text-primary transition-colors cursor-pointer text-xs"
+        aria-label={t("products.increaseQuantity")}
+        className="flex size-8 items-center justify-center rounded-full text-xs transition-colors hover:text-primary"
         onClick={handleIncrease}
       >
         <AiOutlinePlus />

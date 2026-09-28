@@ -12,29 +12,27 @@ const TrendingProducts = () => {
 
   const products = data?.products || [];
 
+  // Nothing trending (or the request failed): hide the section rather than show placeholders.
+  if (!isLoading && products.length === 0) return null;
+
   return (
     <SectionLayout title={t("products.trendingProducts")}>
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="h-64 rounded-xl bg-gray-100 animate-pulse flex flex-col justify-end p-6 space-y-3">
+          <div className="h-64 rounded-card bg-gray-100 animate-pulse flex flex-col justify-end p-6 space-y-3">
             <div className="h-5 w-2/3 bg-gray-200 rounded-md" />
             <div className="h-4 w-1/3 bg-gray-200 rounded-md" />
           </div>
-          <div className="h-64 rounded-xl bg-gray-100 animate-pulse flex flex-col justify-end p-6 space-y-3">
+          <div className="h-64 rounded-card bg-gray-100 animate-pulse flex flex-col justify-end p-6 space-y-3">
             <div className="h-5 w-2/3 bg-gray-200 rounded-md" />
             <div className="h-4 w-1/3 bg-gray-200 rounded-md" />
           </div>
         </div>
-      ) : products.length > 0 ? (
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {products.map((prod) => (
             <TrendingProductCard key={prod.id} product={prod} />
           ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <TrendingProductCard />
-          <TrendingProductCard />
         </div>
       )}
     </SectionLayout>
