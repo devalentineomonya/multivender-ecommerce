@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 import AuthInput from "../components/auth-input";
 import { HiAtSymbol } from "react-icons/hi";
 import { z } from "zod";
@@ -9,44 +10,44 @@ import AuthLayout from "../layout/auth-layout";
 import { useForgetPassword } from "@/features/auth/forget-password";
 import { useRouter } from "next-nprogress-bar";
 import Link from "next/link";
+import { useI18nStore } from "@/lib/i18n/store";
+import type { TranslationKey } from "@/lib/i18n/translations";
 
-const forgetPasswordSchema = z.object({
-  email: z.string().email("Invalid email format").nonempty("Email is required"),
-});
+function getForgetPasswordSchema(t: (key: TranslationKey) => string) {
+  return z.object({
+    email: z.string().email(t("auth.errors.invalidEmail")).nonempty(t("auth.errors.emailRequired")),
+  });
+}
 
-type ForgetPasswordFormData = z.infer<typeof forgetPasswordSchema>;
+type ForgetPasswordFormData = z.infer<ReturnType<typeof getForgetPasswordSchema>>;
 
 const ForgetPassword = () => {
+  const { t } = useI18nStore();
   const resetPassword = useForgetPassword();
   const router = useRouter();
+  const schema = useMemo(() => getForgetPasswordSchema(t), [t]);
   const {
     register,
     reset,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ForgetPasswordFormData>({
-    resolver: zodResolver(forgetPasswordSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: ForgetPasswordFormData) => {
-    const id = toast.loading("Requesting Reset...");
+    const id = toast.loading(t("auth.toast.requestingReset"));
     try {
       const response = await resetPassword.mutateAsync(data);
       if (response?.success) {
         reset()
-        toast.success(response.message || "Request sent successfully");
+        toast.success(response.message || t("auth.toast.resetRequestSent"));
         router.push("/auth/new-password");
       } else {
-        toast.error(
-          response?.message || "Failed to request reset. Please try again."
-        );
+        toast.error(response?.message || t("auth.toast.resetRequestFailed"));
       }
     } catch (error: unknown) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again later."
-      );
+      toast.error(error instanceof Error ? error.message : t("auth.toast.genericError"));
     } finally {
       toast.done(id);
     }
@@ -54,13 +55,13 @@ const ForgetPassword = () => {
 
   return (
     <AuthLayout
-      title="Reset Password"
-      description="Enter your email to reset your password"
+      title={t("auth.forgetPassword.title")}
+      description={t("auth.forgetPassword.description")}
     >
       <form className="max-w-96 w-full mt-4" onSubmit={handleSubmit(onSubmit)}>
         <AuthInput
           type="email"
-          label="Email*"
+          label={t("auth.email")}
           icon={<HiAtSymbol />}
           {...register("email")}
         />
@@ -79,23 +80,22 @@ const ForgetPassword = () => {
             {isSubmitting ? (
               <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              "Reset Password"
+              t("auth.forgetPassword.submit")
             )}
           </button>
           <p className="mt-8 text-xs  text-center text-gray-700">
-            Have your password?
+            {t("auth.forgetPassword.haveAccount")}
             <Link
               href="/auth/sign-in"
               className="font-semibold capitalize ml-3 text-sky-600"
             >
-              Sign In
+              {t("auth.signIn.link")}
             </Link>
           </p>
         </div>
       </form>
     </AuthLayout>
   );
-;
 };
 
 export default ForgetPassword;

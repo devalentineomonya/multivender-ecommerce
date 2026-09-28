@@ -9,6 +9,7 @@ import { useConfirmOtp } from "@/features/auth/confirm-otp";
 import { useResendOtp } from "@/features/auth/resend-otp";
 import { createClient } from "@/lib/supabase/client";
 import { getUserRole, getRoleDashboardPath } from "@/lib/auth/roles";
+import { useI18nStore } from "@/lib/i18n/store";
 import type { User } from "@supabase/supabase-js";
 
 interface OtpFormData {
@@ -16,6 +17,7 @@ interface OtpFormData {
 }
 
 const OtpForm: React.FC = () => {
+  const { t } = useI18nStore();
   const [user, setUser] = React.useState<User | null>(null);
   const confirmOTP = useConfirmOtp();
   const resendOTP = useResendOtp();
@@ -29,44 +31,34 @@ const OtpForm: React.FC = () => {
   }, []);
 
   const onOtpSubmit = async (data: OtpFormData) => {
-    const id = toast.loading("Verifying...");
+    const id = toast.loading(t("auth.toast.verifying"));
     try {
       const response = await confirmOTP.mutateAsync(data);
       if (response?.success) {
-        toast.success("Account Verified successfully");
+        toast.success(t("auth.toast.accountVerified"));
         const role = getUserRole(user);
         router.push(getRoleDashboardPath(role));
       } else {
-        toast.error(response?.message || "Invalid OTP. Please try again.");
+        toast.error(response?.message || t("auth.toast.otpFailed"));
       }
     } catch (error: unknown) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again later."
-      );
+      toast.error(error instanceof Error ? error.message : t("auth.toast.genericError"));
     } finally {
       toast.done(id);
     }
   };
   const onOtpResend = async () => {
-    const id = toast.loading("Requesting Code...");
+    const id = toast.loading(t("auth.toast.requestingCode"));
 
     try {
       const response = await resendOTP.mutateAsync();
       if (response?.success) {
-        toast.success(response.message || "OTP resent successfully");
+        toast.success(response.message || t("auth.toast.otpResent"));
       } else {
-        toast.error(
-          response?.message || "Failed to resent OTP. Please try again."
-        );
+        toast.error(response?.message || t("auth.toast.otpResendFailed"));
       }
     } catch (error: unknown) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again later."
-      );
+      toast.error(error instanceof Error ? error.message : t("auth.toast.genericError"));
     } finally {
       toast.done(id);
     }
@@ -82,23 +74,20 @@ const OtpForm: React.FC = () => {
       .join("");
 
     if (otpValues.length < 6) {
-      return toast.error("Invalid OTP. Please try again.");
+      return toast.error(t("auth.otp.invalidLength"));
     }
     onOtpSubmit({ otp: otpValues });
   };
 
   return (
-    <AuthLayout
-      title="Verify Account"
-      description="Enter the OTP sent to your email"
-    >
+    <AuthLayout title={t("auth.otp.title")} description={t("auth.otp.description")}>
       <form className="max-w-96 w-full mt-4" onSubmit={FormSubmission}>
         <OtpInput
           onOtpSubmit={(otp: string) => onOtpSubmit({ otp })}
           length={6}
         />
         <div className="text-xs text-center mt-4">
-          <span suppressHydrationWarning>Enter the 6-digit code sent to {user?.email}</span>
+          <span suppressHydrationWarning>{t("auth.otp.codeSentTo", { email: user?.email || "" })}</span>
         </div>
         <div className="flex flex-col justify-center items-center mt-4">
           <button
@@ -106,17 +95,17 @@ const OtpForm: React.FC = () => {
             type="submit"
             className="bg-primary text-white hover:bg-black w-full h-11 rounded-md text-sm flex justify-center items-center gap-x-3"
           >
-            Verify
+            {t("auth.otp.verify")}
           </button>
           <div className="flex items-center justify-center gap-x-4 text-sm mt-4">
-            <span>Didn&apos;t receive code? </span>
+            <span>{t("auth.otp.noCode")} </span>
             <button
               onClick={() => onOtpResend()}
               disabled={resendOTP.isPending || confirmOTP.isPending}
               type="button"
               className="text-primary text-medium underline"
             >
-              Resend
+              {t("auth.otp.resend")}
             </button>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { BiRefresh, BiHomeAlt } from "react-icons/bi";
+import { useI18nStore } from "@/lib/i18n/store";
 
 export default function ErrorBoundary({
   error,
@@ -11,6 +12,7 @@ export default function ErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useI18nStore();
   useEffect(() => {
     console.error("Runtime error caught by boundary:", error);
   }, [error]);
@@ -21,11 +23,9 @@ export default function ErrorBoundary({
         !
       </div>
       <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-        Something Went Wrong
+        {t("error.title")}
       </h1>
-      <p className="text-gray-500 max-w-md mt-2 text-sm">
-        An unexpected error occurred while loading this page. Our engineers have been notified.
-      </p>
+      <p className="text-gray-500 max-w-md mt-2 text-sm">{t("error.body")}</p>
 
       <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
         <button
@@ -34,14 +34,14 @@ export default function ErrorBoundary({
           className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-black transition-colors cursor-pointer"
         >
           <BiRefresh className="text-base" />
-          <span>Try Again</span>
+          <span>{t("error.tryAgain")}</span>
         </button>
         <Link
           href="/"
           className="flex items-center gap-2 px-6 py-2.5 border border-gray-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-gray-50 transition-colors"
         >
           <BiHomeAlt className="text-base" />
-          <span>Go to Home</span>
+          <span>{t("error.goHome")}</span>
         </Link>
       </div>
     </div>

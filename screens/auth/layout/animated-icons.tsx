@@ -7,6 +7,7 @@ import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { BiUserCheck, BiShoppingBag, BiShieldQuarter } from "react-icons/bi";
 import { SiApple, SiSamsung, SiNike } from "react-icons/si";
 import logo from "@/public/images/logo.svg";
+import { useI18nStore } from "@/lib/i18n/store";
 
 const Circle = forwardRef<
   HTMLDivElement,
@@ -28,6 +29,7 @@ const Circle = forwardRef<
 Circle.displayName = "Circle";
 
 const AnimatedIcons = () => {
+  const { t } = useI18nStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const div1Ref = useRef<HTMLDivElement>(null);
   const div2Ref = useRef<HTMLDivElement>(null);
@@ -45,17 +47,17 @@ const AnimatedIcons = () => {
       <div className="flex size-full flex-col items-stretch justify-between gap-12">
         {/* Top Row: User to Platform to Brand */}
         <div className="flex flex-row items-center justify-between">
-          <Circle ref={div1Ref} className="border-emerald-200 text-emerald-700 bg-emerald-50/50" title="Verified Shopper">
+          <Circle ref={div1Ref} className="border-emerald-200 text-emerald-700 bg-emerald-50/50" title={t("auth.icons.verifiedShopper")}>
             <BiUserCheck className="size-6" />
           </Circle>
-          <Circle ref={div5Ref} className="border-gray-300 text-black hover:border-black" title="Apple Authorized Store">
+          <Circle ref={div5Ref} className="border-gray-300 text-black hover:border-black" title={t("auth.icons.appleStore")}>
             <SiApple className="size-5" />
           </Circle>
         </div>
 
         {/* Middle Row: Product to Central Platform Logo to Brand */}
         <div className="flex flex-row items-center justify-between">
-          <Circle ref={div2Ref} className="border-amber-200 text-amber-700 bg-amber-50/50" title="Marketplace Cart & Products">
+          <Circle ref={div2Ref} className="border-amber-200 text-amber-700 bg-amber-50/50" title={t("auth.icons.marketplace")}>
             <BiShoppingBag className="size-6" />
           </Circle>
 
@@ -63,7 +65,7 @@ const AnimatedIcons = () => {
           <Circle
             ref={div4Ref}
             className="size-20 border-primary bg-primary/10 shadow-lg ring-4 ring-primary/20 p-3"
-            title="ShoppingCart Platform"
+            title={t("auth.icons.platform")}
           >
             <Image
               src={logo}
@@ -72,17 +74,17 @@ const AnimatedIcons = () => {
             />
           </Circle>
 
-          <Circle ref={div6Ref} className="border-blue-200 text-[#1428a0]" title="Samsung Official Partner">
+          <Circle ref={div6Ref} className="border-blue-200 text-[#1428a0]" title={t("auth.icons.samsungPartner")}>
             <SiSamsung className="size-7" />
           </Circle>
         </div>
 
         {/* Bottom Row: Trust & Security to Brand */}
         <div className="flex flex-row items-center justify-between">
-          <Circle ref={div3Ref} className="border-teal-200 text-teal-700 bg-teal-50/50" title="Secure Payment & Protection">
+          <Circle ref={div3Ref} className="border-teal-200 text-teal-700 bg-teal-50/50" title={t("auth.icons.securePayment")}>
             <BiShieldQuarter className="size-6" />
           </Circle>
-          <Circle ref={div7Ref} className="border-black/20 text-black" title="Nike Official Partner">
+          <Circle ref={div7Ref} className="border-black/20 text-black" title={t("auth.icons.nikePartner")}>
             <SiNike className="size-6" />
           </Circle>
         </div>

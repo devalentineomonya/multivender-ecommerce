@@ -11,25 +11,30 @@ import AuthLayout from "../layout/auth-layout";
 import SignInWithGoogle from "../components/sign-in-with-google";
 import { useSigninUser } from "@/features/auth/sign-in-user";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { getRoleDashboardPath, UserRole } from "@/lib/auth/roles";
+import { useI18nStore } from "@/lib/i18n/store";
+import type { TranslationKey } from "@/lib/i18n/translations";
 
-// Zod schema for validation
-const signInSchema = z.object({
-  email: z.string().email("Invalid email format").nonempty("Email is required"),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters long")
-    .nonempty("Password is required"),
-  remember: z.boolean().optional(),
-});
+function getSignInSchema(t: (key: TranslationKey) => string) {
+  return z.object({
+    email: z.string().email(t("auth.errors.invalidEmail")).nonempty(t("auth.errors.emailRequired")),
+    password: z
+      .string()
+      .min(6, t("auth.errors.passwordMin6"))
+      .nonempty(t("auth.errors.passwordRequired")),
+    remember: z.boolean().optional(),
+  });
+}
 
-type SignInFormData = z.infer<typeof signInSchema>;
+type SignInFormData = z.infer<ReturnType<typeof getSignInSchema>>;
 
 const SignIn = () => {
+  const { t } = useI18nStore();
   const signInUser = useSigninUser();
   const router = useRouter();
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const schema = useMemo(() => getSignInSchema(t), [t]);
 
   const {
     register,
@@ -37,7 +42,7 @@ const SignIn = () => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
       password: "",
@@ -46,12 +51,12 @@ const SignIn = () => {
   });
 
   const onSubmit = async (values: SignInFormData) => {
-    const id = toast.loading("Logging in...");
+    const id = toast.loading(t("auth.toast.loggingIn"));
     try {
       const response = await signInUser.mutateAsync(values);
 
       if (response?.success) {
-        toast.success("Welcome back!");
+        toast.success(t("auth.toast.welcomeBack"));
         setIsRedirecting(true);
         reset();
 
@@ -60,16 +65,10 @@ const SignIn = () => {
         const destination = getRoleDashboardPath(role);
         router.push(destination);
       } else {
-        toast.error(
-          response?.message || "Invalid credentials. Please try again."
-        );
+        toast.error(response?.message || t("auth.toast.invalidCredentials"));
       }
     } catch (error: unknown) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again later."
-      );
+      toast.error(error instanceof Error ? error.message : t("auth.toast.genericError"));
     } finally {
       toast.done(id);
     }
@@ -78,14 +77,11 @@ const SignIn = () => {
   const isDisabled = isSubmitting || signInUser.isPending || isRedirecting;
 
   return (
-    <AuthLayout
-      title="Welcome Back"
-      description="Enter your credentials to access your account"
-    >
+    <AuthLayout title={t("auth.signIn.title")} description={t("auth.signIn.description")}>
       <form className="max-w-96 w-full mt-4" onSubmit={handleSubmit(onSubmit)}>
         <AuthInput
           type="email"
-          label="Email Address*"
+          label={t("auth.emailAddress")}
           icon={<HiAtSymbol />}
           disabled={isDisabled}
           {...register("email")}
@@ -98,7 +94,7 @@ const SignIn = () => {
 
         <AuthInput
           type="password"
-          label="Password*"
+          label={t("auth.password")}
           icon={<BiLock />}
           disabled={isDisabled}
           {...register("password")}
@@ -118,13 +114,13 @@ const SignIn = () => {
               disabled={isDisabled}
               className="rounded border-gray-300 text-primary focus:ring-primary"
             />
-            <span>Remember Me</span>
+            <span>{t("auth.rememberMe")}</span>
           </label>
           <Link
             className="text-primary font-semibold hover:underline"
             href="/auth/forget-password"
           >
-            Forgot Password?
+            {t("auth.forgotPassword")}
           </Link>
         </div>
 
@@ -137,7 +133,7 @@ const SignIn = () => {
             {isSubmitting || signInUser.isPending ? (
               <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              "Sign In"
+              t("auth.signIn.submit")
             )}
           </button>
         </div>
@@ -145,12 +141,12 @@ const SignIn = () => {
         <SignInWithGoogle disabled={isDisabled} />
 
         <p className="mt-6 text-xs text-center text-gray-600">
-          Don&apos;t have an account?{" "}
+          {t("auth.signIn.noAccount")}{" "}
           <Link
             href="/auth/sign-up"
             className="font-semibold text-primary hover:underline ml-1"
           >
-            Sign Up
+            {t("auth.signUp.link")}
           </Link>
         </p>
       </form>

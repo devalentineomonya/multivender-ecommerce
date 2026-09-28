@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { Google } from "@/components/ui/icons";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from 'next-nprogress-bar';
+import { useI18nStore } from "@/lib/i18n/store";
 
 const SignInWithGoogle: React.FC<{ disabled: boolean }> = ({ disabled }) => {
+  const { t } = useI18nStore();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const handleSignIn = () => {
@@ -27,7 +29,7 @@ const SignInWithGoogle: React.FC<{ disabled: boolean }> = ({ disabled }) => {
           ) : (
             <div className="flex items-center gap-x-4 justify-center">
               <Google />
-              <span>Sign Up with Google</span>
+              <span>{t("auth.google.signUp")}</span>
             </div>
           )}
         </button>

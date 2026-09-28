@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { BiHide, BiShow } from "react-icons/bi";
+import { useI18nStore } from "@/lib/i18n/store";
 
 interface AuthInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -26,6 +27,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
     },
     ref
   ) => {
+    const { t } = useI18nStore();
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
@@ -66,7 +68,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
               className="absolute right-3.5 text-gray-400 hover:text-slate-700 transition-colors cursor-pointer text-xl p-1"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
             >
               {showPassword ? <BiHide /> : <BiShow />}
             </button>

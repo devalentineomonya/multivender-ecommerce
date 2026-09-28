@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 import AuthInput from "../components/auth-input";
 import { HiAtSymbol } from "react-icons/hi";
 import { BiLock } from "react-icons/bi";
@@ -9,70 +10,63 @@ import AuthLayout from "../layout/auth-layout";
 import { useSetNewPassword } from "@/features/auth/set-new-password";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { useI18nStore } from "@/lib/i18n/store";
+import type { TranslationKey } from "@/lib/i18n/translations";
 
-// Zod schema for form validation
-const NewPasswordSchema = z
-  .object({
-    email: z
-      .string()
-      .email("Invalid email format")
-      .nonempty("Email is required"),
-    newPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .nonempty("New password is required"),
-    confirmPassword: z.string().nonempty("Please confirm your new password"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+function getNewPasswordSchema(t: (key: TranslationKey) => string) {
+  return z
+    .object({
+      email: z.string().email(t("auth.errors.invalidEmail")).nonempty(t("auth.errors.emailRequired")),
+      newPassword: z
+        .string()
+        .min(8, t("auth.errors.newPasswordMin8"))
+        .nonempty(t("auth.errors.newPasswordRequired")),
+      confirmPassword: z.string().nonempty(t("auth.errors.confirmPasswordRequired")),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t("auth.errors.passwordsDontMatch"),
+      path: ["confirmPassword"],
+    });
+}
 
-// Infer the TypeScript type from the Zod schema
-type NewPasswordFormData = z.infer<typeof NewPasswordSchema>;
+type NewPasswordFormData = z.infer<ReturnType<typeof getNewPasswordSchema>>;
 
 const NewPassword = () => {
+  const { t } = useI18nStore();
   const setNewPassword = useSetNewPassword();
+  const schema = useMemo(() => getNewPasswordSchema(t), [t]);
   const {
     register,
-    handleSubmit,reset,
+    handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<NewPasswordFormData>({
-    resolver: zodResolver(NewPasswordSchema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: NewPasswordFormData) => {
-    const id = toast.loading("Resetting Password...");
+    const id = toast.loading(t("auth.toast.resettingPassword"));
     try {
       const response = await setNewPassword.mutateAsync(data);
       if (response?.success) {
         reset();
-        toast.success(response.message || "Password reset successfully");
+        toast.success(response.message || t("auth.toast.passwordResetSuccess"));
       } else {
-        toast.error(
-          response?.message || "Failed to reset Password. Please try again."
-        );
+        toast.error(response?.message || t("auth.toast.passwordResetFailed"));
       }
     } catch (error: unknown) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again later."
-      );
+      toast.error(error instanceof Error ? error.message : t("auth.toast.genericError"));
     } finally {
       toast.done(id);
     }
   };
 
   return (
-    <AuthLayout
-      title="New Password"
-      description="Enter your email and new password"
-    >
+    <AuthLayout title={t("auth.newPassword.title")} description={t("auth.newPassword.description")}>
       <form className="max-w-96 w-full mt-4" onSubmit={handleSubmit(onSubmit)}>
         <AuthInput
           type="email"
-          label="Email*"
+          label={t("auth.email")}
           icon={<HiAtSymbol />}
           {...register("email")}
         />
@@ -84,7 +78,7 @@ const NewPassword = () => {
 
         <AuthInput
           type="password"
-          label="New Password*"
+          label={t("auth.newPasswordLabel")}
           icon={<BiLock />}
           {...register("newPassword")}
         />
@@ -96,7 +90,7 @@ const NewPassword = () => {
 
         <AuthInput
           type="password"
-          label="Confirm Password*"
+          label={t("auth.confirmPasswordLabel")}
           icon={<BiLock />}
           {...register("confirmPassword")}
         />
@@ -115,17 +109,17 @@ const NewPassword = () => {
             {isSubmitting ? (
               <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              "Reset Password"
+              t("auth.forgetPassword.submit")
             )}
           </button>
         </div>
         <p className="mt-8 text-xs  text-center text-gray-700">
-          Sign in to your account
+          {t("auth.newPassword.signInPrompt")}
           <Link
             href="/auth/sign-in"
             className="font-semibold capitalize ml-3 text-sky-600"
           >
-            Sign In
+            {t("auth.signIn.link")}
           </Link>
         </p>
       </form>
