@@ -90,4 +90,6 @@ export const sw: Partial<Record<TranslationKey, string>> = {
   "search.resultsCount.other": "Matokeo {count}",
   "search.back": "Rudi nyuma",
   "nav.menu": "Menyu",
+  "nav.viewAll": "Ona Zote",
+  "nav.noCategories": "Hakuna aina bado",
 };

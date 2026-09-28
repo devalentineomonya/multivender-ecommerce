@@ -20,7 +20,7 @@ const NavbarLower: React.FC = () => {
 
   const pagePath = useRef<string>("");
 
-  const { width, isMobile } = useBrowserWidth();
+  const { isMobile } = useBrowserWidth();
 
   useEffect(() => {
     const pathname = location.pathname;
@@ -80,12 +80,10 @@ const NavbarLower: React.FC = () => {
     <MainLayout className="overflow-visible sticky top-0 z-40 bg-white shadow-[3px_3px_16.5px_-7.5px_#ccc6c6]">
       <div className="flex items-center justify-between md:gap-x-2 xl:gap-x-8 gap-x-0 mt-3 py-1">
         <NavbarLogo />
-        {width >= 1150 && (
-          <NavCategoryDropDown
-            showDropDown={showCategoryDropDown}
-            setShowDropDown={setShowCategoryDropDown}
-          />
-        )}
+        <NavCategoryDropDown
+          showDropDown={showCategoryDropDown}
+          setShowDropDown={setShowCategoryDropDown}
+        />
 
         <NavbarMobile
           isMobile={isMobile}

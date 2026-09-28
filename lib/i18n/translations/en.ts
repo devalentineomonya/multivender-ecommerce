@@ -88,6 +88,8 @@ export const en = {
   "search.resultsCount.other": "{count} results",
   "search.back": "Back",
   "nav.menu": "Menu",
+  "nav.viewAll": "View All",
+  "nav.noCategories": "No categories yet",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;

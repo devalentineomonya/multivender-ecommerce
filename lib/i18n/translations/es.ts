@@ -90,4 +90,6 @@ export const es: Partial<Record<TranslationKey, string>> = {
   "search.resultsCount.other": "{count} resultados",
   "search.back": "Atrás",
   "nav.menu": "Menú",
+  "nav.viewAll": "Ver todo",
+  "nav.noCategories": "Aún no hay categorías",
 };
