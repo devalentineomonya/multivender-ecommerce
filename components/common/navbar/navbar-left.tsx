@@ -13,12 +13,11 @@ import { useI18nStore } from "@/lib/i18n/store";
 import type { User } from "@supabase/supabase-js";
 
 interface NavbarLeftProps {
-  isMobile: boolean;
   navBarOpen: boolean;
   setNavBarOpen: (isOpen: boolean) => void;
 }
 
-const NavbarLeft: React.FC<NavbarLeftProps> = ({ isMobile, navBarOpen, setNavBarOpen }) => {
+const NavbarLeft: React.FC<NavbarLeftProps> = ({ navBarOpen, setNavBarOpen }) => {
   const { t } = useI18nStore();
   const [user, setUser] = useState<User | null>(null);
   const cartItemCount = useCartStore((state) => state.totalItems());
@@ -64,18 +63,16 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({ isMobile, navBarOpen, setNavBar
           {user ? (
             <>
               <TbUserCheck size={20} className="text-primary" />
-              {!isMobile && (
-                <span className="capitalize font-medium text-slate-800">
-                  {user?.user_metadata?.full_name?.split(" ")[0]?.toLowerCase() ||
-                    user?.user_metadata?.firstName?.toLowerCase() ||
-                    t("nav.account")}
-                </span>
-              )}
+              <span className="hidden capitalize font-medium text-slate-800 lg:inline">
+                {user?.user_metadata?.full_name?.split(" ")[0]?.toLowerCase() ||
+                  user?.user_metadata?.firstName?.toLowerCase() ||
+                  t("nav.account")}
+              </span>
             </>
           ) : (
             <>
               <AiOutlineUser size={20} />
-              {!isMobile && t("nav.account")}
+              <span className="hidden lg:inline">{t("nav.account")}</span>
             </>
           )}
         </div>
@@ -91,7 +88,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({ isMobile, navBarOpen, setNavBar
               </span>
             )}
           </div>
-          {!isMobile && <span className="font-medium text-slate-800">{t("nav.cart")}</span>}
+          <span className="hidden font-medium text-slate-800 lg:inline">{t("nav.cart")}</span>
         </div>
       </Link>
 
@@ -100,7 +97,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({ isMobile, navBarOpen, setNavBar
         aria-label={t("nav.menu")}
         aria-expanded={navBarOpen}
         onClick={() => setNavBarOpen(!navBarOpen)}
-        className={`flex size-9 items-center justify-center ${!isMobile ? "hidden" : ""}`}
+        className="flex size-9 items-center justify-center lg:hidden"
       >
         <HiOutlineMenuAlt4 size={20} />
       </button>

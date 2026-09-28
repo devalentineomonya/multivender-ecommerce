@@ -92,4 +92,5 @@ export const sw: Partial<Record<TranslationKey, string>> = {
   "nav.menu": "Menyu",
   "nav.viewAll": "Ona Zote",
   "nav.noCategories": "Hakuna aina bado",
+  "nav.closeMenu": "Funga menyu",
 };

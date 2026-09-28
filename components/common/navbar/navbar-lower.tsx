@@ -1,5 +1,6 @@
 "use client"
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import MainLayout from "../layouts/main/main-layout";
 import navItems from "./navbaritems";
 import NavbarLogo from "./navbar-logo";
@@ -8,7 +9,6 @@ import NavbarSearch from "./navbar-search";
 import NavbarLeft from "./navbar-left";
 import NavbarMobile from "./navbar-mobile";
 import NavCategoryDropDown from "./nav-category-drop-down";
-import useBrowserWidth from "@/hooks/useBrowserWidth";
 import OneTap from "./one-tap";
 
 /** At most one of these is open at a time, app-wide. */
@@ -16,45 +16,12 @@ type OpenMenu = "category" | "search" | "mobile" | null;
 
 const NavbarLower: React.FC = () => {
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
-  const [activePage, setActivePage] = useState<number>(0);
+  const pathname = usePathname();
 
-  const pagePath = useRef<string>("");
-
-  const { isMobile } = useBrowserWidth();
-
+  // Whatever is open, a navigation always closes it.
   useEffect(() => {
-    const pathname = location.pathname;
-
-    if (pathname.includes("/")) {
-      pagePath.current = pathname.split("/")[1] || "";
-    } else {
-      pagePath.current = pathname.substring(1);
-    }
-  }, []);
-
-  useEffect(() => {
-    const currentNavItem = navItems.find(
-      (navItem) => navItem.href.substring(1) === pagePath.current
-    );
-
-    if (currentNavItem) {
-      const index = navItems.indexOf(currentNavItem);
-      setActivePage(index);
-    }
-  }, [pagePath]);
-
-  const handlePageChange = useCallback((index: number) => {
-    setActivePage(index);
-  }, []);
-
-  const onEnterClick = useCallback(
-    (event: React.KeyboardEvent, index: number) => {
-      if (event.key === "Enter") {
-        handlePageChange(index);
-      }
-    },
-    [handlePageChange]
-  );
+    setOpenMenu(null);
+  }, [pathname]);
 
   // Compatibility shim: NavCategoryDropDown still takes a useState-shaped pair.
   const showCategoryDropDown = openMenu === "category";
@@ -85,25 +52,15 @@ const NavbarLower: React.FC = () => {
           setShowDropDown={setShowCategoryDropDown}
         />
 
-        <NavbarMobile
-          isMobile={isMobile}
-          setNavBarOpen={setMobileNavOpen}
-          navBarOpen={mobileNavOpen}
-        >
-          <NavItems
-            navItems={navItems}
-            activePage={activePage}
-            handlePageChange={handlePageChange}
-            onEnterClick={onEnterClick}
-          />
-        </NavbarMobile>
+        <NavItems navItems={navItems} variant="desktop" />
+        <NavbarMobile open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
 
         <NavbarSearch
           isMenuActive={searchMenuActive}
           onActivate={activateSearch}
           onDeactivate={deactivateSearch}
         />
-        <NavbarLeft isMobile={isMobile} navBarOpen={mobileNavOpen} setNavBarOpen={setMobileNavOpen} />
+        <NavbarLeft navBarOpen={mobileNavOpen} setNavBarOpen={setMobileNavOpen} />
       </div>
       <OneTap/>
     </MainLayout>

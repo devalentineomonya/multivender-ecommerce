@@ -52,6 +52,11 @@
   --z-toast: 60;
 }
 
+/* Staggers an item's entrance animation by its --i index; drawer nav links use this. */
+@utility drawer-stagger {
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
 /* Card surface: hairline border, no shadow at rest */
 @utility card-surface {
   border-radius: var(--radius-card);

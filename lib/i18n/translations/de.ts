@@ -7,7 +7,7 @@ export const de: Partial<Record<TranslationKey, string>> = {
   "nav.categories": "Kategorien",
   "nav.deals": "Angebote",
   "nav.whatIsNew": "Neuheiten",
-  "nav.delivery": "Lieferung",
+  "nav.delivery": "Lieferungen",
   "nav.searchPlaceholder": "Produkt suchen...",
   "nav.cart": "Warenkorb",
   "nav.account": "Konto",
@@ -92,4 +92,5 @@ export const de: Partial<Record<TranslationKey, string>> = {
   "nav.menu": "Menü",
   "nav.viewAll": "Alle anzeigen",
   "nav.noCategories": "Noch keine Kategorien",
+  "nav.closeMenu": "Menü schließen",
 };

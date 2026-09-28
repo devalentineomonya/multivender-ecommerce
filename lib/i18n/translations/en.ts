@@ -5,7 +5,7 @@ export const en = {
   "nav.categories": "Categories",
   "nav.deals": "Deals",
   "nav.whatIsNew": "What's New",
-  "nav.delivery": "Delivery",
+  "nav.delivery": "Deliveries",
   "nav.searchPlaceholder": "Search Product...",
   "nav.cart": "Cart",
   "nav.account": "Account",
@@ -90,6 +90,7 @@ export const en = {
   "nav.menu": "Menu",
   "nav.viewAll": "View All",
   "nav.noCategories": "No categories yet",
+  "nav.closeMenu": "Close menu",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;
