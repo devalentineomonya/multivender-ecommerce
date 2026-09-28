@@ -12,32 +12,32 @@ const CATEGORY_BANNERS: Record<string, { title: string; subtitle: string; bg: st
   electronics: {
     title: "Next-Gen Electronics & Smart Tech",
     subtitle: "Up to 45% Off on 4K QLEDs, Audio & Computing",
-    bg: "bg-[#e8f5e9]",
+    bg: "bg-tint-green",
   },
   fashion: {
     title: "Trending Fashion & Designer Apparel",
     subtitle: "Up to 50% Off on Footwear, Dresses & Streetwear",
-    bg: "bg-[#ffebee]",
+    bg: "bg-tint-rose",
   },
   home: {
     title: "Modern Home & Kitchen Essentials",
     subtitle: "Up to 40% Off on Cookware, Blenders & Living Decor",
-    bg: "bg-[#fff8e1]",
+    bg: "bg-tint-amber",
   },
   beauty: {
     title: "Luxury Beauty, Serums & Wellness",
     subtitle: "Up to 35% Off on Verified Authentic Skincare & Fragrances",
-    bg: "bg-[#fce4ec]",
+    bg: "bg-tint-pink",
   },
   sports: {
     title: "Pro Athletics, Gym Gear & Outdoor Equipment",
     subtitle: "Up to 50% Off on Training Kits, Flasks & Accessories",
-    bg: "bg-[#e0f2f1]",
+    bg: "bg-tint-teal",
   },
   books: {
     title: "Computing, Office Supplies & Tech Essentials",
     subtitle: "Up to 30% Off on Laptops, Storage & Office Stationery",
-    bg: "bg-[#e8eaf6]",
+    bg: "bg-tint-indigo",
   },
 };
 
@@ -63,7 +63,7 @@ const ProductsLayoutHero = () => {
       return {
         title: `Explore ${selectedCat.name}`,
         subtitle: "Handpicked deals & verified seller warranties",
-        bg: "bg-[#e8f5e9]",
+        bg: "bg-tint-green",
         catName: selectedCat.name,
       };
     }
@@ -72,7 +72,7 @@ const ProductsLayoutHero = () => {
     return {
       title: "Grab up to 50% Off on Selected Marketplace Items",
       subtitle: "Discover over 300+ authentic products with verified local delivery",
-      bg: "bg-[#ffe6cc]",
+      bg: "bg-tint-peach",
       catName: "Marketplace Deals",
     };
   }, [selectedCat]);

@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 const PromotionBanner = () => {
   return (
-    <MainLayout className="bg-[#ffe6cc] mt-24">
+    <MainLayout className="bg-tint-peach mt-24">
       <div className="h-80 max-w6xl flex justify-between items-center px-10 mx-auto">
         <div className="w-full">
           <h1 className="font-bold text-5xl text-black mb-4">
