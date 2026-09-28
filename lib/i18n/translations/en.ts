@@ -71,6 +71,23 @@ export const en = {
   "meta.shop.description": "Browse products from verified local sellers with delivery or pickup.",
   "meta.deals.title": "Deals | DevalShoppingCart",
   "meta.deals.description": "Discounted products from verified sellers, sorted by biggest savings.",
+  "search.label": "Search",
+  "search.placeholder": "Search products and categories…",
+  "search.submit": "Search",
+  "search.open": "Open search",
+  "search.close": "Close search",
+  "search.clear": "Clear search",
+  "search.categoriesHeading": "Categories",
+  "search.productsHeading": "Products",
+  "search.hint": "Keep typing to search",
+  "search.empty": "No results for \"{query}\"",
+  "search.seeAll": "See all results for \"{query}\"",
+  "search.error": "Something went wrong",
+  "search.retry": "Try again",
+  "search.resultsCount.one": "{count} result",
+  "search.resultsCount.other": "{count} results",
+  "search.back": "Back",
+  "nav.menu": "Menu",
 } satisfies Record<string, string>;
 
 export type TranslationKey = keyof typeof en;

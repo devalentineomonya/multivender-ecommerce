@@ -2,34 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AiOutlineUser, AiOutlineSearch } from "react-icons/ai";
+import { AiOutlineUser } from "react-icons/ai";
 import { BsCartPlus } from "react-icons/bs";
 import { HiOutlineMenuAlt4 } from "react-icons/hi";
 import { TbUserCheck } from "react-icons/tb";
 import { createClient } from "@/lib/supabase/client";
 import { useCartStore } from "@/lib/zustand/cart-store";
 import { getUserRole, getRoleDashboardPath } from "@/lib/auth/roles";
+import { useI18nStore } from "@/lib/i18n/store";
 import type { User } from "@supabase/supabase-js";
 
 interface NavbarLeftProps {
   isMobile: boolean;
-  setSearching: React.Dispatch<React.SetStateAction<boolean>>;
-  searching: boolean;
-  setNavBarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  handleSearchRedirect: () => void;
-  handleSearchValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  searchValue: string;
+  navBarOpen: boolean;
+  setNavBarOpen: (isOpen: boolean) => void;
 }
 
-const NavbarLeft: React.FC<NavbarLeftProps> = ({
-  isMobile,
-  setSearching,
-  searching,
-  setNavBarOpen,
-  handleSearchRedirect,
-  handleSearchValueChange,
-  searchValue,
-}) => {
+const NavbarLeft: React.FC<NavbarLeftProps> = ({ isMobile, navBarOpen, setNavBarOpen }) => {
+  const { t } = useI18nStore();
   const [user, setUser] = useState<User | null>(null);
   const cartItemCount = useCartStore((state) => state.totalItems());
   const [mounted, setMounted] = useState(false);
@@ -69,58 +59,7 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
 
   return (
     <div className="flex justify-center items-center sm:gap-x-5 gap-x-2">
-      <div
-        className={`flex justify-center items-center gap-x-3 relative ml-1 md:ml-0 ${
-          !isMobile ? "hidden" : ""
-        }`}
-        onClick={() => setSearching((prev) => !prev)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            setSearching((prev) => !prev);
-          }
-        }}
-      >
-        <AiOutlineSearch size={20} />
-        {searching && (
-          <div
-            className={`${
-              isMobile
-                ? "fixed md:absolute bg-white rounded-lg mt-32 right-0 px-5 py-5 w-[98%] mr-[1%] md:mr-[0%] md:w-[calc(100vw-200px)] flex justify-center items-center z-30 shadow-[3px_3px_16.5px_-7.5px_#ccc6c6]"
-                : ""
-            }`}
-          >
-            <input
-              autoFocus
-              onChange={handleSearchValueChange}
-              value={searchValue}
-              className={`border-none w-full outline-none ${
-                searching ? "inline-block" : "hidden"
-              }`}
-              type="text"
-              placeholder="Search Product"
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  setSearching(false);
-                  handleSearchRedirect();
-                }
-              }}
-            />
-            <div
-              className="rounded-full hover:bg-gray-200 min-h-7 min-w-7 max-h-7 max-w-7 flex justify-center items-center cursor-pointer"
-              onClick={handleSearchRedirect}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearchRedirect();
-                }
-              }}
-            >
-              <AiOutlineSearch size={20} />
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Link href={profileLink} title="Profile" aria-label="Profile">
+      <Link href={profileLink} title={t("nav.account")} aria-label={t("nav.account")}>
         <div className="flex justify-center items-center gap-x-3 relative ml-1 md:ml-0">
           {user ? (
             <>
@@ -129,20 +68,20 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
                 <span className="capitalize font-medium text-slate-800">
                   {user?.user_metadata?.full_name?.split(" ")[0]?.toLowerCase() ||
                     user?.user_metadata?.firstName?.toLowerCase() ||
-                    "Account"}
+                    t("nav.account")}
                 </span>
               )}
             </>
           ) : (
             <>
               <AiOutlineUser size={20} />
-              {!isMobile && "Account"}
+              {!isMobile && t("nav.account")}
             </>
           )}
         </div>
       </Link>
 
-      <Link href="/cart" title="Cart" aria-label="Cart" className="relative">
+      <Link href="/cart" title={t("nav.cart")} aria-label={t("nav.cart")} className="relative">
         <div className="flex justify-center items-center gap-x-2 relative ml-1 md:ml-0">
           <div className="relative">
             <BsCartPlus size={22} />
@@ -152,23 +91,19 @@ const NavbarLeft: React.FC<NavbarLeftProps> = ({
               </span>
             )}
           </div>
-          {!isMobile && <span className="font-medium text-slate-800">Cart</span>}
+          {!isMobile && <span className="font-medium text-slate-800">{t("nav.cart")}</span>}
         </div>
       </Link>
 
-      <div
-        className={`flex justify-center items-center gap-x-3 relative ml-1 md:ml-0 ${
-          !isMobile ? "hidden" : ""
-        }`}
-        onClick={() => setNavBarOpen(true)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            setNavBarOpen(true);
-          }
-        }}
+      <button
+        type="button"
+        aria-label={t("nav.menu")}
+        aria-expanded={navBarOpen}
+        onClick={() => setNavBarOpen(!navBarOpen)}
+        className={`flex size-9 items-center justify-center ${!isMobile ? "hidden" : ""}`}
       >
         <HiOutlineMenuAlt4 size={20} />
-      </div>
+      </button>
     </div>
   );
 };

@@ -8,23 +8,19 @@ import NavbarSearch from "./navbar-search";
 import NavbarLeft from "./navbar-left";
 import NavbarMobile from "./navbar-mobile";
 import NavCategoryDropDown from "./nav-category-drop-down";
-import { useRouter } from 'next-nprogress-bar';
-import { toast } from "react-toastify";
 import useBrowserWidth from "@/hooks/useBrowserWidth";
 import OneTap from "./one-tap";
 
-const NavbarLower: React.FC = () => {
-  const [searching, setSearching] = useState<boolean>(false);
-  const [activePage, setActivePage] = useState<number>(0);
-  const [navBarOpen, setNavBarOpen] = useState<boolean>(false);
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string | undefined>("");
+/** At most one of these is open at a time, app-wide. */
+type OpenMenu = "category" | "search" | "mobile" | null;
 
-  const router = useRouter();
+const NavbarLower: React.FC = () => {
+  const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
+  const [activePage, setActivePage] = useState<number>(0);
+
   const pagePath = useRef<string>("");
 
-  const {width, isMobile} = useBrowserWidth();
-
+  const { width, isMobile } = useBrowserWidth();
 
   useEffect(() => {
     const pathname = location.pathname;
@@ -60,18 +56,25 @@ const NavbarLower: React.FC = () => {
     [handlePageChange]
   );
 
-  const handleSearchValueChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
+  // Compatibility shim: NavCategoryDropDown still takes a useState-shaped pair.
+  const showCategoryDropDown = openMenu === "category";
+  const setShowCategoryDropDown: React.Dispatch<React.SetStateAction<boolean>> = useCallback((value) => {
+    setOpenMenu((prev) => {
+      const next = typeof value === "function" ? (value as (p: boolean) => boolean)(prev === "category") : value;
+      return next ? "category" : null;
+    });
   }, []);
 
-  const handleSearchRedirect = useCallback(() => {
-    if (!searchValue?.trim()) {
-      setSearching(true);
-      toast.warning("Please Type something to search...!");
-    } else {
-      router.push(`/shop?search=${searchValue}`);
-    }
-  }, [searchValue, router, setSearching]);
+  const mobileNavOpen = openMenu === "mobile";
+  const setMobileNavOpen = useCallback((isOpen: boolean) => {
+    setOpenMenu(isOpen ? "mobile" : null);
+  }, []);
+
+  const searchMenuActive = openMenu !== "category" && openMenu !== "mobile";
+  const activateSearch = useCallback(() => setOpenMenu("search"), []);
+  const deactivateSearch = useCallback(() => {
+    setOpenMenu((prev) => (prev === "search" ? null : prev));
+  }, []);
 
   return (
     <MainLayout className="overflow-visible sticky top-0 z-40 bg-white shadow-[3px_3px_16.5px_-7.5px_#ccc6c6]">
@@ -79,43 +82,30 @@ const NavbarLower: React.FC = () => {
         <NavbarLogo />
         {width >= 1150 && (
           <NavCategoryDropDown
-            showDropDown={showDropDown}
-            setShowDropDown={setShowDropDown}
+            showDropDown={showCategoryDropDown}
+            setShowDropDown={setShowCategoryDropDown}
           />
         )}
 
-        {!searching && (
-          <NavbarMobile
-            isMobile={isMobile}
-            setNavBarOpen={setNavBarOpen}
-            navBarOpen={navBarOpen}
-          >
-            <NavItems
-              navItems={navItems}
-              activePage={activePage}
-              handlePageChange={handlePageChange}
-              onEnterClick={onEnterClick}
-            />
-          </NavbarMobile>
-        )}
+        <NavbarMobile
+          isMobile={isMobile}
+          setNavBarOpen={setMobileNavOpen}
+          navBarOpen={mobileNavOpen}
+        >
+          <NavItems
+            navItems={navItems}
+            activePage={activePage}
+            handlePageChange={handlePageChange}
+            onEnterClick={onEnterClick}
+          />
+        </NavbarMobile>
 
         <NavbarSearch
-          searching={searching}
-          setSearching={setSearching}
-          isMobile={isMobile}
-          handleSearchValueChange={handleSearchValueChange}
-          searchValue={searchValue || ""}
-          handleSearchRedirect={handleSearchRedirect}
+          isMenuActive={searchMenuActive}
+          onActivate={activateSearch}
+          onDeactivate={deactivateSearch}
         />
-        <NavbarLeft
-          isMobile={isMobile}
-          setSearching={setSearching}
-          searching={searching}
-          setNavBarOpen={setNavBarOpen}
-          searchValue={searchValue || ""}
-          handleSearchRedirect={handleSearchRedirect}
-          handleSearchValueChange={handleSearchValueChange}
-        />
+        <NavbarLeft isMobile={isMobile} navBarOpen={mobileNavOpen} setNavBarOpen={setMobileNavOpen} />
       </div>
       <OneTap/>
     </MainLayout>
