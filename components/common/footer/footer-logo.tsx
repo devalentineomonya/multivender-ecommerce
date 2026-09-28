@@ -8,8 +8,8 @@ import { BiCreditCard, BiMobile, BiBuilding, BiHash } from "react-icons/bi";
 function FooterLogo() {
   // Animation Variants
   const logoAndDescriptionVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
+    hidden: { opacity: 0, y: 12 },
+    visible: { opacity: 1, y: 0 },
   };
 
   const paymentContainerVariants = {
@@ -23,7 +23,7 @@ function FooterLogo() {
   };
 
   const paymentMethodVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 12 },
     visible: { opacity: 1, y: 0 },
   };
 

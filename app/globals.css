@@ -124,6 +124,12 @@ html,
 body {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
+  /* A page that occasionally grows a vertical scrollbar (e.g. during a reveal
+     animation) shouldn't reflow the layout when it appears/disappears. */
+  scrollbar-gutter: stable;
+  /* Belt-and-suspenders guard against a stray wide child creating horizontal
+     scroll; unlike overflow-x: hidden this never forces overflow-y to auto. */
+  overflow-x: clip;
 }
 
 ::-webkit-scrollbar {
